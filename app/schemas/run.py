@@ -9,6 +9,7 @@ class CreateRunRequest(BaseModel):
     room_size: float = Field(default=10.0, gt=1.0)
     max_steps: int = Field(default=200, ge=20, le=5_000)
     dirt_count: int = Field(default=3, ge=1, le=100)
+    device: str = Field(default="auto", pattern="^(auto|cpu|cuda|mps)$")
 
 
 class RunResponse(BaseModel):

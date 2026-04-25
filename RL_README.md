@@ -105,10 +105,20 @@ GET /api/runs
 ## Direct CLI training
 
 ```bash
-python -m app.rl.train --run-id local_test --total-timesteps 30000
+python -m app.rl.train --run-id local_test --total-timesteps 30000 --device cpu
 python -m app.rl.eval --run-id local_test --episodes 50
 python -m app.rl.baseline --episodes 50
 ```
+
+`--device mps` is supported as an input, but training falls back to CPU if PPO cannot initialize on the local MPS backend.
+
+Generate visual diagnostics for a saved model:
+
+```bash
+python -m app.rl.visualize --run-id local_test --seed 0 --episodes 2
+```
+
+This writes GIFs, trajectory JSON, and a manifest under `runs/{run_id}/artifacts/`.
 
 ## Phase 1 success criteria
 

@@ -57,6 +57,9 @@ npm run lint
 
 `npm install` installs dependencies from `package-lock.json`. `npm run dev` starts the local Next.js development server. `npm run build` validates the production build. `npm run start` serves the built app. `npm run lint` runs ESLint with Next.js Core Web Vitals and TypeScript rules.
 
+Use `DEVICE=cpu ./scripts/run_local.sh` for explicit CPU runs. `DEVICE=mps` is accepted, but this environment falls back to CPU if Stable-Baselines3 cannot initialize PPO on MPS.
+Use `.venv/bin/python -m app.rl.visualize --run-id local_test --seed 0 --episodes 2` to write GIFs and trajectory JSON under `runs/{run_id}/artifacts/`.
+
 ## Coding Style & Naming Conventions
 
 **Python:** Use Python 3 style with 4-space indentation, type hints where they clarify API boundaries, and small functions with explicit names. Keep modules grouped by responsibility: API code in `app/main.py`, schemas in `app/schemas/`, run orchestration in `app/services/`, and RL logic in `app/rl/`. Use snake_case for files, functions, variables, and CLI arguments; use PascalCase for Pydantic models.
@@ -65,7 +68,7 @@ npm run lint
 
 ## Testing Guidelines
 
-**Backend:** Run `pytest` for the test suite under `tests/` (for example `tests/test_phase1_rl.py`). For ad-hoc checks, hit `/health` through the API and execute the smallest relevant RL command with reduced timesteps or episodes when possible. Avoid committing generated model files or metrics from validation runs.
+**Backend:** Run `.venv/bin/python -m unittest tests.test_phase1_rl` for the RL smoke suite. For ad-hoc checks, hit `/health` through the API and execute the smallest relevant RL command with reduced timesteps or episodes when possible. Avoid committing generated model files or metrics from validation runs.
 
 **Frontend:** Run `npm run lint` and `npm run build` from `frontend/`. If you add tests, add the test script to `frontend/package.json`, keep tests near the code they cover or under a clearly named test directory, and use names such as `ComponentName.test.tsx` or `helper.test.ts`.
 

@@ -5,6 +5,25 @@ from stable_baselines3 import PPO
 
 from app.config import RUNS_DIR
 from app.rl.env import RoombaEnv
+from app.rl.telemetry import run_policy_episode
+
+
+def _avg(values):
+    values = list(values)
+    return sum(values) / len(values) if values else 0.0
+
+
+def _avg_optional(values):
+    values = [value for value in values if value is not None]
+    return _avg(values) if values else None
+
+
+def _avg_reward_components(episode_summaries):
+    keys = sorted({key for item in episode_summaries for key in item["reward_totals"]})
+    return {
+        key: _avg(item["reward_totals"].get(key, 0.0) for item in episode_summaries)
+        for key in keys
+    }
 
 
 def evaluate_policy(
@@ -27,47 +46,44 @@ def evaluate_policy(
 
     model = PPO.load(str(model_path))
 
-    successes = 0
-    rewards = []
-    steps_list = []
-    remaining_dirt_list = []
-    wall_hits = 0
+    episode_summaries = []
 
     for episode_index in range(episodes):
-        obs, _ = env.reset(seed=episode_index)
-        total_reward = 0.0
-        last_info = {"remaining_dirt": dirt_count, "steps": 0}
+        episode = run_policy_episode(model=model, env=env, seed=episode_index)
+        episode_summaries.append(episode["summary"])
 
-        for _ in range(env.max_steps):
-            action, _ = model.predict(obs, deterministic=True)
-            obs, reward, terminated, truncated, info = env.step(action)
-            total_reward += float(reward)
-
-            if info.get("hit_wall"):
-                wall_hits += 1
-
-            last_info = info
-
-            if terminated or truncated:
-                break
-
-        success = last_info["remaining_dirt"] == 0
-        successes += int(success)
-        rewards.append(total_reward)
-        steps_list.append(last_info["steps"])
-        remaining_dirt_list.append(last_info["remaining_dirt"])
+    cleaned_distribution = {}
+    for item in episode_summaries:
+        key = str(item["cleaned_dirt"])
+        cleaned_distribution[key] = cleaned_distribution.get(key, 0) + 1
 
     metrics = {
         "episodes": episodes,
-        "success_rate": successes / episodes,
-        "avg_reward": sum(rewards) / episodes,
-        "avg_steps": sum(steps_list) / episodes,
-        "avg_remaining_dirt": sum(remaining_dirt_list) / episodes,
-        "wall_hits": wall_hits,
+        "success_rate": _avg(item["success"] for item in episode_summaries),
+        "timeout_rate": _avg(item["timeout"] for item in episode_summaries),
+        "avg_reward": _avg(item["total_reward"] for item in episode_summaries),
+        "avg_steps": _avg(item["steps"] for item in episode_summaries),
+        "avg_remaining_dirt": _avg(item["remaining_dirt"] for item in episode_summaries),
+        "avg_cleaned_dirt": _avg(item["cleaned_dirt"] for item in episode_summaries),
+        "cleaned_dirt_distribution": cleaned_distribution,
+        "wall_hits": sum(item["wall_hits"] for item in episode_summaries),
+        "avg_wall_hits": _avg(item["wall_hits"] for item in episode_summaries),
+        "avg_path_length": _avg(item["path_length"] for item in episode_summaries),
+        "avg_forward_moves": _avg(item["forward_moves"] for item in episode_summaries),
+        "avg_turns": _avg(item["turns"] for item in episode_summaries),
+        "avg_turn_move_ratio": _avg(item["turn_move_ratio"] for item in episode_summaries),
+        "avg_action_switches": _avg(item["action_switches"] for item in episode_summaries),
+        "avg_max_turn_streak": _avg(item["max_turn_streak"] for item in episode_summaries),
+        "avg_max_no_clean_streak": _avg(item["max_no_clean_streak"] for item in episode_summaries),
+        "avg_first_clean_step": _avg_optional(item["first_clean_step"] for item in episode_summaries),
+        "avg_final_clean_step": _avg_optional(item["final_clean_step"] for item in episode_summaries),
+        "avg_reward_components": _avg_reward_components(episode_summaries),
     }
 
     metrics_path = metrics_dir / "eval_metrics.json"
     metrics_path.write_text(json.dumps(metrics, indent=2))
+    episodes_path = metrics_dir / "eval_episodes.json"
+    episodes_path.write_text(json.dumps(episode_summaries, indent=2))
 
     return metrics
 

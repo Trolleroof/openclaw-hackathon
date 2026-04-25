@@ -10,7 +10,8 @@ class RoombaEnv(gym.Env):
     The robot is a point/circle in a 2D room.
 
     Observation:
-        [robot_x, robot_y, heading, nearest_dirt_dx, nearest_dirt_dy]
+        Normalized navigation features: robot pose, nearest dirt geometry,
+        wall distances, remaining dirt, and up to three nearest dirt vectors.
 
     Actions:
         0 = move forward
@@ -19,6 +20,8 @@ class RoombaEnv(gym.Env):
     """
 
     metadata = {"render_modes": ["human", "rgb_array"]}
+    observation_size = 23
+    max_observed_dirt = 3
 
     def __init__(
         self,
@@ -46,14 +49,8 @@ class RoombaEnv(gym.Env):
 
         self.action_space = spaces.Discrete(3)
 
-        high = np.array(
-            [self.size, self.size, np.pi, self.size, self.size],
-            dtype=np.float32,
-        )
-        low = np.array(
-            [0.0, 0.0, -np.pi, -self.size, -self.size],
-            dtype=np.float32,
-        )
+        high = np.ones(self.observation_size, dtype=np.float32)
+        low = -np.ones(self.observation_size, dtype=np.float32)
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
 
         self.rng = np.random.default_rng(seed)
@@ -98,26 +95,75 @@ class RoombaEnv(gym.Env):
         return extra.astype(np.float32)
 
     def _obs(self):
-        if len(self.dirt) == 0:
-            nearest = np.array([0.0, 0.0], dtype=np.float32)
-        else:
+        nearest, nearest_distance = self._nearest_dirt()
+        heading_error = self._heading_error_to(nearest)
+
+        dirt_features = []
+        if len(self.dirt) > 0:
             distances = np.linalg.norm(self.dirt - self.robot, axis=1)
-            nearest = self.dirt[np.argmin(distances)] - self.robot
+            dirt_vectors = self.dirt[np.argsort(distances)] - self.robot
+        else:
+            dirt_vectors = np.empty((0, 2), dtype=np.float32)
+
+        for index in range(self.max_observed_dirt):
+            if index < len(dirt_vectors):
+                vector = np.clip(dirt_vectors[index] / self.size, -1.0, 1.0)
+                dirt_features.extend([vector[0], vector[1], 1.0])
+            else:
+                dirt_features.extend([0.0, 0.0, 0.0])
 
         return np.array(
             [
-                self.robot[0],
-                self.robot[1],
-                self.heading,
-                nearest[0],
-                nearest[1],
+                self.robot[0] / self.size,
+                self.robot[1] / self.size,
+                np.sin(self.heading),
+                np.cos(self.heading),
+                nearest[0] / self.size,
+                nearest[1] / self.size,
+                nearest_distance / (self.size * np.sqrt(2.0)),
+                np.sin(heading_error),
+                np.cos(heading_error),
+                len(self.dirt) / max(self.dirt_count, 1),
+                self.robot[0] / self.size,
+                (self.size - self.robot[0]) / self.size,
+                self.robot[1] / self.size,
+                (self.size - self.robot[1]) / self.size,
+                *dirt_features,
             ],
             dtype=np.float32,
         )
 
+    def _nearest_dirt(self):
+        if len(self.dirt) == 0:
+            return np.array([0.0, 0.0], dtype=np.float32), 0.0
+
+        vectors = self.dirt - self.robot
+        distances = np.linalg.norm(vectors, axis=1)
+        nearest_index = int(np.argmin(distances))
+        return vectors[nearest_index].astype(np.float32), float(distances[nearest_index])
+
+    def _nearest_dirt_distance(self):
+        return self._nearest_dirt()[1]
+
+    def _heading_error_to(self, vector):
+        if np.allclose(vector, 0.0):
+            return 0.0
+        target_angle = float(np.arctan2(vector[1], vector[0]))
+        return float(((target_angle - self.heading + np.pi) % (2 * np.pi)) - np.pi)
+
     def step(self, action):
         self.steps += 1
-        reward = -0.01
+        reward_components = {
+            "step_penalty": -0.01,
+            "turn_penalty": 0.0,
+            "wall_penalty": 0.0,
+            "progress": 0.0,
+            "alignment": 0.0,
+            "clean": 0.0,
+            "terminal": 0.0,
+        }
+        previous_nearest, previous_nearest_distance = self._nearest_dirt()
+        previous_heading_error = abs(self._heading_error_to(previous_nearest))
 
         if action == 0:
             direction = np.array(
@@ -127,38 +173,55 @@ class RoombaEnv(gym.Env):
             self.robot += direction * self.forward_step
         elif action == 1:
             self.heading += self.turn_angle
+            reward_components["turn_penalty"] = -0.002
         elif action == 2:
             self.heading -= self.turn_angle
+            reward_components["turn_penalty"] = -0.002
 
         self.heading = ((self.heading + np.pi) % (2 * np.pi)) - np.pi
 
         hit_wall = bool(np.any(self.robot < 0.0) or np.any(self.robot > self.size))
         if hit_wall:
             self.robot = np.clip(self.robot, 0.0, self.size)
-            reward -= 1.0
+            reward_components["wall_penalty"] = -1.5
 
         cleaned_count = 0
+        nearest_dirt_distance = 0.0
+        heading_error = 0.0
         if len(self.dirt) > 0:
             distances = np.linalg.norm(self.dirt - self.robot, axis=1)
+            nearest_dirt_distance = float(np.min(distances))
+            nearest = self.dirt[int(np.argmin(distances))] - self.robot
+            heading_error = abs(self._heading_error_to(nearest))
+
+            reward_components["progress"] = (previous_nearest_distance - nearest_dirt_distance) * 0.8
+            reward_components["alignment"] = (previous_heading_error - heading_error) * 0.1
+
             cleaned = distances < self.clean_radius
             cleaned_count = int(np.sum(cleaned))
-            reward += float(cleaned_count) * 2.0
+            reward_components["clean"] = float(cleaned_count) * 5.0
             self.dirt = self.dirt[~cleaned]
 
         terminated = len(self.dirt) == 0
         truncated = self.steps >= self.max_steps
 
         if terminated:
-            reward += 10.0
+            reward_components["terminal"] = 15.0
+            reward_components["terminal"] += 5.0 * ((self.max_steps - self.steps) / self.max_steps)
+
+        reward = float(sum(reward_components.values()))
 
         info = {
             "remaining_dirt": int(len(self.dirt)),
             "steps": int(self.steps),
             "hit_wall": hit_wall,
             "cleaned_count": cleaned_count,
+            "nearest_dirt_distance": nearest_dirt_distance,
+            "heading_error": heading_error,
+            "reward_components": reward_components,
         }
 
-        return self._obs(), float(reward), terminated, truncated, info
+        return self._obs(), reward, terminated, truncated, info
 
     def render(self):
         if self.render_mode is None:

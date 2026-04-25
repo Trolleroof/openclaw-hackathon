@@ -60,6 +60,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
             room_size=request.room_size,
             max_steps=request.max_steps,
             dirt_count=request.dirt_count,
+            device=request.device,
         )
 
         eval_metrics = evaluate_policy(

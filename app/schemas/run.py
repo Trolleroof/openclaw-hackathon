@@ -1,13 +1,16 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field, field_validator
+from pydantic import ConfigDict
 from typing import Optional, Dict, Any
 
 from app.rl.config import RunConfig
+from app.rl.envs.registry import all_env_specs
 
 
 DEFAULT_RUN_CONFIG = RunConfig()
 
 
 class CreateRunRequest(BaseModel):
+    env_id: str = Field(default="ClawLab/FullCleaning-v0")
     total_timesteps: int = Field(default=DEFAULT_RUN_CONFIG.total_timesteps, ge=1_000, le=2_000_000)
     eval_episodes: int = Field(default=DEFAULT_RUN_CONFIG.eval_episodes, ge=1, le=1_000)
     seed: int = Field(default=DEFAULT_RUN_CONFIG.seed)
@@ -20,6 +23,13 @@ class CreateRunRequest(BaseModel):
     sensor_mode: str = Field(default=DEFAULT_RUN_CONFIG.sensor_mode, pattern="^(oracle|lidar_local_dirt)$")
     lidar_rays: int = Field(default=DEFAULT_RUN_CONFIG.lidar_rays, ge=0, le=128)
     device: str = Field(default=DEFAULT_RUN_CONFIG.device, pattern="^(auto|cpu|cuda|mps)$")
+
+    @field_validator("env_id")
+    @classmethod
+    def validate_env_id(cls, value: str) -> str:
+        if value not in all_env_specs():
+            raise ValueError(f"Unknown ClawLab env_id: {value}")
+        return value
 
 
 class RunResponse(BaseModel):
@@ -74,4 +84,3 @@ class RunReport(BaseModel):
     hermes_delivery_status: str = "pending"
     hermes_delivery_error: Optional[str] = None
     created_at: str
-

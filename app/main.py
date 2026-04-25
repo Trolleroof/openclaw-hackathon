@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.schemas.agentmail import AgentMailMessageDetail, AgentMailMessageList, AgentMailMockSendResponse
+from app.rl.envs.registry import describe_env, list_envs
 from app.schemas.run import CompleteRunRequest, CreateRunRequest, RunResponse, RunReport
 from app.services.agentmail import build_mock_run_report, get_inbox_message, list_inbox_messages, send_report
 from app.services.reports import list_reports, read_report
@@ -41,6 +42,19 @@ def create_training_run(request: CreateRunRequest):
 @app.get("/api/runs")
 def get_runs():
     return list_runs()
+
+
+@app.get("/api/envs")
+def get_envs():
+    return {"envs": list_envs()}
+
+
+@app.get("/api/envs/{env_id:path}")
+def get_env(env_id: str):
+    try:
+        return describe_env(env_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @app.get("/api/runs/{run_id}", response_model=RunResponse)

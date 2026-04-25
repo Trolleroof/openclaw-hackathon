@@ -106,6 +106,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
     try:
         model_path = train_policy(
             run_id=run_id,
+            env_id=request.env_id,
             total_timesteps=request.total_timesteps,
             seed=request.seed,
             eval_seed_offset=request.eval_seed_offset,
@@ -121,6 +122,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
 
         eval_metrics = evaluate_policy(
             run_id=run_id,
+            env_id=request.env_id,
             episodes=request.eval_episodes,
             room_size=request.room_size,
             max_steps=request.max_steps,
@@ -134,6 +136,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
         )
 
         random_metrics = evaluate_random_baseline(
+            env_id=request.env_id,
             episodes=request.eval_episodes,
             room_size=request.room_size,
             max_steps=request.max_steps,

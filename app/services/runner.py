@@ -1,4 +1,5 @@
 import json
+import shutil
 import traceback
 import uuid
 from datetime import datetime, timezone
@@ -226,17 +227,44 @@ def complete_run(run_id: str, request: CompleteRunRequest) -> RunResponse:
     return RunResponse(**metadata)
 
 
-def get_run(run_id: str) -> Optional[RunResponse]:
+def get_run(run_id: str) -> Optional[dict]:
     metadata = _read_metadata(run_id)
     if metadata is None:
         return None
-    return RunResponse(**metadata)
+    gif = latest_gif_path(run_id)
+    metadata["has_gif"] = gif is not None
+    metadata["gif_url"] = f"/api/runs/{run_id}/gif" if gif is not None else None
+    return metadata
 
 
 def list_runs():
     items = []
     for run_dir in sorted(RUNS_DIR.glob("run_*"), reverse=True):
         metadata = _read_metadata(run_dir.name)
-        if metadata:
-            items.append(metadata)
+        if not metadata:
+            continue
+        artifacts_dir = run_dir / "artifacts"
+        gif_files = sorted(artifacts_dir.glob("*.gif")) if artifacts_dir.exists() else []
+        metadata["has_gif"] = bool(gif_files)
+        metadata["gif_url"] = (
+            f"/api/runs/{run_dir.name}/gif" if gif_files else None
+        )
+        items.append(metadata)
     return {"runs": items}
+
+
+def latest_gif_path(run_id: str):
+    run_dir = _run_dir(run_id)
+    artifacts_dir = run_dir / "artifacts"
+    if not artifacts_dir.exists():
+        return None
+    gifs = sorted(artifacts_dir.glob("*.gif"))
+    return gifs[-1] if gifs else None
+
+
+def delete_run(run_id: str) -> bool:
+    run_dir = _run_dir(run_id)
+    if not run_dir.exists():
+        return False
+    shutil.rmtree(run_dir)
+    return True

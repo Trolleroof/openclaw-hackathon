@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from app.schemas.agentmail import AgentMailMessageDetail, AgentMailMessageList, AgentMailMockSendResponse
 from app.rl.envs.registry import describe_env, list_envs
 from app.schemas.run import CompleteRunRequest, CreateRunRequest, RunResponse, RunReport
 from app.services.agentmail import build_mock_run_report, get_inbox_message, list_inbox_messages, send_report
 from app.services.reports import list_reports, read_report
-from app.services.runner import complete_run, create_run, get_run, list_runs
+from app.services.runner import complete_run, create_run, delete_run, get_run, latest_gif_path, list_runs
 
 app = FastAPI(
     title="Roomba RL FastAPI",
@@ -57,12 +58,31 @@ def get_env(env_id: str):
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
-@app.get("/api/runs/{run_id}", response_model=RunResponse)
+@app.get("/api/runs/{run_id}")
 def get_training_run(run_id: str):
     run = get_run(run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="Run not found")
     return run
+
+
+@app.get("/api/runs/{run_id}/gif")
+def get_run_gif(run_id: str):
+    path = latest_gif_path(run_id)
+    if path is None:
+        raise HTTPException(status_code=404, detail="GIF not found for run")
+    return FileResponse(
+        str(path),
+        media_type="image/gif",
+        headers={"Cache-Control": "no-cache"},
+    )
+
+
+@app.delete("/api/runs/{run_id}", status_code=204)
+def delete_training_run(run_id: str):
+    if not delete_run(run_id):
+        raise HTTPException(status_code=404, detail="Run not found")
+    return None
 
 
 @app.post("/api/v1/runs/{run_id}/complete", response_model=RunResponse)

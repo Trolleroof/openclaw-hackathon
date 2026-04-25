@@ -1,0 +1,110 @@
+[
+  {
+    "seed": 10000,
+    "success": false,
+    "terminated": false,
+    "truncated": true,
+    "timeout": true,
+    "steps": 220,
+    "total_reward": -2.6684308667214536,
+    "remaining_dirt": 6,
+    "cleaned_dirt": 0,
+    "wall_hits": 0,
+    "path_length": 4.200000315904617,
+    "action_counts": {
+      "forward": 14,
+      "turn_left": 171,
+      "turn_right": 35
+    },
+    "turns": 206,
+    "forward_moves": 14,
+    "turn_move_ratio": 14.714285714285714,
+    "action_switches": 67,
+    "max_turn_streak": 128,
+    "max_no_clean_streak": 220,
+    "first_clean_step": null,
+    "final_clean_step": null,
+    "cleaned_events": [],
+    "reward_totals": {
+      "step_penalty": -2.199999999999997,
+      "turn_penalty": -0.4120000000000003,
+      "wall_penalty": 0.0,
+      "progress": -0.08488712310791016,
+      "alignment": 0.02845625638645857,
+      "clean": 0.0,
+      "terminal": 0.0
+    }
+  },
+  {
+    "seed": 10001,
+    "success": false,
+    "terminated": false,
+    "truncated": true,
+    "timeout": true,
+    "steps": 220,
+    "total_reward": -2.060004958451775,
+    "remaining_dirt": 6,
+    "cleaned_dirt": 0,
+    "wall_hits": 0,
+    "path_length": 2.9999995827674866,
+    "action_counts": {
+      "forward": 10,
+      "turn_left": 103,
+      "turn_right": 107
+    },
+    "turns": 210,
+    "forward_moves": 10,
+    "turn_move_ratio": 21.0,
+    "action_switches": 212,
+    "max_turn_streak": 206,
+    "max_no_clean_streak": 220,
+    "first_clean_step": null,
+    "final_clean_step": null,
+    "cleaned_events": [],
+    "reward_totals": {
+      "step_penalty": -2.199999999999997,
+      "turn_penalty": -0.4200000000000003,
+      "wall_penalty": 0.0,
+      "progress": 0.7664908409118651,
+      "alignment": -0.20649579936363832,
+      "clean": 0.0,
+      "terminal": 0.0
+    }
+  },
+  {
+    "seed": 10002,
+    "success": false,
+    "terminated": false,
+    "truncated": true,
+    "timeout": true,
+    "steps": 220,
+    "total_reward": -2.5850673460276554,
+    "remaining_dirt": 6,
+    "cleaned_dirt": 0,
+    "wall_hits": 0,
+    "path_length": 0.0,
+    "action_counts": {
+      "forward": 0,
+      "turn_left": 115,
+      "turn_right": 105
+    },
+    "turns": 220,
+    "forward_moves": 0,
+    "turn_move_ratio": 220.0,
+    "action_switches": 209,
+    "max_turn_streak": 220,
+    "max_no_clean_streak": 220,
+    "first_clean_step": null,
+    "final_clean_step": null,
+    "cleaned_events": [],
+    "reward_totals": {
+      "step_penalty": -2.199999999999997,
+      "turn_penalty": -0.44000000000000034,
+      "wall_penalty": 0.0,
+      "progress": 0.0,
+      "alignment": 0.054932653972346826,
+      "clean": 0.0,
+      "terminal": 0.0
+    }
+  }
+]

@@ -91,9 +91,14 @@ def create_run(request: CreateRunRequest) -> RunResponse:
             run_id=run_id,
             total_timesteps=request.total_timesteps,
             seed=request.seed,
+            eval_seed_offset=request.eval_seed_offset,
             room_size=request.room_size,
             max_steps=request.max_steps,
             dirt_count=request.dirt_count,
+            obstacle_count=request.obstacle_count,
+            layout_mode=request.layout_mode,
+            sensor_mode=request.sensor_mode,
+            lidar_rays=request.lidar_rays,
             device=request.device,
         )
 
@@ -103,6 +108,12 @@ def create_run(request: CreateRunRequest) -> RunResponse:
             room_size=request.room_size,
             max_steps=request.max_steps,
             dirt_count=request.dirt_count,
+            seed=request.seed,
+            eval_seed_offset=request.eval_seed_offset,
+            obstacle_count=request.obstacle_count,
+            layout_mode=request.layout_mode,
+            sensor_mode=request.sensor_mode,
+            lidar_rays=request.lidar_rays,
         )
 
         random_metrics = evaluate_random_baseline(
@@ -110,6 +121,12 @@ def create_run(request: CreateRunRequest) -> RunResponse:
             room_size=request.room_size,
             max_steps=request.max_steps,
             dirt_count=request.dirt_count,
+            seed=request.seed,
+            eval_seed_offset=request.eval_seed_offset,
+            obstacle_count=request.obstacle_count,
+            layout_mode=request.layout_mode,
+            sensor_mode=request.sensor_mode,
+            lidar_rays=request.lidar_rays,
         )
 
         metrics = {

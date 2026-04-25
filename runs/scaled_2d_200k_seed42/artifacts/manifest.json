@@ -1,0 +1,13 @@
+{
+  "run_id": "scaled_2d_200k_seed42",
+  "fps": 6,
+  "hold_final_frames": 30,
+  "gif_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/scaled_2d_200k_seed42/artifacts/episode_seed_0.gif",
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/scaled_2d_200k_seed42/artifacts/episode_seed_1.gif"
+  ],
+  "trajectory_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/scaled_2d_200k_seed42/artifacts/episode_seed_0_trajectory.json",
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/scaled_2d_200k_seed42/artifacts/episode_seed_1_trajectory.json"
+  ]
+}

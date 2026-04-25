@@ -30,6 +30,7 @@ def run_policy_episode(
     max_no_clean_streak = 0
     no_clean_streak = 0
     wall_hits = 0
+    obstacle_hits = 0
     path_length = 0.0
     total_reward = 0.0
     previous_action = None
@@ -46,6 +47,7 @@ def run_policy_episode(
         "remaining_dirt": env.dirt_count,
         "cleaned_count": 0,
         "hit_wall": False,
+        "hit_obstacle": False,
         "reward_components": {},
     }
     terminated = False
@@ -84,6 +86,7 @@ def run_policy_episode(
 
         total_reward += float(reward)
         wall_hits += int(info.get("hit_wall", False))
+        obstacle_hits += int(info.get("hit_obstacle", False))
         for key, value in info.get("reward_components", {}).items():
             reward_totals[key] = reward_totals.get(key, 0.0) + float(value)
 
@@ -115,6 +118,7 @@ def run_policy_episode(
                     "remaining_dirt": int(info["remaining_dirt"]),
                     "cleaned_count": int(info["cleaned_count"]),
                     "hit_wall": bool(info["hit_wall"]),
+                    "hit_obstacle": bool(info.get("hit_obstacle", False)),
                     "nearest_dirt_distance": float(info["nearest_dirt_distance"]),
                     "heading_error": float(info["heading_error"]),
                     "step_distance": step_distance,
@@ -144,6 +148,7 @@ def run_policy_episode(
         "remaining_dirt": int(last_info["remaining_dirt"]),
         "cleaned_dirt": cleaned_dirt,
         "wall_hits": wall_hits,
+        "obstacle_hits": obstacle_hits,
         "path_length": path_length,
         "action_counts": action_counts,
         "turns": action_counts["turn_left"] + action_counts["turn_right"],

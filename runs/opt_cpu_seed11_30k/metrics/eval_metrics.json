@@ -1,0 +1,8 @@
+{
+  "episodes": 50,
+  "success_rate": 1.0,
+  "avg_reward": 46.89103223848342,
+  "avg_steps": 70.0,
+  "avg_remaining_dirt": 0.0,
+  "wall_hits": 0
+}

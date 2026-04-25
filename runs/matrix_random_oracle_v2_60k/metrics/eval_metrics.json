@@ -1,0 +1,48 @@
+{
+  "episodes": 20,
+  "success_rate": 0.7,
+  "timeout_rate": 0.3,
+  "avg_reward": -12.82253710385902,
+  "avg_steps": 122.65,
+  "avg_remaining_dirt": 1.05,
+  "avg_cleaned_dirt": 4.95,
+  "cleaned_dirt_distribution": {
+    "6": 14,
+    "5": 2,
+    "0": 1,
+    "2": 2,
+    "1": 1
+  },
+  "wall_hits": 0,
+  "avg_wall_hits": 0.0,
+  "obstacle_hits": 236,
+  "avg_obstacle_hits": 11.8,
+  "avg_path_length": 13.20000030696392,
+  "avg_forward_moves": 55.8,
+  "avg_turns": 66.85,
+  "avg_turn_move_ratio": 5.831001345827632,
+  "avg_action_switches": 60.8,
+  "avg_max_turn_streak": 46.2,
+  "avg_max_no_clean_streak": 74.6,
+  "avg_first_clean_step": 13.736842105263158,
+  "avg_final_clean_step": 70.63157894736842,
+  "avg_reward_components": {
+    "alignment": 0.42354779563791983,
+    "clean": 24.75,
+    "obstacle_penalty": -59.0,
+    "progress": 9.65161510050297,
+    "step_penalty": -1.2264999999999995,
+    "terminal": 12.7125,
+    "turn_penalty": -0.13370000000000007,
+    "wall_penalty": 0.0
+  },
+  "reward_hacking": {
+    "low_clean_high_reward": false,
+    "shaping_dominates_cleaning": false,
+    "excessive_turning": true,
+    "low_movement": false,
+    "long_no_clean_streaks": false,
+    "collision_abuse": true,
+    "flag_count": 2
+  }
+}

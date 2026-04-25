@@ -1,0 +1,15 @@
+{
+  "total_timesteps": 40000,
+  "seed": 102,
+  "eval_seed_offset": 10000,
+  "room_size": 10.0,
+  "max_steps": 220,
+  "dirt_count": 6,
+  "obstacle_count": 0,
+  "layout_mode": "preset",
+  "sensor_mode": "lidar_local_dirt",
+  "lidar_rays": 16,
+  "device": "cpu",
+  "progress_eval_interval": 10000,
+  "progress_eval_episodes": 5
+}

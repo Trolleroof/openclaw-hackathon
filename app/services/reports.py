@@ -34,8 +34,6 @@ def _metric(metadata: dict, key: str) -> Any:
 
 
 def _status_label(status: str) -> str:
-    if status == "completed":
-        return "success"
     return status
 
 
@@ -50,7 +48,9 @@ def build_run_report(metadata: dict) -> RunReport:
     best_return = _safe_float(_metric(metadata, "success_rate"))
     episodes = _safe_int(_metric(metadata, "episodes") or config.get("eval_episodes"))
     steps = _safe_int(config.get("total_timesteps"))
-    template = f"roomba.room-{config.get('room_size', 'unknown')}.dirt-{config.get('dirt_count', 'unknown')}"
+    template = config.get("env_id") or (
+        f"roomba.room-{config.get('room_size', 'unknown')}.dirt-{config.get('dirt_count', 'unknown')}"
+    )
     algo = "PPO"
     checkpoint_uri = metadata.get("model_path")
     metrics_path = metadata.get("metrics_path")

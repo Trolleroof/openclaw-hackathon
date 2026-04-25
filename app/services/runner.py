@@ -80,7 +80,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
     (run_dir / "logs").mkdir(parents=True, exist_ok=True)
 
     config = request.model_dump()
-    template = f"roomba.room-{request.room_size}.dirt-{request.dirt_count}"
+    template = request.env_id
 
     metadata = {
         "run_id": run_id,

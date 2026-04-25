@@ -177,7 +177,7 @@ def post_lesson(report: RunReport) -> HermesPostResult:
             "type": "section",
             "fields": [
                 {"type": "mrkdwn", "text": f"*env_id*\n`{report.template}`"},
-                {"type": "mrkdwn", "text": f"*result*\n{report.status} | reward {report.mean_return:.3f} | success {report.best_return:.0%}"}
+                {"type": "mrkdwn", "text": f"*result*\n{report.status} | reward {report.mean_return:.3f} | policy success {report.best_return:.0%}"}
                 if report.mean_return is not None and report.best_return is not None
                 else {"type": "mrkdwn", "text": f"*result*\n{report.status}"},
             ],

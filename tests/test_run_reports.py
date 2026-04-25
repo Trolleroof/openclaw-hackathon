@@ -17,6 +17,7 @@ def _metadata():
         "ended_at": "2026-04-25T20:02:00+00:00",
         "duration_sec": 120,
         "config": {
+            "env_id": "ClawLab/FullCleaning-v0",
             "total_timesteps": 1024,
             "eval_episodes": 2,
             "room_size": 5.0,
@@ -40,7 +41,8 @@ class RunReportTests(unittest.TestCase):
         report = build_run_report(_metadata())
 
         self.assertEqual(report.run_id, "run_report_test")
-        self.assertEqual(report.status, "success")
+        self.assertEqual(report.status, "completed")
+        self.assertEqual(report.template, "ClawLab/FullCleaning-v0")
         self.assertEqual(report.steps, 1024)
         self.assertEqual(report.episodes, 2)
         self.assertEqual(report.mean_return, 42.5)

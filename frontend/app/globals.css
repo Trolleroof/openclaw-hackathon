@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0e0f0d;
-  --surface: #161714;
-  --surface-2: #1d1e1a;
-  --line: #25261f;
-  --line-strong: #34352c;
-  --foreground: #ecebe4;
-  --muted: #807d72;
-  --muted-strong: #a8a496;
-  --accent: #c7f73e;
-  --accent-soft: rgba(199, 247, 62, 0.12);
+  --background: #25170e;
+  --surface: #4a2e1c;
+  --surface-2: #6f442a;
+  --line: #876412;
+  --line-strong: #da9058;
+  --foreground: #f9fee7;
+  --muted: #edca78;
+  --muted-strong: #e7b84b;
+  --accent: #c5f40b;
+  --accent-soft: rgba(197, 244, 11, 0.12);
   --status-success: #c7f73e;
   --status-running: #ffb347;
   --status-failed: #ff6b6b;
@@ -94,12 +94,58 @@ body {
   border-radius: 6px;
   transition: background 120ms ease;
 }
-.btn-accent:hover { background: #d6ff5b; }
+.btn-accent:hover { background: #d1f63c; }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
+}
+
+.channel-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.chat-bubble {
+  max-width: 82%;
+  align-self: flex-start;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.chat-bubble-user {
+  align-self: flex-end;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0e0f0d;
+}
+
+.chat-input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  padding: 0.55rem 0.7rem;
+}
+
+.chat-input:focus {
+  border-color: var(--accent);
 }
 
 @keyframes pulse-dot {

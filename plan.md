@@ -5,6 +5,57 @@
 - **Backend:** [FastAPI](https://fastapi.tiangolo.com/) — API for ClawLab orchestration, training jobs, metrics/proxy to W&B or your DB, report storage, and AgentMail delivery. RL/Webots worker processes are started or supervised from here (or by a worker the API enqueues).
 - **Agent harness:** Hermes is the agent runtime used to execute orchestration tasks. Hermes is not the product name and not the backend service.
 
+## Run everything (local)
+
+From the **repository root** (`openclaw-hackathon/`), **not** inside `app/`. (`uvicorn` imports the `app` package next to `requirements.txt`.) Use two terminals.
+
+**One-time setup**
+
+```bash
+cd /path/to/openclaw-hackathon   # repo root; must see requirements.txt and app/ here
+python3 -m venv .venv            # macOS/Linux often use python3; Windows: py -3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cd frontend && npm install && cd ..
+```
+
+If `python3 -m venv .venv` fails with an **ensurepip** error (common with some Python 3.14 installs), install a stable Python and point at it, e.g. Homebrew: `brew install python@3.12` then:
+
+```bash
+$(brew --prefix python@3.12)/bin/python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Remove a mistakenly created venv under `app/` before retrying: `rm -rf app/.venv`.
+
+Copy env template if you do not already have one: `cp .env.example .env` and fill in secrets as needed. The Next app talks to the API at `http://127.0.0.1:8000` by default (`NEXT_PUBLIC_HERMES_API_BASE_URL` overrides this if set in `frontend/.env.local`).
+
+**Terminal 1 — FastAPI (ClawLab API)**
+
+```bash
+cd /path/to/openclaw-hackathon
+source .venv/bin/activate
+uvicorn app.main:app --reload
+```
+
+- API: `http://127.0.0.1:8000` — interactive docs: `http://127.0.0.1:8000/docs`
+
+**Terminal 2 — Next.js frontend**
+
+```bash
+cd frontend
+npm run dev
+```
+
+- UI: `http://localhost:3000`
+
+**Optional — full local script (train / eval / baseline)** after the venv is active and deps are installed:
+
+```bash
+./scripts/run_local.sh
+```
+
 ## ClawLab orchestrator (what it actually does)
 
 ClawLab is the **orchestration layer** — not the physics engine and not the RL math inside `env.step`. It does **not** replace Webots or PPO; it **produces** worlds/config, **launches** training, **aggregates telemetry**, and **ships a report**. The Hermes agent harness can run these orchestration steps, but the user-facing platform is ClawLab.

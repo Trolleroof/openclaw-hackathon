@@ -33,22 +33,6 @@ export default function MemoryPage() {
         </div>
 
         <div className="flex flex-col gap-6">
-          <Card title="Connection" hint="stub">
-            <div className="flex flex-col gap-3">
-              <label className="flex flex-col gap-1">
-                <span className="label">API key</span>
-                <input
-                  disabled
-                  placeholder="nia_..."
-                  className="px-3 py-2 rounded-md text-[13px] outline-none"
-                  style={{ background: "var(--background)", border: "1px solid var(--line)", color: "var(--foreground)" }}
-                />
-              </label>
-              <button className="btn-accent" type="button">Authorize Nia</button>
-              <p className="label">docs.trynia.ai</p>
-            </div>
-          </Card>
-
           <Card title="Sources" hint="to be indexed">
             <ul className="flex flex-col text-[13px]">
               {["openclaw-hackathon repo", "Webots supervisor docs", "Gymnasium docs", "Run postmortems"].map((s) => (

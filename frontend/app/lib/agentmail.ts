@@ -1,62 +1,78 @@
-import type { Run } from "./runs";
-import { fmtDuration, fmtNumber, statusLabel } from "./runs";
-
-export type MockAgentMailPayload = {
-  to: string;
-  from: string;
-  subject: string;
-  runId: string;
-  modelSummary: string;
-  attachment: {
-    filename: string;
-    data: {
-      status: string;
-      template: string;
-      algo: string;
-      steps: number;
-      meanReturn: number;
-      bestReturn: number;
-      durationSec: number;
-      checkpoint: string;
-      notes: string;
-      error?: string;
-    };
-  };
+export type AgentMailMessageSummary = {
+  inbox_id: string;
+  message_id: string;
+  thread_id?: string | null;
+  labels: string[];
+  timestamp?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  from?: string | null;
+  to: string[];
+  cc: string[];
+  bcc: string[];
+  subject?: string | null;
+  preview?: string | null;
+  size?: number | null;
 };
 
-export function buildMockAgentMailPayload(run: Run): MockAgentMailPayload {
-  const status = statusLabel(run.status).toLowerCase();
-  const configBits = [
-    `lr=${run.config.lr}`,
-    `gamma=${run.config.gamma}`,
-    `entropy=${run.config.ent_coef}`,
-    `seed=${run.seed}`,
-  ].join(" · ");
+export type AgentMailMessageDetail = AgentMailMessageSummary & {
+  text?: string | null;
+  html?: string | null;
+  extracted_text?: string | null;
+  extracted_html?: string | null;
+  attachments: Record<string, unknown>[];
+  raw: Record<string, unknown>;
+};
 
-  return {
-    to: "nikhi@ucsd.edu",
-    from: "hermes-bot@openclaw.dev",
-    subject: `[RL] run ${run.shortId} ${status}`,
-    runId: run.id,
-    modelSummary:
-      `${run.algo} on ${run.template} finished ${status} after ${run.steps.toLocaleString()} steps ` +
-      `(${fmtDuration(run.durationSec)}). mean_return=${fmtNumber(run.meanReturn)}, ` +
-      `best_return=${fmtNumber(run.bestReturn)}. Config: ${configBits}. ` +
-      `${run.error ? `Failure signal: ${run.error}` : `Checkpoint: ${run.checkpoint}`}`,
-    attachment: {
-      filename: `run-${run.shortId}-summary.json`,
-      data: {
-        status: run.status,
-        template: run.template,
-        algo: run.algo,
-        steps: run.steps,
-        meanReturn: run.meanReturn,
-        bestReturn: run.bestReturn,
-        durationSec: run.durationSec,
-        checkpoint: run.checkpoint,
-        notes: run.notes,
-        error: run.error,
-      },
-    },
-  };
+export type AgentMailMessageList = {
+  count: number;
+  messages: AgentMailMessageSummary[];
+  next_page_token?: string | null;
+};
+
+export type AgentMailMockSendResponse = {
+  run_id: string;
+  delivery_status: string;
+  message_id?: string | null;
+  thread_id?: string | null;
+  error?: string | null;
+};
+
+export const HERMES_API_BASE_URL =
+  process.env.NEXT_PUBLIC_HERMES_API_BASE_URL ?? "http://127.0.0.1:8000";
+
+async function readJson<T>(response: Response, action: string): Promise<T> {
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    const detail = typeof body?.detail === "string" ? `: ${body.detail}` : "";
+    throw new Error(`${action} failed (${response.status})${detail}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchAgentMailMessages(limit = 25): Promise<AgentMailMessageList> {
+  const response = await fetch(`${HERMES_API_BASE_URL}/api/v1/agentmail/messages?limit=${limit}`, {
+    headers: { Accept: "application/json" },
+  });
+
+  return readJson<AgentMailMessageList>(response, "Loading AgentMail inbox");
+}
+
+export async function fetchAgentMailMessage(messageId: string): Promise<AgentMailMessageDetail> {
+  const response = await fetch(
+    `${HERMES_API_BASE_URL}/api/v1/agentmail/messages/${encodeURIComponent(messageId)}`,
+    { headers: { Accept: "application/json" } },
+  );
+
+  return readJson<AgentMailMessageDetail>(response, "Loading AgentMail message");
+}
+
+export async function sendMockRunToAgentMail(): Promise<AgentMailMockSendResponse> {
+  const response = await fetch(`${HERMES_API_BASE_URL}/api/v1/agentmail/mock-run`, {
+    method: "POST",
+    headers: { Accept: "application/json" },
+  });
+
+  return readJson<AgentMailMockSendResponse>(response, "Sending mock run to AgentMail");
 }

@@ -3,65 +3,112 @@
 import { useEffect, useState } from "react";
 import { Card } from "../components/Card";
 import { EmptyState } from "../components/EmptyState";
-import { createSampleRunReport, fetchRunReports, HERMES_API_BASE_URL, type RunReport } from "../lib/reports";
+import {
+  fetchAgentMailMessage,
+  fetchAgentMailMessages,
+  HERMES_API_BASE_URL,
+  sendMockRunToAgentMail,
+  type AgentMailMessageDetail,
+  type AgentMailMessageSummary,
+} from "../lib/agentmail";
+
+function messageTime(message: AgentMailMessageSummary) {
+  const raw = message.timestamp ?? message.created_at ?? message.updated_at;
+  if (!raw) return "unknown";
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(raw));
+}
+
+function deliveryLabel(message: AgentMailMessageSummary) {
+  if (message.labels.includes("success")) return "success delivery";
+  if (message.labels.includes("failed")) return "failed delivery";
+  if (message.labels.includes("early_stop")) return "stopped delivery";
+  return "agentmail delivery";
+}
 
 export default function AgentMailPage() {
-  const [isSending, setIsSending] = useState(false);
-  const [reports, setReports] = useState<RunReport[]>([]);
-  const [isLoadingReports, setIsLoadingReports] = useState(true);
-  const [reportsError, setReportsError] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState<AgentMailMessageSummary[]>([]);
+  const [selectedMessage, setSelectedMessage] = useState<AgentMailMessageDetail | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const [isLoadingMessage, setIsLoadingMessage] = useState(false);
+  const [isSendingMock, setIsSendingMock] = useState(false);
+  const [inboxError, setInboxError] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [detailError, setDetailError] = useState<string | null>(null);
+
+  async function loadMessages() {
+    setIsLoadingMessages(true);
+    setInboxError(null);
+
+    try {
+      const data = await fetchAgentMailMessages();
+      setMessages(data.messages);
+    } catch (err) {
+      setInboxError(err instanceof Error ? err.message : "Failed to load AgentMail inbox");
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadReports() {
-      setIsLoadingReports(true);
-      setReportsError(null);
+    async function loadInitialMessages() {
+      setIsLoadingMessages(true);
+      setInboxError(null);
 
       try {
-        const data = await fetchRunReports();
-        if (!cancelled) setReports(data);
+        const data = await fetchAgentMailMessages();
+        if (!cancelled) setMessages(data.messages);
       } catch (err) {
         if (!cancelled) {
-          setReportsError(err instanceof Error ? err.message : "Failed to load reports");
+          setInboxError(err instanceof Error ? err.message : "Failed to load AgentMail inbox");
         }
       } finally {
-        if (!cancelled) setIsLoadingReports(false);
+        if (!cancelled) setIsLoadingMessages(false);
       }
     }
 
-    loadReports();
+    loadInitialMessages();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  async function loadReports() {
-    setIsLoadingReports(true);
-    setReportsError(null);
+  async function sendMockRun() {
+    setIsSendingMock(true);
+    setSendError(null);
 
     try {
-      const data = await fetchRunReports();
-      setReports(data);
+      const sent = await sendMockRunToAgentMail();
+      await loadMessages();
+      if (sent.message_id) await openMessage(sent.message_id);
     } catch (err) {
-      setReportsError(err instanceof Error ? err.message : "Failed to load reports");
+      setSendError(err instanceof Error ? err.message : "Mock run send failed");
     } finally {
-      setIsLoadingReports(false);
+      setIsSendingMock(false);
     }
   }
 
-  async function sendSampleSummary() {
-    setIsSending(true);
-    setError(null);
+  async function openMessage(messageId: string) {
+    setSelectedMessageId(messageId);
+    setSelectedMessage(null);
+    setIsLoadingMessage(true);
+    setDetailError(null);
 
     try {
-      await createSampleRunReport();
-      await loadReports();
+      const message = await fetchAgentMailMessage(messageId);
+      setSelectedMessage(message);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sample report request failed");
+      setDetailError(err instanceof Error ? err.message : "Failed to load AgentMail message");
     } finally {
-      setIsSending(false);
+      setIsLoadingMessage(false);
     }
   }
 
@@ -71,130 +118,122 @@ export default function AgentMailPage() {
         <span className="label">Integration · 02</span>
         <h1 className="text-[32px] font-semibold tracking-tight">AgentMail</h1>
         <p className="max-w-2xl text-[13px]" style={{ color: "var(--muted-strong)" }}>
-          When a supervised run exits, Hermes hands the same structured report it already builds
-          to AgentMail. Not yet connected.
+          Hermes sends run summaries to AgentMail and reads the run inbox back through the AgentMail
+          messages API.
         </p>
       </header>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <Card title="Outbox" hint="recent dispatches">
-            {isLoadingReports ? (
-              <EmptyState
-                icon="..."
-                title="Loading reports"
-                body={`Reading run reports from ${HERMES_API_BASE_URL}.`}
-              />
-            ) : reportsError ? (
+      <section className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_520px] gap-6">
+        <div className="flex flex-col gap-6">
+          <Card title="Inbox" hint="AgentMail messages">
+            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="text-[12px]" style={{ color: "var(--muted-strong)" }}>
+                {messages.length} messages from {HERMES_API_BASE_URL}
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button className="btn-ghost disabled:opacity-60" type="button" onClick={loadMessages}>
+                  Refresh
+                </button>
+                <button
+                  className="btn-accent disabled:opacity-60"
+                  type="button"
+                  onClick={sendMockRun}
+                  disabled={isSendingMock}
+                >
+                  {isSendingMock ? "Sending..." : "Generate mock run"}
+                </button>
+              </div>
+            </div>
+
+            {sendError && (
+              <div className="mb-3 rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--status-failed)" }}>
+                {sendError}
+              </div>
+            )}
+
+            {isLoadingMessages ? (
+              <EmptyState icon="..." title="Loading inbox" body="Reading messages from AgentMail." />
+            ) : inboxError ? (
               <EmptyState
                 icon="!"
-                title="Backend not connected"
-                body={`${reportsError}. Start FastAPI with uvicorn app.main:app --reload, then refresh this page.`}
+                title="AgentMail not connected"
+                body={`${inboxError}. Set AGENTMAIL_API_KEY and AGENTMAIL_INBOX_ID in the API .env, then refresh.`}
               />
-            ) : reports.length === 0 ? (
-              <EmptyState
-                icon="✉"
-                title="No dispatches yet"
-                body="Once a run completes, the backend will store the report here and attempt AgentMail delivery."
-              />
+            ) : messages.length === 0 ? (
+              <EmptyState icon="✉" title="No inbox messages" body="Generate a mock run to send the first report." />
             ) : (
               <div className="flex flex-col">
-                {reports.map((report) => (
-                  <div key={report.run_id} className="grid grid-cols-[1fr_auto] gap-4 py-3 border-b hairline last:border-b-0">
+                {messages.map((message) => (
+                  <div
+                    key={message.message_id}
+                    className="grid grid-cols-[1fr_auto] gap-4 py-3 border-b hairline last:border-b-0"
+                  >
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">{report.run_id}</span>
-                        <span className="label">{report.status}</span>
-                        <span className="label">delivery: {report.delivery_status}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold">{message.subject ?? "Untitled message"}</span>
+                        <span className="label">{deliveryLabel(message)}</span>
+                        <span className="label">{messageTime(message)}</span>
                       </div>
                       <p className="mt-1 text-[12px] truncate" style={{ color: "var(--muted-strong)" }}>
-                        {report.model_summary}
+                        {message.preview ?? message.message_id}
                       </p>
-                      {report.delivery_error && (
-                        <p className="mt-1 text-[11px]" style={{ color: "var(--status-failed)" }}>
-                          {report.delivery_error}
-                        </p>
-                      )}
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {message.labels.slice(0, 4).map((label) => (
+                          <span key={label} className="channel-pill">
+                            {label}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    {report.artifact_links.dashboard && (
-                      <a className="btn-ghost self-start" href={report.artifact_links.dashboard}>
-                        Open
-                      </a>
-                    )}
+                    <button className="btn-ghost self-start" type="button" onClick={() => openMessage(message.message_id)}>
+                      Open
+                    </button>
                   </div>
                 ))}
               </div>
             )}
           </Card>
+        </div>
 
-          <Card title="Sample completion" hint="backend test">
+        <Card title="Message" hint="AgentMail detail">
+          {!selectedMessageId ? (
+            <EmptyState icon="↗" title="Open a message" body="Select an inbox row to load the full AgentMail message." />
+          ) : isLoadingMessage ? (
+            <EmptyState icon="..." title="Loading message" body={selectedMessageId} />
+          ) : detailError ? (
+            <EmptyState icon="!" title="Message unavailable" body={detailError} />
+          ) : selectedMessage ? (
             <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-end">
-                <p className="text-[13px]" style={{ color: "var(--muted-strong)" }}>
-                  Posts a completed demo run to FastAPI, generates a stored report, and attempts
-                  AgentMail delivery if credentials are configured.
+              <div className="flex flex-col gap-1">
+                <span className="label">{selectedMessage.message_id}</span>
+                <h2 className="text-[20px] font-semibold leading-tight">{selectedMessage.subject ?? "Untitled message"}</h2>
+                <p className="text-[12px]" style={{ color: "var(--muted-strong)" }}>
+                  From {selectedMessage.from ?? "unknown"} to {selectedMessage.to.join(", ") || "unknown"}
                 </p>
-                <button
-                  className="btn-accent self-end disabled:opacity-60"
-                  type="button"
-                  onClick={sendSampleSummary}
-                  disabled={isSending}
-                >
-                  {isSending ? "Sending sample..." : "Send sample report"}
-                </button>
               </div>
 
-              {error && (
-                <div className="rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--status-failed)" }}>
-                  {error}
+              {selectedMessage.html ? (
+                <iframe
+                  className="min-h-[420px] w-full rounded-md border hairline bg-white"
+                  sandbox=""
+                  srcDoc={selectedMessage.html}
+                  title="AgentMail message HTML"
+                />
+              ) : (
+                <pre className="max-h-[520px] overflow-auto rounded-md border hairline bg-background p-3 text-[12px] whitespace-pre-wrap">
+                  {selectedMessage.extracted_text ?? selectedMessage.text ?? selectedMessage.preview ?? "No message body."}
+                </pre>
+              )}
+
+              {selectedMessage.attachments.length > 0 && (
+                <div className="rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--muted-strong)" }}>
+                  {selectedMessage.attachments.length} attachment(s)
                 </div>
               )}
             </div>
-          </Card>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <Card title="Connection" hint="stub">
-            <div className="flex flex-col gap-3">
-              <Field k="Inbox" placeholder="you@example.com" />
-              <Field k="API key" placeholder="agm_..." />
-              <button className="btn-accent mt-1" type="button">Connect AgentMail</button>
-              <p className="label">docs.agentmail.to</p>
-            </div>
-          </Card>
-
-          <Card title="Defaults" hint="stub">
-            <div className="flex flex-col gap-2 text-[12px]">
-              <Row k="trigger" v="on run.exit" />
-              <Row k="format" v="markdown + json" />
-              <Row k="retries" v="3" />
-            </div>
-          </Card>
-        </div>
+          ) : null}
+        </Card>
       </section>
-    </div>
-  );
-}
-
-function Field({ k, placeholder }: { k: string; placeholder: string }) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="label">{k}</span>
-      <input
-        disabled
-        placeholder={placeholder}
-        className="px-3 py-2 rounded-md text-[13px] outline-none"
-        style={{ background: "var(--background)", border: "1px solid var(--line)", color: "var(--foreground)" }}
-      />
-    </label>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex items-center justify-between border-b hairline pb-1.5">
-      <span className="label">{k}</span>
-      <span style={{ color: "var(--foreground)" }}>{v}</span>
     </div>
   );
 }

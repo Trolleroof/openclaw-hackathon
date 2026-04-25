@@ -26,6 +26,20 @@ def _avg_reward_components(episode_summaries):
     }
 
 
+def summarize_generalization(train_metrics: dict, heldout_metrics: dict) -> dict:
+    success_rate_gap = float(train_metrics["success_rate"] - heldout_metrics["success_rate"])
+    cleaned_dirt_gap = float(
+        train_metrics["avg_cleaned_dirt"] - heldout_metrics["avg_cleaned_dirt"]
+    )
+    return {
+        "train_success_rate": train_metrics["success_rate"],
+        "heldout_success_rate": heldout_metrics["success_rate"],
+        "success_rate_gap": success_rate_gap,
+        "cleaned_dirt_gap": cleaned_dirt_gap,
+        "possible_memorization": success_rate_gap >= 0.25 or cleaned_dirt_gap >= 1.0,
+    }
+
+
 def evaluate_policy(
     run_id: str,
     episodes: int = 50,

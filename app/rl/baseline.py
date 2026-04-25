@@ -3,7 +3,7 @@ import json
 
 from app.rl.config import RunConfig
 from app.rl.env import RoombaEnv
-from app.rl.eval import _avg, _avg_optional, _avg_reward_components
+from app.rl.eval import _avg, _avg_optional, _avg_reward_components, evaluation_seed
 from app.rl.telemetry import run_policy_episode
 
 DEFAULT_RUN_CONFIG = RunConfig()
@@ -36,7 +36,11 @@ def evaluate_random_baseline(
     episode_summaries = []
 
     for episode_index in range(episodes):
-        episode = run_policy_episode(model=None, env=env, seed=eval_seed_offset + episode_index)
+        episode = run_policy_episode(
+            model=None,
+            env=env,
+            seed=evaluation_seed(seed, eval_seed_offset, episode_index),
+        )
         episode_summaries.append(episode["summary"])
 
     cleaned_distribution = {}

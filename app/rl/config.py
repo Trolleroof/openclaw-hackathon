@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import json
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -15,3 +17,16 @@ class RunConfig:
     sensor_mode: str = "lidar_local_dirt"
     lidar_rays: int = 16
     device: str = "auto"
+
+
+def load_saved_run_config(run_dir: Path) -> dict:
+    config_path = run_dir / "rl_config.json"
+    if config_path.exists():
+        return json.loads(config_path.read_text())
+
+    metadata_path = run_dir / "metadata.json"
+    if metadata_path.exists():
+        metadata = json.loads(metadata_path.read_text())
+        return metadata.get("config", {})
+
+    return {}

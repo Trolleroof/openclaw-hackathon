@@ -16,6 +16,12 @@ class LayoutTests(unittest.TestCase):
         )
         self.assertEqual(layout.obstacles, [])
 
+    def test_preset_layout_honors_requested_dirt_count(self):
+        layout = generate_layout(LayoutConfig(mode="preset", room_size=10.0, dirt_count=12), seed=0)
+
+        self.assertEqual(len(layout.dirt), 12)
+        self.assertEqual(len({tuple(point) for point in layout.dirt}), 12)
+
     def test_random_layout_reproducible_by_seed(self):
         config = LayoutConfig(mode="random", room_size=10.0, dirt_count=5, obstacle_count=2)
         a = generate_layout(config, seed=123)
@@ -37,6 +43,12 @@ class LayoutTests(unittest.TestCase):
         self.assertTrue(np.all(layout.dirt <= 9.5))
         for dirt in layout.dirt:
             self.assertGreaterEqual(np.linalg.norm(dirt - layout.robot), config.min_clearance)
+        for obstacle in layout.obstacles:
+            center = np.array([obstacle.x, obstacle.y], dtype=np.float32)
+            self.assertGreaterEqual(
+                np.linalg.norm(center - layout.robot),
+                obstacle.radius + config.min_clearance,
+            )
 
 
 if __name__ == "__main__":

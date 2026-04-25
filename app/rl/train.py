@@ -1,4 +1,5 @@
 import argparse
+import json
 from pathlib import Path
 
 from stable_baselines3 import PPO
@@ -54,6 +55,20 @@ def train_policy(
     run_dir = RUNS_DIR / run_id
     model_dir = run_dir / "model"
     model_dir.mkdir(parents=True, exist_ok=True)
+    config = {
+        "total_timesteps": total_timesteps,
+        "seed": seed,
+        "eval_seed_offset": eval_seed_offset,
+        "room_size": room_size,
+        "max_steps": max_steps,
+        "dirt_count": dirt_count,
+        "obstacle_count": obstacle_count,
+        "layout_mode": layout_mode,
+        "sensor_mode": sensor_mode,
+        "lidar_rays": lidar_rays,
+        "device": device,
+    }
+    (run_dir / "rl_config.json").write_text(json.dumps(config, indent=2))
 
     env = RoombaEnv(
         room_size=room_size,

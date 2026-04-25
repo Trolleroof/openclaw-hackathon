@@ -38,8 +38,7 @@ PRESET_DIRT = np.array(
 
 def generate_layout(config: LayoutConfig, seed: int | None = None) -> Layout:
     if config.mode == "preset":
-        dirt = PRESET_DIRT[: config.dirt_count].copy()
-        dirt = np.clip(dirt, 0.5, config.room_size - 0.5).astype(np.float32)
+        dirt = _preset_dirt(config)
         return Layout(
             robot=np.array([1.0, 1.0], dtype=np.float32),
             heading=0.0,
@@ -52,10 +51,7 @@ def generate_layout(config: LayoutConfig, seed: int | None = None) -> Layout:
     rng = np.random.default_rng(seed)
     robot = _sample_point(rng, config.room_size)
     heading = float(rng.uniform(-np.pi, np.pi)) if config.randomize_start else 0.0
-    obstacles = [
-        CircleObstacle(*_sample_point(rng, config.room_size), radius=float(rng.uniform(0.25, 0.75)))
-        for _ in range(config.obstacle_count)
-    ]
+    obstacles = _sample_obstacles(rng, config, robot)
     dirt = []
     attempts = 0
     while len(dirt) < config.dirt_count:
@@ -79,3 +75,52 @@ def generate_layout(config: LayoutConfig, seed: int | None = None) -> Layout:
 
 def _sample_point(rng: np.random.Generator, room_size: float) -> np.ndarray:
     return rng.uniform(0.5, room_size - 0.5, size=2).astype(np.float32)
+
+
+def _preset_dirt(config: LayoutConfig) -> np.ndarray:
+    dirt = [
+        np.clip(point, 0.5, config.room_size - 0.5).astype(np.float32)
+        for point in PRESET_DIRT[: min(config.dirt_count, len(PRESET_DIRT))]
+    ]
+
+    if len(dirt) >= config.dirt_count:
+        return np.array(dirt, dtype=np.float32)
+
+    robot = np.array([1.0, 1.0], dtype=np.float32)
+    grid_size = max(4, int(np.ceil(np.sqrt(config.dirt_count * 2))))
+    while len(dirt) < config.dirt_count:
+        coords = np.linspace(0.5, config.room_size - 0.5, grid_size, dtype=np.float32)
+        for x in coords:
+            for y in coords:
+                point = np.array([x, y], dtype=np.float32)
+                if np.linalg.norm(point - robot) < config.min_clearance:
+                    continue
+                if any(np.linalg.norm(point - existing) < 0.05 for existing in dirt):
+                    continue
+                dirt.append(point)
+                if len(dirt) == config.dirt_count:
+                    break
+            if len(dirt) == config.dirt_count:
+                break
+        grid_size *= 2
+
+    return np.array(dirt, dtype=np.float32)
+
+
+def _sample_obstacles(
+    rng: np.random.Generator,
+    config: LayoutConfig,
+    robot: np.ndarray,
+) -> list[CircleObstacle]:
+    obstacles = []
+    attempts = 0
+    while len(obstacles) < config.obstacle_count:
+        attempts += 1
+        if attempts > max(config.obstacle_count, 1) * 500:
+            raise RuntimeError("Could not generate obstacles with requested clearance")
+        point = _sample_point(rng, config.room_size)
+        radius = float(rng.uniform(0.25, 0.75))
+        if np.linalg.norm(point - robot) < radius + config.min_clearance:
+            continue
+        obstacles.append(CircleObstacle(float(point[0]), float(point[1]), radius=radius))
+    return obstacles

@@ -1,3 +1,4 @@
+import json
 import shutil
 import unittest
 from pathlib import Path
@@ -118,17 +119,14 @@ class Phase1RLTests(unittest.TestCase):
         metrics = evaluate_policy(
             run_id=run_id,
             episodes=2,
-            room_size=5.0,
-            max_steps=50,
-            dirt_count=1,
-            layout_mode="preset",
-            sensor_mode="oracle",
-            lidar_rays=0,
         )
 
         self.assertTrue(model_path.exists())
+        self.assertTrue((run_dir / "rl_config.json").exists())
         self.assertTrue((run_dir / "metrics" / "eval_metrics.json").exists())
         self.assertTrue((run_dir / "metrics" / "eval_episodes.json").exists())
+        episodes = json.loads((run_dir / "metrics" / "eval_episodes.json").read_text())
+        self.assertEqual(episodes[0]["seed"], 10_003)
         self.assertEqual(metrics["episodes"], 2)
         self.assertIn("success_rate", metrics)
         self.assertIn("avg_cleaned_dirt", metrics)
@@ -137,7 +135,8 @@ class Phase1RLTests(unittest.TestCase):
     def test_visualization_writes_gif_and_trajectory(self):
         run_id = "phase1_unittest"
         model_path = RUNS_DIR / run_id / "model" / "roomba_policy.zip"
-        if not model_path.exists():
+        config_path = RUNS_DIR / run_id / "rl_config.json"
+        if not model_path.exists() or not config_path.exists():
             train_policy(
                 run_id=run_id,
                 total_timesteps=1024,
@@ -170,6 +169,31 @@ class Phase1RLTests(unittest.TestCase):
         self.assertTrue(Path(artifacts["trajectory_paths"][0]).exists())
         self.assertEqual(artifacts["fps"], 6)
         self.assertEqual(artifacts["hold_final_frames"], 3)
+        self.assertEqual(artifacts["layout_mode"], "preset")
+        self.assertEqual(artifacts["sensor_mode"], "oracle")
+
+    def test_visualization_uses_saved_run_config_by_default(self):
+        run_id = "phase1_unittest"
+        model_path = RUNS_DIR / run_id / "model" / "roomba_policy.zip"
+        config_path = RUNS_DIR / run_id / "rl_config.json"
+        if not model_path.exists() or not config_path.exists():
+            train_policy(
+                run_id=run_id,
+                total_timesteps=1024,
+                seed=3,
+                room_size=5.0,
+                max_steps=50,
+                dirt_count=1,
+                device="cpu",
+                verbose=0,
+                layout_mode="preset",
+                sensor_mode="oracle",
+                lidar_rays=0,
+            )
+
+        artifacts = generate_run_artifacts(run_id=run_id, episodes=1, hold_final_frames=1)
+
+        self.assertEqual(artifacts["seed"], 10_003)
         self.assertEqual(artifacts["layout_mode"], "preset")
         self.assertEqual(artifacts["sensor_mode"], "oracle")
 

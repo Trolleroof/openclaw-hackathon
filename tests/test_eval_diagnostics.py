@@ -1,6 +1,6 @@
 import unittest
 
-from app.rl.eval import summarize_generalization
+from app.rl.eval import evaluation_seed, summarize_generalization
 
 
 class EvalDiagnosticsTests(unittest.TestCase):
@@ -18,3 +18,6 @@ class EvalDiagnosticsTests(unittest.TestCase):
             heldout_metrics={"success_rate": 0.85, "avg_cleaned_dirt": 2.7},
         )
         self.assertFalse(summary["possible_memorization"])
+
+    def test_evaluation_seed_includes_run_seed_and_offset(self):
+        self.assertEqual(evaluation_seed(seed=7, eval_seed_offset=10_000, episode_index=3), 10_010)

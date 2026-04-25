@@ -33,6 +33,7 @@ class RunResponse(BaseModel):
     metrics_path: Optional[str] = None
     error: Optional[str] = None
     report_path: Optional[str] = None
+    nia_context: Optional[str] = None
 
 
 class CompleteRunRequest(BaseModel):

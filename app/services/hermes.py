@@ -1,7 +1,8 @@
 import json
+import time
 from dataclasses import dataclass
 from typing import Optional
-from urllib import error, request
+from urllib import error, parse, request
 
 from app import config
 from app.schemas.run import RunReport
@@ -13,73 +14,201 @@ class HermesPostResult:
     error: Optional[str] = None
 
 
+# ---------------------------------------------------------------------------
+# Slack helpers
+# ---------------------------------------------------------------------------
+
+def _slack_post(url: str, body: dict, token: Optional[str] = None) -> dict:
+    payload = json.dumps(body).encode("utf-8")
+    headers = {"Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    req = request.Request(url, data=payload, headers=headers, method="POST")
+    try:
+        with request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Slack HTTP {exc.code}: {detail}") from exc
+
+
+def _slack_get(url: str, params: dict) -> dict:
+    qs = parse.urlencode(params)
+    req = request.Request(
+        f"{url}?{qs}",
+        headers={"Authorization": f"Bearer {config.SLACK_BOT_TOKEN}"},
+        method="GET",
+    )
+    try:
+        with request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        raise RuntimeError(str(exc)) from exc
+
+
+def _post_message(text: str, blocks: Optional[list] = None) -> Optional[str]:
+    """Post via chat.postMessage, return message ts."""
+    body: dict = {"channel": config.SLACK_CHANNEL_ID, "text": text}
+    if blocks:
+        body["blocks"] = blocks
+    try:
+        data = _slack_post(
+            "https://slack.com/api/chat.postMessage", body, token=config.SLACK_BOT_TOKEN
+        )
+        if data.get("ok"):
+            return data.get("ts")
+        return None
+    except Exception:
+        return None
+
+
+def _get_replies(thread_ts: str) -> list[str]:
+    """Return text of all replies in a thread (excludes the root message)."""
+    try:
+        data = _slack_get(
+            "https://slack.com/api/conversations.replies",
+            {"channel": config.SLACK_CHANNEL_ID, "ts": thread_ts},
+        )
+    except Exception:
+        return []
+    messages = data.get("messages") or []
+    return [m["text"] for m in messages[1:] if m.get("text")]
+
+
+# ---------------------------------------------------------------------------
+# Before-run: query Nia via Hermes
+# ---------------------------------------------------------------------------
+
+def query_nia(template: str, run_config: dict) -> str:
+    """
+    Post a pre-run query to Hermes in Slack. Hermes searches Nia and replies.
+    Returns Hermes' reply text, or "" if unavailable/timeout.
+    """
+    if not config.SLACK_BOT_TOKEN or not config.SLACK_CHANNEL_ID:
+        return ""
+
+    config_summary = ", ".join(
+        f"{k}={v}"
+        for k, v in run_config.items()
+        if k in ("room_size", "dirt_count", "total_timesteps", "max_steps", "obstacle_count")
+    )
+
+    text = (
+        f"[ClawLab] Planning a new training run.\n"
+        f"*env_id:* `{template}`\n"
+        f"*Config:* {config_summary}\n"
+        f"Please search Nia for relevant prior lessons on this environment "
+        f"and reply with what worked, what failed, and any recommendations."
+    )
+
+    ts = _post_message(text)
+    if not ts:
+        return ""
+
+    for _ in range(6):  # poll up to 30s
+        time.sleep(5)
+        replies = _get_replies(ts)
+        if replies:
+            return "\n".join(replies)
+
+    return ""
+
+
+# ---------------------------------------------------------------------------
+# After-run: post lesson note
+# ---------------------------------------------------------------------------
+
 def _status_emoji(status: str) -> str:
     return {"success": "✅", "completed": "✅", "failed": "❌", "early_stop": "⏹"}.get(status, "🔵")
 
 
-def _fmt(value: Optional[float], decimals: int = 3) -> str:
-    return f"{value:.{decimals}f}" if value is not None else "n/a"
+def _derive_lesson(report: RunReport) -> tuple[str, str, str]:
+    sr = report.best_return or 0.0
+    mr = report.mean_return or 0.0
+
+    if report.status == "failed" and report.error:
+        return (
+            "n/a — run did not complete",
+            f"Run error: {report.error}",
+            "Fix the run error before retrying. Check logs in runs/ directory.",
+        )
+    if sr >= 0.8:
+        return (
+            f"Policy converged well. Success rate {sr:.0%}, mean reward {mr:.3f}.",
+            "No critical failures.",
+            "Config is solid — consider increasing difficulty (larger room or more dirt).",
+        )
+    if sr >= 0.5:
+        return (
+            f"Policy showed learning. Success rate {sr:.0%}, mean reward {mr:.3f}.",
+            "Policy did not fully converge.",
+            "Try increasing total_timesteps by 50% or tuning reward weights.",
+        )
+    return (
+        f"Minimal learning signal. Mean reward {mr:.3f}.",
+        f"Low success rate ({sr:.0%}). Policy struggled with this config.",
+        "Increase timesteps significantly, simplify env (smaller room/fewer dirt), or revisit reward shaping.",
+    )
 
 
-def _build_lesson_blocks(report: RunReport) -> list:
+def post_lesson(report: RunReport) -> HermesPostResult:
+    """
+    Post a structured run lesson note to Hermes in Slack.
+    Uses webhook if no bot token; bot token preferred for consistency.
+    """
+    if not config.SLACK_WEBHOOK_URL and not config.SLACK_BOT_TOKEN:
+        return HermesPostResult(status="skipped")
+
+    what_worked, what_failed, next_rec = _derive_lesson(report)
     emoji = _status_emoji(report.status)
-    header_text = f"[ClawLab Lesson] Run `{report.run_id}` — {emoji} {report.status}"
-
-    fields = [
-        {"type": "mrkdwn", "text": f"*Template*\n`{report.template}`"},
-        {"type": "mrkdwn", "text": f"*Algo*\nPPO"},
-        {"type": "mrkdwn", "text": f"*Timesteps*\n{report.steps or 0:,}"},
-        {"type": "mrkdwn", "text": f"*Duration*\n{report.duration_sec:.1f}s" if report.duration_sec else "*Duration*\nn/a"},
-        {"type": "mrkdwn", "text": f"*Mean reward*\n{_fmt(report.mean_return)}"},
-        {"type": "mrkdwn", "text": f"*Success rate*\n{_fmt(report.best_return)}"},
-    ]
-
     cfg = report.config or {}
-    config_text = " | ".join(f"{k}={v}" for k, v in [
-        ("room_size", cfg.get("room_size")),
-        ("dirt_count", cfg.get("dirt_count")),
-        ("max_steps", cfg.get("max_steps")),
-        ("seed", cfg.get("seed")),
-    ] if v is not None)
+    config_summary = ", ".join(
+        f"{k}={v}"
+        for k, v in cfg.items()
+        if k in ("room_size", "dirt_count", "total_timesteps", "max_steps")
+    )
 
     blocks = [
-        {"type": "header", "text": {"type": "plain_text", "text": header_text}},
-        {"type": "section", "fields": fields},
-        {"type": "section", "text": {"type": "mrkdwn", "text": f"*What happened*\n{report.model_summary}"}},
+        {
+            "type": "header",
+            "text": {"type": "plain_text", "text": f"[ClawLab Note] {emoji} Run `{report.run_id}`"},
+        },
+        {
+            "type": "section",
+            "fields": [
+                {"type": "mrkdwn", "text": f"*env_id*\n`{report.template}`"},
+                {"type": "mrkdwn", "text": f"*result*\n{report.status} | reward {report.mean_return:.3f} | success {report.best_return:.0%}"}
+                if report.mean_return is not None and report.best_return is not None
+                else {"type": "mrkdwn", "text": f"*result*\n{report.status}"},
+            ],
+        },
+        {"type": "section", "text": {"type": "mrkdwn", "text": f"*Config*\n{config_summary}"}},
+        {"type": "section", "text": {"type": "mrkdwn", "text": f"*What worked*\n{what_worked}"}},
+        {"type": "section", "text": {"type": "mrkdwn", "text": f"*What failed*\n{what_failed}"}},
+        {"type": "section", "text": {"type": "mrkdwn", "text": f"*Next recommendation*\n{next_rec}"}},
     ]
 
     if report.error:
-        blocks.append({
-            "type": "section",
-            "text": {"type": "mrkdwn", "text": f"*Failure*\n```{report.error}```"},
-        })
-
-    if config_text:
-        blocks.append({
-            "type": "context",
-            "elements": [{"type": "mrkdwn", "text": f"Config: {config_text}"}],
-        })
+        blocks.append(
+            {"type": "section", "text": {"type": "mrkdwn", "text": f"*Error*\n```{report.error}```"}}
+        )
 
     dashboard_url = (report.artifact_links or {}).get("dashboard", "")
     if dashboard_url:
         blocks.append({
             "type": "actions",
-            "elements": [{
-                "type": "button",
-                "text": {"type": "plain_text", "text": "View Dashboard →"},
-                "url": dashboard_url,
-            }],
+            "elements": [{"type": "button", "text": {"type": "plain_text", "text": "View Dashboard →"}, "url": dashboard_url}],
         })
 
-    return blocks
+    # Prefer bot token (chat.postMessage); fall back to webhook
+    if config.SLACK_BOT_TOKEN and config.SLACK_CHANNEL_ID:
+        fallback = f"[ClawLab Note] {report.run_id} {report.status}"
+        ts = _post_message(fallback, blocks=blocks)
+        if ts is not None:
+            return HermesPostResult(status="posted")
+        return HermesPostResult(status="failed", error="chat.postMessage returned no ts")
 
-
-def post_lesson(report: RunReport) -> HermesPostResult:
-    """Post a structured run lesson to the Hermes Slack channel via Incoming Webhook."""
-    if not config.SLACK_WEBHOOK_URL:
-        return HermesPostResult(status="skipped")
-
-    blocks = _build_lesson_blocks(report)
+    # Webhook fallback
     payload = json.dumps({"blocks": blocks}).encode("utf-8")
     req = request.Request(
         config.SLACK_WEBHOOK_URL,
@@ -91,8 +220,7 @@ def post_lesson(report: RunReport) -> HermesPostResult:
         with request.urlopen(req, timeout=10) as resp:
             body = resp.read().decode("utf-8")
     except error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        return HermesPostResult(status="failed", error=f"HTTP {exc.code}: {detail}")
+        return HermesPostResult(status="failed", error=f"HTTP {exc.code}")
     except Exception as exc:
         return HermesPostResult(status="failed", error=str(exc))
 

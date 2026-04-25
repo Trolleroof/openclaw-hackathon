@@ -79,6 +79,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
     (run_dir / "logs").mkdir(parents=True, exist_ok=True)
 
     config = request.model_dump()
+    template = f"roomba.room-{request.room_size}.dirt-{request.dirt_count}"
 
     metadata = {
         "run_id": run_id,
@@ -92,8 +93,15 @@ def create_run(request: CreateRunRequest) -> RunResponse:
         "metrics_path": None,
         "error": None,
         "report_path": None,
+        "nia_context": None,
     }
     _write_metadata(run_id, metadata)
+
+    from app.services.hermes import query_nia
+    nia_context = query_nia(template, config)
+    if nia_context:
+        metadata["nia_context"] = nia_context
+        _write_metadata(run_id, metadata)
 
     try:
         model_path = train_policy(

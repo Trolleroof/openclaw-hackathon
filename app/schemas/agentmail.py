@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -8,7 +8,11 @@ class AgentMailMessageSummary(BaseModel):
 
     inbox_id: str
     message_id: str
+    source: Literal["historical_seed", "run_report"]
+    run_id: str
     thread_id: Optional[str] = None
+    external_message_id: Optional[str] = None
+    external_thread_id: Optional[str] = None
     labels: list[str] = Field(default_factory=list)
     timestamp: Optional[str] = None
     created_at: Optional[str] = None
@@ -35,11 +39,3 @@ class AgentMailMessageList(BaseModel):
     count: int
     messages: list[AgentMailMessageSummary]
     next_page_token: Optional[str] = None
-
-
-class AgentMailMockSendResponse(BaseModel):
-    run_id: str
-    delivery_status: str
-    message_id: Optional[str] = None
-    thread_id: Optional[str] = None
-    error: Optional[str] = None

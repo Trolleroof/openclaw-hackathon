@@ -7,7 +7,6 @@ import {
   fetchAgentMailMessage,
   fetchAgentMailMessages,
   HERMES_API_BASE_URL,
-  sendMockRunToAgentMail,
   type AgentMailMessageDetail,
   type AgentMailMessageSummary,
 } from "../lib/agentmail";
@@ -31,15 +30,17 @@ function deliveryLabel(message: AgentMailMessageSummary) {
   return "agentmail delivery";
 }
 
+function sourceLabel(message: AgentMailMessageSummary) {
+  return message.source === "historical_seed" ? "historical seed" : "live run report";
+}
+
 export default function AgentMailPage() {
   const [messages, setMessages] = useState<AgentMailMessageSummary[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<AgentMailMessageDetail | null>(null);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [isLoadingMessage, setIsLoadingMessage] = useState(false);
-  const [isSendingMock, setIsSendingMock] = useState(false);
   const [inboxError, setInboxError] = useState<string | null>(null);
-  const [sendError, setSendError] = useState<string | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
 
   async function loadMessages() {
@@ -81,21 +82,6 @@ export default function AgentMailPage() {
     };
   }, []);
 
-  async function sendMockRun() {
-    setIsSendingMock(true);
-    setSendError(null);
-
-    try {
-      const sent = await sendMockRunToAgentMail();
-      await loadMessages();
-      if (sent.message_id) await openMessage(sent.message_id);
-    } catch (err) {
-      setSendError(err instanceof Error ? err.message : "Mock run send failed");
-    } finally {
-      setIsSendingMock(false);
-    }
-  }
-
   async function openMessage(messageId: string) {
     setSelectedMessageId(messageId);
     setSelectedMessage(null);
@@ -118,8 +104,8 @@ export default function AgentMailPage() {
         <span className="label">Integration · 02</span>
         <h1 className="text-[32px] font-semibold tracking-tight">AgentMail</h1>
         <p className="max-w-2xl text-[13px]" style={{ color: "var(--muted-strong)" }}>
-          Hermes sends run summaries to AgentMail and reads the run inbox back through the AgentMail
-          messages API.
+          Hermes keeps a local run mail feed backed by run reports. Historical uploads are seeded
+          here, and every future finalized run appears here automatically.
         </p>
       </header>
 
@@ -128,39 +114,23 @@ export default function AgentMailPage() {
           <Card title="Inbox" hint="AgentMail messages">
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="text-[12px]" style={{ color: "var(--muted-strong)" }}>
-                {messages.length} messages from {HERMES_API_BASE_URL}
+                {messages.length} Hermes messages from {HERMES_API_BASE_URL}
               </div>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <button className="btn-ghost disabled:opacity-60" type="button" onClick={loadMessages}>
-                  Refresh
-                </button>
-                <button
-                  className="btn-accent disabled:opacity-60"
-                  type="button"
-                  onClick={sendMockRun}
-                  disabled={isSendingMock}
-                >
-                  {isSendingMock ? "Sending..." : "Generate mock run"}
-                </button>
-              </div>
+              <button className="btn-ghost disabled:opacity-60" type="button" onClick={loadMessages}>
+                Refresh
+              </button>
             </div>
 
-            {sendError && (
-              <div className="mb-3 rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--status-failed)" }}>
-                {sendError}
-              </div>
-            )}
-
             {isLoadingMessages ? (
-              <EmptyState icon="..." title="Loading inbox" body="Reading messages from AgentMail." />
+              <EmptyState icon="..." title="Loading inbox" body="Reading the Hermes run mail feed." />
             ) : inboxError ? (
               <EmptyState
                 icon="!"
-                title="AgentMail not connected"
-                body={`${inboxError}. Set AGENTMAIL_API_KEY and AGENTMAIL_INBOX_ID in the API .env, then refresh.`}
+                title="AgentMail feed unavailable"
+                body={inboxError}
               />
             ) : messages.length === 0 ? (
-              <EmptyState icon="✉" title="No inbox messages" body="Generate a mock run to send the first report." />
+              <EmptyState icon="✉" title="No run messages" body="Once Hermes has seeded or finalized runs, they will appear here." />
             ) : (
               <div className="flex flex-col">
                 {messages.map((message) => (
@@ -172,10 +142,11 @@ export default function AgentMailPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-semibold">{message.subject ?? "Untitled message"}</span>
                         <span className="label">{deliveryLabel(message)}</span>
+                        <span className="label">{sourceLabel(message)}</span>
                         <span className="label">{messageTime(message)}</span>
                       </div>
                       <p className="mt-1 text-[12px] truncate" style={{ color: "var(--muted-strong)" }}>
-                        {message.preview ?? message.message_id}
+                        {message.preview ?? message.run_id}
                       </p>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {message.labels.slice(0, 4).map((label) => (
@@ -205,12 +176,23 @@ export default function AgentMailPage() {
           ) : selectedMessage ? (
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <span className="label">{selectedMessage.message_id}</span>
+                <div className="flex flex-wrap gap-2">
+                  <span className="label">{selectedMessage.message_id}</span>
+                  <span className="label">{sourceLabel(selectedMessage)}</span>
+                  <span className="label">{selectedMessage.run_id}</span>
+                </div>
                 <h2 className="text-[20px] font-semibold leading-tight">{selectedMessage.subject ?? "Untitled message"}</h2>
                 <p className="text-[12px]" style={{ color: "var(--muted-strong)" }}>
                   From {selectedMessage.from ?? "unknown"} to {selectedMessage.to.join(", ") || "unknown"}
                 </p>
               </div>
+
+              {(selectedMessage.external_message_id || selectedMessage.external_thread_id) && (
+                <div className="rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--muted-strong)" }}>
+                  {selectedMessage.external_message_id && <div>External message: {selectedMessage.external_message_id}</div>}
+                  {selectedMessage.external_thread_id && <div>External thread: {selectedMessage.external_thread_id}</div>}
+                </div>
+              )}
 
               {selectedMessage.html ? (
                 <iframe

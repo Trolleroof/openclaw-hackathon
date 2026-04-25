@@ -1,13 +1,12 @@
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from typing import Optional
-from urllib.parse import quote
 from urllib import error, request
 
 from app import config
 from app.schemas.agentmail import AgentMailMessageDetail, AgentMailMessageList, AgentMailMessageSummary
 from app.schemas.run import RunReport
+from app.services.reports import is_historical_agentmail_seed, list_agentmail_reports, resolve_report
 
 
 @dataclass
@@ -16,6 +15,11 @@ class AgentMailResult:
     message_id: Optional[str] = None
     thread_id: Optional[str] = None
     error: Optional[str] = None
+
+
+LOCAL_INBOX_ID = "hermes-local-feed"
+LOCAL_FROM_ADDRESS = "hermes@local.agentmail"
+LOCAL_TO_ADDRESS = "runs@local.agentmail"
 
 
 def _html_report(report: RunReport) -> str:
@@ -65,23 +69,46 @@ def _request_json(method: str, path: str, body: Optional[dict] = None) -> dict:
     return json.loads(raw or "{}")
 
 
-def _as_list(value: object) -> list[str]:
-    if isinstance(value, list):
-        return [str(item) for item in value if item is not None]
-    if value is None:
-        return []
-    return [str(value)]
+def _message_id(run_id: str) -> str:
+    return f"run:{run_id}"
 
 
-def _message_summary(data: dict) -> AgentMailMessageSummary:
-    normalized = {
-        **data,
-        "labels": _as_list(data.get("labels")),
-        "to": _as_list(data.get("to")),
-        "cc": _as_list(data.get("cc")),
-        "bcc": _as_list(data.get("bcc")),
-    }
-    return AgentMailMessageSummary.model_validate(normalized)
+def _message_source(report: RunReport) -> str:
+    if is_historical_agentmail_seed(report.run_id):
+        return "historical_seed"
+    return "run_report"
+
+
+def _message_labels(report: RunReport) -> list[str]:
+    freshness = "historical" if _message_source(report) == "historical_seed" else "live"
+    return ["hermes", "run-report", report.status, freshness]
+
+
+def _message_summary(report: RunReport) -> AgentMailMessageSummary:
+    timestamp = report.ended_at or report.created_at
+    recipient = _configured_recipient() or LOCAL_TO_ADDRESS
+    source = _message_source(report)
+    message_id = _message_id(report.run_id)
+    return AgentMailMessageSummary(
+        inbox_id=LOCAL_INBOX_ID,
+        message_id=message_id,
+        source=source,
+        run_id=report.run_id,
+        thread_id=message_id,
+        external_message_id=report.agentmail_message_id,
+        external_thread_id=report.agentmail_thread_id,
+        labels=_message_labels(report),
+        timestamp=timestamp,
+        created_at=report.created_at,
+        updated_at=report.created_at,
+        from_address=LOCAL_FROM_ADDRESS,
+        to=[recipient],
+        cc=[],
+        bcc=[],
+        subject=f"[RL] run {report.run_id} {report.status}",
+        preview=report.model_summary,
+        size=len(report.markdown.encode("utf-8")),
+    )
 
 
 def send_report(report: RunReport) -> AgentMailResult:
@@ -109,85 +136,41 @@ def send_report(report: RunReport) -> AgentMailResult:
 
 
 def list_inbox_messages(limit: int = 25) -> AgentMailMessageList:
-    data = _request_json("GET", f"inboxes/{config.AGENTMAIL_INBOX_ID}/messages?limit={limit}")
-    messages = [_message_summary(item) for item in data.get("messages", [])]
+    all_messages = [_message_summary(report) for report in list_agentmail_reports()]
     return AgentMailMessageList(
-        count=int(data.get("count") or len(messages)),
-        messages=messages,
-        next_page_token=data.get("next_page_token") or data.get("nextPageToken"),
+        count=len(all_messages),
+        messages=all_messages[:limit],
+        next_page_token=None,
     )
 
 
 def get_inbox_message(message_id: str) -> AgentMailMessageDetail:
-    safe_message_id = quote(message_id, safe="")
-    data = _request_json("GET", f"inboxes/{config.AGENTMAIL_INBOX_ID}/messages/{safe_message_id}")
-    summary = _message_summary(data).model_dump(by_alias=True)
+    prefix = "run:"
+    if not message_id.startswith(prefix):
+        raise LookupError("AgentMail message not found")
+
+    report = resolve_report(message_id[len(prefix):])
+    if report is None:
+        raise LookupError("AgentMail message not found")
+
+    summary = _message_summary(report).model_dump(by_alias=True)
+    html = _html_report(report)
     return AgentMailMessageDetail.model_validate(
         {
             **summary,
-            "text": data.get("text"),
-            "html": data.get("html"),
-            "extracted_text": data.get("extracted_text") or data.get("extractedText"),
-            "extracted_html": data.get("extracted_html") or data.get("extractedHtml"),
-            "attachments": data.get("attachments") or [],
-            "raw": data,
+            "text": report.markdown,
+            "html": html,
+            "extracted_text": report.markdown,
+            "extracted_html": html,
+            "attachments": [],
+            "raw": {
+                "run_id": report.run_id,
+                "status": report.status,
+                "source": _message_source(report),
+                "delivery_status": report.delivery_status,
+                "external_message_id": report.agentmail_message_id,
+                "external_thread_id": report.agentmail_thread_id,
+                "artifact_links": report.artifact_links,
+            },
         }
-    )
-
-
-def build_mock_run_report() -> RunReport:
-    created_at = datetime.now(timezone.utc).isoformat()
-    stamp = int(datetime.now(timezone.utc).timestamp() * 1000)
-    run_id = f"run_mock_{stamp}"
-    steps = 30000
-    episodes = 10
-    mean_return = 38.4
-    best_return = 0.7
-    template = "roomba.room-10.0.dirt-3"
-    dashboard_url = f"{config.HERMES_PUBLIC_BASE_URL.rstrip('/')}/runs/{run_id}"
-    model_summary = (
-        f"PPO run {run_id} finished with status success. "
-        f"Trained for {steps:,} timesteps and evaluated across {episodes} episodes. "
-        f"Average reward: {mean_return:.3f}; success rate: {best_return:.3f}."
-    )
-    markdown = "\n".join(
-        [
-            f"# Hermes Run Report: {run_id}",
-            "",
-            "- Status: `success`",
-            f"- Template: `{template}`",
-            f"- Timesteps: `{steps}`",
-            f"- Episodes: `{episodes}`",
-            f"- Average reward: `{mean_return}`",
-            f"- Success rate: `{best_return}`",
-            f"- Dashboard: {dashboard_url}",
-            "",
-            model_summary,
-        ]
-    )
-    return RunReport(
-        run_id=run_id,
-        status="success",
-        started_at=created_at,
-        ended_at=created_at,
-        duration_sec=872.0,
-        template=template,
-        algo="PPO",
-        config={
-            "total_timesteps": steps,
-            "eval_episodes": episodes,
-            "seed": 42,
-            "room_size": 10.0,
-            "max_steps": 200,
-            "dirt_count": 3,
-        },
-        steps=steps,
-        episodes=episodes,
-        mean_return=mean_return,
-        best_return=best_return,
-        checkpoint_uri=f"runs/{run_id}/model/roomba_policy.zip",
-        artifact_links={"dashboard": dashboard_url},
-        model_summary=model_summary,
-        markdown=markdown,
-        created_at=created_at,
     )

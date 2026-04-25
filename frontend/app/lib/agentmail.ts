@@ -1,7 +1,11 @@
 export type AgentMailMessageSummary = {
   inbox_id: string;
   message_id: string;
+  source: "historical_seed" | "run_report";
+  run_id: string;
   thread_id?: string | null;
+  external_message_id?: string | null;
+  external_thread_id?: string | null;
   labels: string[];
   timestamp?: string | null;
   created_at?: string | null;
@@ -28,14 +32,6 @@ export type AgentMailMessageList = {
   count: number;
   messages: AgentMailMessageSummary[];
   next_page_token?: string | null;
-};
-
-export type AgentMailMockSendResponse = {
-  run_id: string;
-  delivery_status: string;
-  message_id?: string | null;
-  thread_id?: string | null;
-  error?: string | null;
 };
 
 export const HERMES_API_BASE_URL =
@@ -66,13 +62,4 @@ export async function fetchAgentMailMessage(messageId: string): Promise<AgentMai
   );
 
   return readJson<AgentMailMessageDetail>(response, "Loading AgentMail message");
-}
-
-export async function sendMockRunToAgentMail(): Promise<AgentMailMockSendResponse> {
-  const response = await fetch(`${HERMES_API_BASE_URL}/api/v1/agentmail/mock-run`, {
-    method: "POST",
-    headers: { Accept: "application/json" },
-  });
-
-  return readJson<AgentMailMockSendResponse>(response, "Sending mock run to AgentMail");
 }

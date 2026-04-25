@@ -7,6 +7,20 @@ from app.config import HERMES_PUBLIC_BASE_URL, RUNS_DIR
 from app.schemas.run import RunReport
 
 
+HISTORICAL_AGENTMAIL_RUN_IDS = (
+    "run_3b77938dc6",
+    "run_ecb8069f9c",
+    "matrix_preset_lidar_v2_40k",
+    "matrix_preset_oracle_40k",
+    "matrix_random_lidar_v2_60k",
+    "matrix_random_lidar_v3_60k",
+    "matrix_random_lidar_v5_60k",
+    "matrix_random_oracle_40k",
+    "matrix_random_oracle_no_obstacles_40k",
+    "matrix_random_oracle_v2_60k",
+)
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -19,12 +33,49 @@ def report_path(run_id: str) -> Path:
     return _run_dir(run_id) / "report.json"
 
 
+def _metadata_path(run_id: str) -> Path:
+    return _run_dir(run_id) / "metadata.json"
+
+
+def _rl_config_path(run_id: str) -> Path:
+    return _run_dir(run_id) / "rl_config.json"
+
+
+def _eval_metrics_path(run_id: str) -> Path:
+    return _run_dir(run_id) / "metrics" / "eval_metrics.json"
+
+
+def _combined_metrics_path(run_id: str) -> Path:
+    return _run_dir(run_id) / "metrics" / "combined_metrics.json"
+
+
+def _checkpoint_path(run_id: str) -> Path:
+    return _run_dir(run_id) / "model" / "roomba_policy.zip"
+
+
 def _safe_float(value: Any) -> Optional[float]:
     return float(value) if isinstance(value, (int, float)) else None
 
 
 def _safe_int(value: Any) -> Optional[int]:
     return int(value) if isinstance(value, (int, float)) else None
+
+
+def _read_json(path: Path) -> Optional[dict]:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text())
+
+
+def _iso_from_timestamp(timestamp: float) -> str:
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc).isoformat()
+
+
+def _fallback_timestamp(paths: list[Path]) -> str:
+    existing = [path for path in paths if path.exists()]
+    if not existing:
+        return _now_iso()
+    return _iso_from_timestamp(max(path.stat().st_mtime for path in existing))
 
 
 def _metric(metadata: dict, key: str) -> Any:
@@ -37,6 +88,73 @@ def _status_label(status: str) -> str:
     if status == "completed":
         return "success"
     return status
+
+
+def _is_terminal_status(status: Optional[str]) -> bool:
+    return status in {"completed", "success", "failed", "early_stop"}
+
+
+def is_historical_agentmail_seed(run_id: str) -> bool:
+    return run_id in HISTORICAL_AGENTMAIL_RUN_IDS
+
+
+def _local_artifact_uri(path: Path, fallback: Optional[str] = None) -> Optional[str]:
+    if path.exists():
+        return str(path)
+    return fallback
+
+
+def _historical_timestamp(run_id: str) -> str:
+    return _fallback_timestamp(
+        [
+            report_path(run_id),
+            _metadata_path(run_id),
+            _eval_metrics_path(run_id),
+            _rl_config_path(run_id),
+            _combined_metrics_path(run_id),
+            _checkpoint_path(run_id),
+        ]
+    )
+
+
+def _normalized_report(metadata: dict, *, run_id: str) -> RunReport:
+    timestamp = metadata.get("ended_at") or metadata.get("started_at") or _historical_timestamp(run_id)
+    report = build_run_report(
+        {
+            **metadata,
+            "run_id": run_id,
+            "ended_at": metadata.get("ended_at") or timestamp,
+            "started_at": metadata.get("started_at"),
+            "model_path": _local_artifact_uri(_checkpoint_path(run_id), metadata.get("model_path")),
+            "metrics_path": _local_artifact_uri(_combined_metrics_path(run_id), metadata.get("metrics_path"))
+            or _local_artifact_uri(_eval_metrics_path(run_id), metadata.get("metrics_path")),
+        }
+    )
+    return report.model_copy(update={"created_at": timestamp})
+
+
+def _historical_metadata(run_id: str) -> Optional[dict]:
+    config = _read_json(_rl_config_path(run_id))
+    eval_metrics = _read_json(_eval_metrics_path(run_id))
+    if config is None or eval_metrics is None or not is_historical_agentmail_seed(run_id):
+        return None
+
+    checkpoint_uri = _local_artifact_uri(_checkpoint_path(run_id))
+    metrics_path = _local_artifact_uri(_eval_metrics_path(run_id))
+    timestamp = _historical_timestamp(run_id)
+
+    return {
+        "run_id": run_id,
+        "status": "success",
+        "started_at": timestamp,
+        "ended_at": timestamp,
+        "duration_sec": None,
+        "config": config,
+        "metrics": {"ppo": eval_metrics},
+        "model_path": checkpoint_uri,
+        "metrics_path": metrics_path,
+        "error": None,
+    }
 
 
 def build_run_report(metadata: dict) -> RunReport:
@@ -121,6 +239,36 @@ def read_report(run_id: str) -> Optional[RunReport]:
     if not path.exists():
         return None
     return RunReport(**json.loads(path.read_text()))
+
+
+def resolve_report(run_id: str) -> Optional[RunReport]:
+    persisted = read_report(run_id)
+    if persisted is not None:
+        return persisted
+
+    metadata = _read_json(_metadata_path(run_id))
+    if metadata is not None and _is_terminal_status(metadata.get("status")):
+        return _normalized_report(metadata, run_id=run_id)
+
+    historical = _historical_metadata(run_id)
+    if historical is not None:
+        return _normalized_report(historical, run_id=run_id)
+
+    return None
+
+
+def list_agentmail_reports() -> list[RunReport]:
+    run_ids = {run_dir.name for run_dir in RUNS_DIR.iterdir() if run_dir.is_dir()}
+    reports = [report for run_id in run_ids if (report := resolve_report(run_id)) is not None]
+    return sorted(
+        reports,
+        key=lambda report: (
+            report.ended_at or report.created_at,
+            report.created_at,
+            report.run_id,
+        ),
+        reverse=True,
+    )
 
 
 def list_reports() -> list[RunReport]:

@@ -48,7 +48,7 @@ Nia is the **knowledge and memory layer** on top of raw metrics. **W&B / the DB*
 - Evaluate (eval.py)
 - Goal: prove RL loop works in minutes
 
-Status: complete. The default API run trains PPO, writes model and metrics artifacts, evaluates against a random baseline, and reports `ppo_beats_random=true`. The optimized Phase 1 env now uses normalized navigation observations, wall/dirt features, progress and alignment rewards, and reaches `success_rate=1.0` in 30k-step CPU runs across tested seeds.
+Status: complete. The default API run trains PPO, writes model and metrics artifacts, evaluates against a random baseline, and reports `ppo_beats_random=true`. The optimized Phase 1 env now uses normalized navigation observations, wall/dirt features, progress and alignment rewards. The 2D default training budget is 200k PPO steps for better convergence, with 30k-step CPU runs already reaching `success_rate=1.0` across tested seeds.
 
 ## Phase 2: Introduce ClawLab Orchestration
 - Generate env + world/config (from templates or prompts)

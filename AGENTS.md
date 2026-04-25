@@ -39,7 +39,7 @@ uvicorn app.main:app --reload
 Open `http://127.0.0.1:8000/docs` for the interactive API docs. Run direct RL workflows with:
 
 ```bash
-python -m app.rl.train --run-id local_test --total-timesteps 30000
+python -m app.rl.train --run-id local_test --total-timesteps 200000 --verbose 0
 python -m app.rl.eval --run-id local_test --episodes 50
 python -m app.rl.baseline --episodes 50
 ./scripts/run_local.sh
@@ -58,7 +58,7 @@ npm run lint
 `npm install` installs dependencies from `package-lock.json`. `npm run dev` starts the local Next.js development server. `npm run build` validates the production build. `npm run start` serves the built app. `npm run lint` runs ESLint with Next.js Core Web Vitals and TypeScript rules.
 
 Use `DEVICE=cpu ./scripts/run_local.sh` for explicit CPU runs. `DEVICE=mps` is accepted, but this environment falls back to CPU if Stable-Baselines3 cannot initialize PPO on MPS.
-Use `.venv/bin/python -m app.rl.visualize --run-id local_test --seed 0 --episodes 2` to write GIFs and trajectory JSON under `runs/{run_id}/artifacts/`.
+Use `.venv/bin/python -m app.rl.visualize --run-id local_test --seed 0 --episodes 2 --fps 6 --hold-final-frames 18` to write slower GIFs and trajectory JSON under `runs/{run_id}/artifacts/`.
 
 ## Coding Style & Naming Conventions
 

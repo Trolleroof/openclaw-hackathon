@@ -8,6 +8,9 @@ from app.config import RUNS_DIR
 from app.rl.env import RoombaEnv
 
 
+DEFAULT_TOTAL_TIMESTEPS = 200_000
+
+
 def _create_ppo_model(env: RoombaEnv, seed: int, device: str, verbose: int) -> PPO:
     model_kwargs = {
         "policy": "MlpPolicy",
@@ -33,7 +36,7 @@ def _create_ppo_model(env: RoombaEnv, seed: int, device: str, verbose: int) -> P
 
 def train_policy(
     run_id: str,
-    total_timesteps: int = 30_000,
+    total_timesteps: int = DEFAULT_TOTAL_TIMESTEPS,
     seed: int = 42,
     room_size: float = 10.0,
     max_steps: int = 200,
@@ -67,7 +70,7 @@ def train_policy(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--total-timesteps", type=int, default=30_000)
+    parser.add_argument("--total-timesteps", type=int, default=DEFAULT_TOTAL_TIMESTEPS)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--room-size", type=float, default=10.0)
     parser.add_argument("--max-steps", type=int, default=200)

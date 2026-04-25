@@ -14,7 +14,9 @@ if [[ ! -x "${PYTHON_BIN}" ]]; then
 fi
 
 DEVICE="${DEVICE:-auto}"
+TOTAL_TIMESTEPS="${TOTAL_TIMESTEPS:-200000}"
+VERBOSE="${VERBOSE:-0}"
 
-"${PYTHON_BIN}" -m app.rl.train --run-id local_test --total-timesteps 30000 --device "${DEVICE}"
+"${PYTHON_BIN}" -m app.rl.train --run-id local_test --total-timesteps "${TOTAL_TIMESTEPS}" --device "${DEVICE}" --verbose "${VERBOSE}"
 "${PYTHON_BIN}" -m app.rl.eval --run-id local_test --episodes 50
 "${PYTHON_BIN}" -m app.rl.baseline --episodes 50

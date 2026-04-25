@@ -10,10 +10,13 @@ from app.rl.env import RoombaEnv
 from app.rl.telemetry import run_policy_episode
 
 
-def _write_gif(frames, path: Path, fps: int) -> None:
+def _write_gif(frames, path: Path, fps: int, hold_final_frames: int = 0) -> None:
     images = [Image.fromarray(frame) for frame in frames if frame is not None]
     if not images:
         raise ValueError("No frames captured for GIF export")
+
+    if hold_final_frames > 0:
+        images.extend([images[-1].copy() for _ in range(hold_final_frames)])
 
     duration_ms = int(1000 / max(fps, 1))
     images[0].save(
@@ -29,7 +32,8 @@ def generate_run_artifacts(
     run_id: str,
     seed: int = 0,
     episodes: int = 1,
-    fps: int = 12,
+    fps: int = 6,
+    hold_final_frames: int = 18,
     room_size: float = 10.0,
     max_steps: int = 200,
     dirt_count: int = 3,
@@ -62,7 +66,7 @@ def generate_run_artifacts(
         gif_path = artifacts_dir / f"episode_seed_{episode_seed}.gif"
         trajectory_path = artifacts_dir / f"episode_seed_{episode_seed}_trajectory.json"
 
-        _write_gif(rollout["frames"], gif_path, fps=fps)
+        _write_gif(rollout["frames"], gif_path, fps=fps, hold_final_frames=hold_final_frames)
         trajectory_payload = {
             "run_id": run_id,
             "episode_seed": episode_seed,
@@ -76,6 +80,8 @@ def generate_run_artifacts(
 
     manifest = {
         "run_id": run_id,
+        "fps": fps,
+        "hold_final_frames": hold_final_frames,
         "gif_paths": gif_paths,
         "trajectory_paths": trajectory_paths,
     }
@@ -90,7 +96,8 @@ def main():
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--episodes", type=int, default=1)
-    parser.add_argument("--fps", type=int, default=12)
+    parser.add_argument("--fps", type=int, default=6)
+    parser.add_argument("--hold-final-frames", type=int, default=18)
     parser.add_argument("--room-size", type=float, default=10.0)
     parser.add_argument("--max-steps", type=int, default=200)
     parser.add_argument("--dirt-count", type=int, default=3)
@@ -101,6 +108,7 @@ def main():
         seed=args.seed,
         episodes=args.episodes,
         fps=args.fps,
+        hold_final_frames=args.hold_final_frames,
         room_size=args.room_size,
         max_steps=args.max_steps,
         dirt_count=args.dirt_count,

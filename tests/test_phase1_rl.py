@@ -8,8 +8,9 @@ from stable_baselines3.common.env_checker import check_env
 from app.config import RUNS_DIR
 from app.rl.env import RoombaEnv
 from app.rl.eval import evaluate_policy
-from app.rl.train import train_policy
+from app.rl.train import DEFAULT_TOTAL_TIMESTEPS, train_policy
 from app.rl.visualize import generate_run_artifacts
+from app.schemas.run import CreateRunRequest
 
 
 class Phase1RLTests(unittest.TestCase):
@@ -20,6 +21,10 @@ class Phase1RLTests(unittest.TestCase):
         self.assertEqual(obs.shape, (23,))
         self.assertTrue(np.all(obs >= -1.0))
         self.assertTrue(np.all(obs <= 1.0))
+
+    def test_default_training_budget_is_scaled_for_2d_runs(self):
+        self.assertEqual(DEFAULT_TOTAL_TIMESTEPS, 200_000)
+        self.assertEqual(CreateRunRequest().total_timesteps, 200_000)
 
     def test_env_passes_stable_baselines_checker(self):
         env = RoombaEnv(room_size=6.0, max_steps=20, dirt_count=2, seed=7)
@@ -121,10 +126,18 @@ class Phase1RLTests(unittest.TestCase):
                 verbose=0,
             )
 
-        artifacts = generate_run_artifacts(run_id=run_id, seed=0, episodes=1)
+        artifacts = generate_run_artifacts(
+            run_id=run_id,
+            seed=0,
+            episodes=1,
+            fps=6,
+            hold_final_frames=3,
+        )
 
         self.assertTrue(Path(artifacts["gif_paths"][0]).exists())
         self.assertTrue(Path(artifacts["trajectory_paths"][0]).exists())
+        self.assertEqual(artifacts["fps"], 6)
+        self.assertEqual(artifacts["hold_final_frames"], 3)
 
 
 if __name__ == "__main__":

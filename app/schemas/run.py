@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
 
+from app.rl.train import DEFAULT_TOTAL_TIMESTEPS
+
 
 class CreateRunRequest(BaseModel):
-    total_timesteps: int = Field(default=30_000, ge=1_000, le=2_000_000)
+    total_timesteps: int = Field(default=DEFAULT_TOTAL_TIMESTEPS, ge=1_000, le=2_000_000)
     eval_episodes: int = Field(default=50, ge=1, le=1_000)
     seed: int = Field(default=42)
     room_size: float = Field(default=10.0, gt=1.0)

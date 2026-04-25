@@ -80,7 +80,7 @@ Example body:
 
 ```json
 {
-  "total_timesteps": 30000,
+  "total_timesteps": 200000,
   "eval_episodes": 50,
   "seed": 42
 }
@@ -88,7 +88,7 @@ Example body:
 
 The endpoint runs training synchronously for simplicity.
 
-For 30k timesteps, this should usually complete in a few minutes.
+For 200k timesteps, this should usually complete in a couple of minutes in the 2D env on CPU.
 
 ## Get run status
 
@@ -105,7 +105,7 @@ GET /api/runs
 ## Direct CLI training
 
 ```bash
-python -m app.rl.train --run-id local_test --total-timesteps 30000 --device cpu
+python -m app.rl.train --run-id local_test --total-timesteps 200000 --device cpu --verbose 0
 python -m app.rl.eval --run-id local_test --episodes 50
 python -m app.rl.baseline --episodes 50
 ```
@@ -115,7 +115,7 @@ python -m app.rl.baseline --episodes 50
 Generate visual diagnostics for a saved model:
 
 ```bash
-python -m app.rl.visualize --run-id local_test --seed 0 --episodes 2
+python -m app.rl.visualize --run-id local_test --seed 0 --episodes 2 --fps 6 --hold-final-frames 18
 ```
 
 This writes GIFs, trajectory JSON, and a manifest under `runs/{run_id}/artifacts/`.

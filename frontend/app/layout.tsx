@@ -1,38 +1,34 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
+import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Shell } from "./components/Shell";
 
-const serif = Instrument_Serif({
-  variable: "--font-instrument-serif",
+const sans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const mono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
+const mono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
   title: "Hermes — RL run console",
-  description:
-    "Hermes orchestrates reinforcement-learning training runs against Webots and templated worlds.",
+  description: "Hermes orchestrates reinforcement-learning training runs.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${serif.variable} ${mono.variable} h-full antialiased`}
+      className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col grain">
+      <body className="min-h-full flex flex-col">
         <Shell>{children}</Shell>
       </body>
     </html>

@@ -10,18 +10,15 @@ export function StatusDot({ status, withLabel = false }: { status: RunStatus; wi
         className={isRunning ? "pulse-dot" : ""}
         style={{
           display: "inline-block",
-          width: 8,
-          height: 8,
+          width: 7,
+          height: 7,
           borderRadius: 999,
           background: color,
-          boxShadow: `0 0 12px ${color}`,
         }}
         aria-hidden
       />
       {withLabel && (
-        <span className="text-[10px] tracking-[0.18em] uppercase" style={{ color }}>
-          {statusLabel(status)}
-        </span>
+        <span className="label" style={{ color }}>{statusLabel(status)}</span>
       )}
     </span>
   );

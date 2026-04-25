@@ -4,21 +4,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-const NAV: { label: string; href: string; code: string }[] = [
-  { label: "Runs", href: "/", code: "01" },
-  { label: "AgentMail", href: "/agentmail", code: "02" },
-  { label: "Nia memory", href: "/memory", code: "03" },
+const NAV: { label: string; href: string }[] = [
+  { label: "Runs", href: "/" },
+  { label: "AgentMail", href: "/agentmail" },
+  { label: "Memory", href: "/memory" },
 ];
 
 export function Shell({ children }: { children: ReactNode }) {
   const path = usePathname();
   return (
     <div className="min-h-screen flex flex-col">
-      <Header path={path} />
-      <div className="flex-1 flex">
-        <aside className="hidden md:flex w-56 shrink-0 border-r hairline">
-          <nav className="w-full p-6 flex flex-col gap-1">
-            <div className="label mb-3">Sections</div>
+      <header className="border-b hairline">
+        <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <span
+              aria-hidden
+              className="inline-block w-2 h-2 rounded-full"
+              style={{ background: "var(--accent)" }}
+            />
+            <span className="text-[15px] font-semibold tracking-tight">Hermes</span>
+            <span className="label hidden sm:inline ml-2">RL console</span>
+          </Link>
+
+          <nav className="flex items-center gap-1">
             {NAV.map((item) => {
               const active =
                 item.href === "/"
@@ -28,86 +36,30 @@ export function Shell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="group flex items-center justify-between px-2 py-2 border-l-2 transition-colors"
+                  className="px-3 py-1.5 text-[13px] rounded-md transition-colors"
                   style={{
-                    borderColor: active ? "var(--accent)" : "transparent",
                     color: active ? "var(--foreground)" : "var(--muted-strong)",
+                    background: active ? "var(--surface-2)" : "transparent",
                   }}
                 >
-                  <span className="flex items-baseline gap-3">
-                    <span
-                      className="text-[10px]"
-                      style={{ color: active ? "var(--accent)" : "var(--muted)" }}
-                    >
-                      {item.code}
-                    </span>
-                    <span className="serif italic text-[18px] leading-none">{item.label}</span>
-                  </span>
-                  <span
-                    className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    →
-                  </span>
+                  {item.label}
                 </Link>
               );
             })}
-            <div className="mt-auto pt-8 text-[10px] leading-relaxed" style={{ color: "var(--muted)" }}>
-              <div className="label mb-2">System</div>
-              <div>hermes-api · v0.1.0</div>
-              <div>region · sfo-2</div>
-              <div>uptime · 04d 11h</div>
-            </div>
           </nav>
-        </aside>
-        <main className="flex-1 min-w-0">{children}</main>
-      </div>
-      <Ticker />
-    </div>
-  );
-}
+        </div>
+      </header>
 
-function Header({ path }: { path: string }) {
-  return (
-    <header className="px-6 md:px-10 py-6 border-b hairline flex items-end justify-between gap-6">
-      <div className="flex items-baseline gap-4">
-        <Link href="/" className="flex items-baseline gap-3">
-          <span className="serif text-[42px] leading-none tracking-tight">Hermes</span>
-          <span className="serif italic text-[18px]" style={{ color: "var(--muted-strong)" }}>
-            — a small console for training runs
-          </span>
-        </Link>
-      </div>
-      <div className="hidden lg:flex items-center gap-2">
-        <button className="btn-ghost" type="button">
-          <span style={{ color: "var(--muted)" }}>⌘K</span>
-          <span>Search</span>
-        </button>
-        <button className="btn-accent" type="button">+ New run</button>
-      </div>
-      <div className="sr-only">{path}</div>
-    </header>
-  );
-}
+      <main className="flex-1">
+        <div className="mx-auto max-w-6xl px-6 py-10">{children}</div>
+      </main>
 
-function Ticker() {
-  const items = [
-    "run kw0c8x · step 180,224 · mean_return 0.61",
-    "agentmail · last dispatch 5h ago · nikhi@ucsd.edu",
-    "nia · 24 indexed lessons · 3 new this week",
-    "webots · supervisor proto OK · 1 worker pool",
-    "telemetry db · 2,481 step rows · latency 12ms",
-  ];
-  const text = items.join("   ···   ");
-  return (
-    <div
-      className="border-t hairline overflow-hidden whitespace-nowrap text-[10px] tracking-[0.22em] uppercase py-1.5"
-      style={{ color: "var(--muted)", background: "var(--surface)" }}
-    >
-      <div className="ticker inline-block">
-        <span className="px-6">{text}</span>
-        <span className="px-6">{text}</span>
-      </div>
+      <footer className="border-t hairline">
+        <div className="mx-auto max-w-6xl px-6 h-10 flex items-center justify-between text-[11px]" style={{ color: "var(--muted)" }}>
+          <span>hermes · v0.1.0</span>
+          <span>not connected</span>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -7,11 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is the **openclaw-hackathon**: a reinforcement learning + physics simulation orchestration system. The architecture consists of:
 
 - **Frontend**: Next.js dashboard for run history, configuration, and metrics visualization
-- **Backend**: FastAPI orchestration layer (Hermes) for world generation, training supervision, and telemetry aggregation
+- **Backend**: FastAPI orchestration layer (ClawLab) for world generation, training supervision, report generation, AgentMail delivery, and telemetry aggregation
+- **Agent Harness**: Hermes runtime used to execute orchestration tasks; Hermes is not the product name or backend service
 - **RL Core**: PPO training pipeline with Gymnasium environment interface
 - **Physics**: Webots simulator integration for realistic robot/environment dynamics
 - **Knowledge Layer**: Nia for indexed memory of runs and documentation
-- **Communication**: AgentMail for end-of-run reports and notifications
+- **Communication**: AgentMail for delivering the same structured run reports that the backend API exposes to the frontend
 
 See **`plan.md`** for the full architecture roadmap (Phases 1–6) and detailed responsibility matrix.
 
@@ -61,10 +62,12 @@ npm run lint       # Run ESLint
 
 Not yet implemented. When adding the backend:
 
-- Hermes orchestrator should live in a `backend/` directory (or sibling to `frontend/`)
+- ClawLab orchestrator should live in a `backend/` directory (or sibling to `frontend/`)
 - It should expose a REST API for:
   - Creating/querying training runs
   - Fetching telemetry and metrics
+  - Creating/querying run reports
+  - Sending stored reports through AgentMail
   - Submitting world/config generation requests
 - The backend will be called from the frontend (likely via `/api/` Next.js routes or direct HTTP)
 
@@ -74,26 +77,27 @@ When implementing (phases 1–4 of plan.md):
 
 - **Phase 1** (simple 2D RL): `env.py`, `train.py`, `eval.py` in a top-level `rl/` directory
 - **Phase 3** (Webots): `.wbt` world files in `rl/worlds/`; controller bridge in `rl/controllers/`
-- Keep training loop separate from orchestration (Hermes supervises, not embeds)
+- Keep training loop separate from orchestration (ClawLab supervises, not embeds; Hermes may run the orchestration task)
 
 ## Development Workflow
 
-1. **Plan**: Check `plan.md` for the feature or phase; understand Hermes responsibilities vs. other layers
+1. **Plan**: Check `plan.md` for the feature or phase; understand ClawLab responsibilities vs. the Hermes harness and other layers
 2. **Frontend**: Add UI components/pages in `frontend/app/`; start the dev server to test
 3. **Backend**: When needed, add FastAPI routes and database models
 4. **Testing**: Frontend linting runs via `npm run lint`; add unit tests in `**/*.test.ts(x)` (runner TBD)
-5. **Coordination**: Frontend calls backend APIs; Hermes orchestrates the RL training and telemetry
+5. **Coordination**: Frontend calls backend APIs; ClawLab orchestrates RL training, telemetry, report storage, and AgentMail delivery
 
 ## Glossary
 
-- **Hermes**: FastAPI orchestrator that generates environments, supervises training, aggregates metrics
+- **ClawLab**: Product/platform and FastAPI orchestration layer that generates environments, supervises training, aggregates metrics, creates reports, and sends AgentMail copies
+- **Hermes**: Agent harness/runtime used to execute orchestration work for ClawLab; do not use it as the product or backend service name
 - **Nia**: Knowledge/memory layer (indexing runs, docs, lessons learned)
-- **AgentMail**: Service for sending structured run reports via email
+- **AgentMail**: Service for sending structured run reports to an inbox; the backend API remains the source of truth for reports
 - **W&B**: Weights & Biases integration for metrics and checkpoints (planned)
 - **Webots**: Physics engine + simulator for realistic robot/environment dynamics
 
 ## Next Steps
 
 Refer to `plan.md` Phase 2 and 3 for immediate priorities:
-- Phase 2: Hermes FastAPI setup, unified telemetry DB, AgentMail integration
+- Phase 2: ClawLab FastAPI setup, unified telemetry DB, report API, AgentMail report delivery
 - Phase 3: Webots world + robot integration

@@ -125,5 +125,7 @@ You are done when:
 1. Add W&B logging.
 2. Add config.yaml support.
 3. Add async/background jobs.
-4. Add Hermes agent hooks.
+4. Add ClawLab report generation and API storage.
 5. Replace Python env backend with Webots env backend later.
+6. Run orchestration tasks through the Hermes agent harness where useful.
+7. Send stored run reports through AgentMail.

@@ -1,0 +1,39 @@
+[
+  {
+    "seed": 10001,
+    "success": false,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 200,
+    "total_reward": -3.310299987643962,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 0,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 0.0,
+    "action_counts": {
+      "forward": 0,
+      "turn_left": 96,
+      "turn_right": 104
+    },
+    "turns": 200,
+    "forward_moves": 0,
+    "turn_move_ratio": 200.0,
+    "action_switches": 192,
+    "max_turn_streak": 200,
+    "max_no_clean_streak": 200,
+    "first_clean_step": null,
+    "final_clean_step": null,
+    "cleaned_events": [],
+    "reward_totals": {
+      "step_penalty": -2.0000000000000013,
+      "forward_reward": 0.0,
+      "clearance_reward": 0.689700012356045,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "survival_bonus": 0.0,
+      "idle_penalty": -2.0
+    }
+  }
+]

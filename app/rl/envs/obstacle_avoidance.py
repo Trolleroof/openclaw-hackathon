@@ -23,6 +23,7 @@ class ObstacleAvoidanceEnv(gym.Env):
         lidar_rays: int = 16,
         lidar_range: float | None = None,
         min_clearance: float = 0.8,
+        min_success_path_length: float | None = None,
         safe_waypoint: tuple[float, float] | None = None,
         waypoint_radius: float = 0.5,
         seed: int | None = None,
@@ -43,6 +44,7 @@ class ObstacleAvoidanceEnv(gym.Env):
         self.lidar_rays = int(lidar_rays)
         self.lidar_range = float(lidar_range or room_size)
         self.min_clearance = float(min_clearance)
+        self.min_success_path_length = float(min_success_path_length or room_size * 0.75)
         self.safe_waypoint = (
             np.array(safe_waypoint, dtype=np.float32)
             if safe_waypoint is not None
@@ -64,6 +66,7 @@ class ObstacleAvoidanceEnv(gym.Env):
         self.heading = 0.0
         self.obstacles: list[CircleObstacle] = []
         self.steps = 0
+        self.path_length = 0.0
 
         self.dirt_count = 0
         self.dirt = np.empty((0, 2), dtype=np.float32)
@@ -94,6 +97,7 @@ class ObstacleAvoidanceEnv(gym.Env):
         self.heading = float(layout.heading)
         self.obstacles = list(layout.obstacles)
         self.steps = 0
+        self.path_length = 0.0
         self.dirt = np.empty((0, 2), dtype=np.float32)
 
         return self._obs(), self._info(
@@ -124,6 +128,7 @@ class ObstacleAvoidanceEnv(gym.Env):
                 self.robot = previous_robot
             else:
                 self.robot = proposed_robot.astype(np.float32)
+                self.path_length += float(np.linalg.norm(self.robot - previous_robot))
                 reward_components["forward_reward"] = 0.05
         elif action == 1:
             self.heading += self.turn_angle
@@ -145,9 +150,15 @@ class ObstacleAvoidanceEnv(gym.Env):
         reached_waypoint = self._reached_safe_waypoint()
         survived = self.steps >= self.max_steps
         terminated = bool(survived or reached_waypoint)
+        success = bool(
+            reached_waypoint
+            or (survived and self.path_length >= self.min_success_path_length)
+        )
         truncated = False
-        if terminated:
+        if success:
             reward_components["survival_bonus"] = 1.0
+        elif survived:
+            reward_components["idle_penalty"] = -2.0
 
         reward = float(sum(reward_components.values()))
         info = self._info(
@@ -155,6 +166,7 @@ class ObstacleAvoidanceEnv(gym.Env):
             hit_obstacle=hit_obstacle,
             reward_components=reward_components,
             reached_waypoint=reached_waypoint,
+            success=success,
         )
         return self._obs(), reward, terminated, truncated, info
 
@@ -193,17 +205,20 @@ class ObstacleAvoidanceEnv(gym.Env):
         hit_obstacle: bool,
         reward_components: dict[str, float],
         reached_waypoint: bool = False,
+        success: bool = False,
     ):
         return {
             "remaining_dirt": 0,
             "steps": int(self.steps),
             "hit_wall": bool(hit_wall),
             "hit_obstacle": bool(hit_obstacle),
+            "success": bool(success),
             "cleaned_count": 0,
             "nearest_dirt_distance": 0.0,
             "heading_error": 0.0,
             "reached_waypoint": bool(reached_waypoint),
             "min_clearance": self._min_clearance(),
+            "path_length": float(self.path_length),
             "reward_components": reward_components,
         }
 
@@ -216,6 +231,7 @@ class ObstacleAvoidanceEnv(gym.Env):
             "wall_penalty": 0.0,
             "obstacle_penalty": 0.0,
             "survival_bonus": 0.0,
+            "idle_penalty": 0.0,
         }
 
     @staticmethod

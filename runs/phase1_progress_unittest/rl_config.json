@@ -11,5 +11,6 @@
   "lidar_rays": 0,
   "device": "cpu",
   "progress_eval_interval": 512,
-  "progress_eval_episodes": 1
+  "progress_eval_episodes": 1,
+  "env_id": null
 }

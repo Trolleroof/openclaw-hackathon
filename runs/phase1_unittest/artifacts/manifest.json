@@ -10,6 +10,7 @@
   "layout_mode": "preset",
   "sensor_mode": "oracle",
   "lidar_rays": 0,
+  "env_id": null,
   "gif_paths": [
     "/Users/adavya/Downloads/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0.gif"
   ],

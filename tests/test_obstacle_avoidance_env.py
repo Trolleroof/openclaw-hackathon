@@ -43,6 +43,43 @@ class ObstacleAvoidanceEnvTests(unittest.TestCase):
         self.assertLess(components["obstacle_penalty"], 0.0)
         self.assertAlmostEqual(sum(components.values()), reward)
 
+    def test_turning_in_place_until_timeout_is_not_success(self):
+        env = ObstacleAvoidanceEnv(
+            room_size=6.0,
+            max_steps=3,
+            obstacle_count=0,
+            min_success_path_length=1.0,
+            seed=7,
+        )
+        env.reset(seed=7)
+
+        for _ in range(3):
+            _, reward, terminated, _, info = env.step(1)
+
+        self.assertTrue(terminated)
+        self.assertFalse(info["success"])
+        self.assertLess(info["reward_components"]["idle_penalty"], 0.0)
+        self.assertLess(reward, 0.0)
+
+    def test_survival_success_requires_real_movement(self):
+        env = ObstacleAvoidanceEnv(
+            room_size=6.0,
+            max_steps=3,
+            obstacle_count=0,
+            min_success_path_length=0.5,
+            seed=7,
+        )
+        env.reset(seed=7)
+        env.robot = np.array([2.0, 2.0], dtype=np.float32)
+        env.heading = 0.0
+
+        for _ in range(3):
+            _, _, terminated, _, info = env.step(0)
+
+        self.assertTrue(terminated)
+        self.assertTrue(info["success"])
+        self.assertGreaterEqual(info["path_length"], 0.5)
+
     def test_random_policy_episode_produces_telemetry_keys(self):
         env = ObstacleAvoidanceEnv(room_size=6.0, max_steps=5, obstacle_count=2, seed=7)
 

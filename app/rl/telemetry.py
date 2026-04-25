@@ -75,7 +75,8 @@ def run_policy_episode(
             turn_streak = 0
         max_turn_streak = max(max_turn_streak, turn_streak)
 
-        if info["cleaned_count"]:
+        cleaned_count = int(info.get("cleaned_count", 0))
+        if cleaned_count:
             no_clean_streak = 0
         else:
             no_clean_streak += 1
@@ -93,12 +94,12 @@ def run_policy_episode(
             reward_totals[key] = reward_totals.get(key, 0.0) + float(value)
 
         step_number = step_index + 1
-        if info["cleaned_count"]:
+        if cleaned_count:
             cleaned_events.append(
                 {
                     "step": step_number,
-                    "cleaned_count": int(info["cleaned_count"]),
-                    "remaining_dirt": int(info["remaining_dirt"]),
+                    "cleaned_count": cleaned_count,
+                    "remaining_dirt": int(info.get("remaining_dirt", 0)),
                     "robot_x": float(base_env.robot[0]),
                     "robot_y": float(base_env.robot[1]),
                     "reward": float(reward),
@@ -140,9 +141,15 @@ def run_policy_episode(
     first_clean_step = cleaned_events[0]["step"] if cleaned_events else None
     final_clean_step = cleaned_events[-1]["step"] if cleaned_events else None
 
+    explicit_success = last_info.get("success")
+    if explicit_success is None:
+        success = bool(last_info.get("remaining_dirt", 0) == 0 and terminated)
+    else:
+        success = bool(explicit_success)
+
     summary = {
         "seed": seed,
-        "success": bool(last_info.get("success", False) or (last_info.get("remaining_dirt", 0) == 0 and terminated)),
+        "success": success,
         "terminated": bool(terminated),
         "truncated": bool(truncated),
         "timeout": bool(truncated and last_info.get("remaining_dirt", 0) > 0),

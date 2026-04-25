@@ -1,0 +1,94 @@
+{
+  "runs": [
+    {
+      "run_id": "clawlab_ci_smoke_obstacleavoidance_v0_seed1",
+      "env_id": "ClawLab/ObstacleAvoidance-v0",
+      "success_rate": 0.0,
+      "avg_reward": -3.310299987643962,
+      "avg_cleaned_dirt": 0.0,
+      "avg_wall_hits": 0.0,
+      "avg_obstacle_hits": 0.0,
+      "reward_hacking_flags": 0,
+      "behavior_flags": 2,
+      "progress": {
+        "snapshots": 2,
+        "first_timestep": 512,
+        "final_timestep": 1024,
+        "first_success_rate": 0.0,
+        "final_success_rate": 0.0,
+        "success_rate_delta": 0.0,
+        "first_avg_reward": -3.309999987483029,
+        "final_avg_reward": -3.310299987643962,
+        "avg_reward_delta": -0.0003000001609327896
+      }
+    },
+    {
+      "run_id": "clawlab_ci_smoke_pointnavigation_v0_seed1",
+      "env_id": "ClawLab/PointNavigation-v0",
+      "success_rate": 0.0,
+      "avg_reward": -3.8776494734893125,
+      "avg_cleaned_dirt": 0.0,
+      "avg_wall_hits": 0.0,
+      "avg_obstacle_hits": 0.0,
+      "reward_hacking_flags": 0,
+      "behavior_flags": 2,
+      "progress": {
+        "snapshots": 2,
+        "first_timestep": 512,
+        "final_timestep": 1024,
+        "first_success_rate": 0.0,
+        "final_success_rate": 0.0,
+        "success_rate_delta": 0.0,
+        "first_avg_reward": -377.9119118611006,
+        "final_avg_reward": -3.9976494734893127,
+        "avg_reward_delta": 373.91426238761125
+      }
+    },
+    {
+      "run_id": "clawlab_ci_smoke_dirtseeking_v0_seed1",
+      "env_id": "ClawLab/DirtSeeking-v0",
+      "success_rate": 0.0,
+      "avg_reward": 0.8462213277816942,
+      "avg_cleaned_dirt": 0.0,
+      "avg_wall_hits": 0.0,
+      "avg_obstacle_hits": 0.0,
+      "reward_hacking_flags": 0,
+      "behavior_flags": 3,
+      "progress": {
+        "snapshots": 2,
+        "first_timestep": 512,
+        "final_timestep": 1024,
+        "first_success_rate": 1.0,
+        "final_success_rate": 0.0,
+        "success_rate_delta": -1.0,
+        "first_avg_reward": 7.700696996450425,
+        "final_avg_reward": 0.08172130584716797,
+        "avg_reward_delta": -7.618975690603257
+      }
+    },
+    {
+      "run_id": "clawlab_ci_smoke_fullcleaning_v0_seed1",
+      "env_id": "ClawLab/FullCleaning-v0",
+      "success_rate": 0.0,
+      "avg_reward": -2.352895535768059,
+      "avg_cleaned_dirt": 0.0,
+      "avg_wall_hits": 0.0,
+      "avg_obstacle_hits": 0.0,
+      "reward_hacking_flags": 0,
+      "behavior_flags": 3,
+      "progress": {
+        "snapshots": 2,
+        "first_timestep": 512,
+        "final_timestep": 1024,
+        "first_success_rate": 0.0,
+        "final_success_rate": 0.0,
+        "success_rate_delta": 0.0,
+        "first_avg_reward": -538.020710847834,
+        "final_avg_reward": -2.352895535768059,
+        "avg_reward_delta": 535.667815312066
+      }
+    }
+  ],
+  "best_run_id": "clawlab_ci_smoke_obstacleavoidance_v0_seed1",
+  "best_env_id": "ClawLab/ObstacleAvoidance-v0"
+}

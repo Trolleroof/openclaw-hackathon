@@ -122,7 +122,7 @@ class DirtSeekingEnv(gym.Env):
         current_vector = self._dirt_proximity_vector()
         dirt_visible = bool(current_vector[2] > 0.0)
         if dirt_visible:
-            reward_components["dirt_visible"] = 0.05
+            reward_components["dirt_visible"] = 0.005
 
         current_visible_distance = self._nearest_visible_dirt_distance()
         if (
@@ -131,7 +131,7 @@ class DirtSeekingEnv(gym.Env):
             and current_visible_distance is not None
         ):
             progress = previous_visible_distance - current_visible_distance
-            reward_components["dirt_progress"] = max(0.0, progress * 1.5)
+            reward_components["dirt_progress"] = progress * 1.5
 
         found_dirt = False
         if len(self.dirt) > 0:
@@ -223,6 +223,8 @@ class DirtSeekingEnv(gym.Env):
             "hit_wall": hit_wall,
             "hit_obstacle": hit_obstacle,
             "found_dirt": found_dirt,
+            "success": found_dirt,
+            "cleaned_count": int(found_dirt),
             "remaining_dirt": int(len(self.dirt)),
             "nearest_dirt_distance": nearest_dirt_distance,
             "reward_components": reward_components,

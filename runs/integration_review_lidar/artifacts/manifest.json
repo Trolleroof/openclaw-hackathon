@@ -1,0 +1,19 @@
+{
+  "run_id": "integration_review_lidar",
+  "seed": 10005,
+  "fps": 6,
+  "hold_final_frames": 6,
+  "room_size": 10.0,
+  "max_steps": 220,
+  "dirt_count": 6,
+  "obstacle_count": 4,
+  "layout_mode": "random",
+  "sensor_mode": "lidar_local_dirt",
+  "lidar_rays": 16,
+  "gif_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/integration_review_lidar/artifacts/episode_seed_10005.gif"
+  ],
+  "trajectory_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/integration_review_lidar/artifacts/episode_seed_10005_trajectory.json"
+  ]
+}

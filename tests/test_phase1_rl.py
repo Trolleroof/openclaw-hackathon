@@ -9,6 +9,7 @@ from stable_baselines3.common.env_checker import check_env
 from app.config import RUNS_DIR
 from app.rl.env import RoombaEnv
 from app.rl.eval import evaluate_policy
+from app.rl.layouts import CircleObstacle
 from app.rl.train import DEFAULT_TOTAL_TIMESTEPS, train_policy
 from app.rl.visualize import generate_run_artifacts
 from app.schemas.run import CreateRunRequest
@@ -35,7 +36,7 @@ class Phase1RLTests(unittest.TestCase):
         env = RoombaEnv(layout_mode="random", sensor_mode="lidar_local_dirt", lidar_rays=16, seed=1)
         obs, _ = env.reset(seed=1)
 
-        self.assertEqual(obs.shape, (24,))
+        self.assertEqual(obs.shape, (27,))
         self.assertTrue(np.all(obs >= -1.0))
         self.assertTrue(np.all(obs <= 1.0))
 
@@ -98,6 +99,49 @@ class Phase1RLTests(unittest.TestCase):
         self.assertIn("alignment", components)
         self.assertAlmostEqual(sum(components.values()), reward)
 
+    def test_oracle_observation_includes_obstacle_clearance(self):
+        clear_env = RoombaEnv(room_size=10.0, max_steps=20, dirt_count=1, seed=7)
+        clear_env.reset(seed=7)
+        clear_env.robot = np.array([1.0, 1.0], dtype=np.float32)
+        clear_env.heading = 0.0
+        clear_obs = clear_env._obs()
+
+        blocked_env = RoombaEnv(room_size=10.0, max_steps=20, dirt_count=1, seed=7)
+        blocked_env.reset(seed=7)
+        blocked_env.robot = np.array([1.0, 1.0], dtype=np.float32)
+        blocked_env.heading = 0.0
+        blocked_env.obstacles = [CircleObstacle(x=1.8, y=1.0, radius=0.25)]
+        blocked_obs = blocked_env._obs()
+
+        self.assertLess(blocked_obs[10], clear_obs[10])
+
+    def test_wall_collision_blocks_forward_motion(self):
+        env = RoombaEnv(room_size=10.0, max_steps=20, dirt_count=1, seed=7)
+        env.reset(seed=7)
+        env.robot = np.array([9.95, 1.0], dtype=np.float32)
+        env.heading = 0.0
+        previous_robot = env.robot.copy()
+
+        _, _, _, _, info = env.step(0)
+
+        np.testing.assert_allclose(env.robot, previous_robot)
+        self.assertTrue(info["hit_wall"])
+        self.assertLessEqual(info["reward_components"]["wall_penalty"], -3.0)
+
+    def test_obstacle_collision_blocks_forward_motion(self):
+        env = RoombaEnv(room_size=10.0, max_steps=20, dirt_count=1, seed=7)
+        env.reset(seed=7)
+        env.robot = np.array([1.0, 1.0], dtype=np.float32)
+        env.heading = 0.0
+        env.obstacles = [CircleObstacle(x=1.3, y=1.0, radius=0.25)]
+        previous_robot = env.robot.copy()
+
+        _, _, _, _, info = env.step(0)
+
+        np.testing.assert_allclose(env.robot, previous_robot)
+        self.assertTrue(info["hit_obstacle"])
+        self.assertLessEqual(info["reward_components"]["obstacle_penalty"], -5.0)
+
     def test_short_train_and_eval_writes_phase1_artifacts(self):
         run_id = "phase1_unittest"
         run_dir = Path("runs") / run_id
@@ -131,6 +175,42 @@ class Phase1RLTests(unittest.TestCase):
         self.assertIn("success_rate", metrics)
         self.assertIn("avg_cleaned_dirt", metrics)
         self.assertIn("avg_reward_components", metrics)
+
+    def test_training_writes_progress_telemetry(self):
+        run_id = "phase1_progress_unittest"
+        run_dir = Path("runs") / run_id
+        if run_dir.exists():
+            shutil.rmtree(run_dir)
+
+        train_policy(
+            run_id=run_id,
+            total_timesteps=1024,
+            seed=11,
+            room_size=5.0,
+            max_steps=50,
+            dirt_count=1,
+            device="cpu",
+            verbose=0,
+            layout_mode="preset",
+            sensor_mode="oracle",
+            lidar_rays=0,
+            progress_eval_interval=512,
+            progress_eval_episodes=1,
+        )
+
+        progress_path = run_dir / "metrics" / "train_progress.jsonl"
+        self.assertTrue(progress_path.exists())
+        snapshots = [
+            json.loads(line)
+            for line in progress_path.read_text().splitlines()
+            if line.strip()
+        ]
+        self.assertGreaterEqual(len(snapshots), 2)
+        self.assertIn("timesteps", snapshots[-1])
+        self.assertIn("avg_cleaned_dirt", snapshots[-1])
+        self.assertIn("avg_reward_components", snapshots[-1])
+        self.assertIn("reward_hacking", snapshots[-1])
+        self.assertIn("low_clean_high_reward", snapshots[-1]["reward_hacking"])
 
     def test_visualization_writes_gif_and_trajectory(self):
         run_id = "phase1_unittest"

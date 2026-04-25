@@ -3,7 +3,7 @@ from gymnasium import spaces
 import numpy as np
 
 from app.rl.layouts import LayoutConfig, generate_layout
-from app.rl.sensors import cast_lidar_rays, local_dirt_signal
+from app.rl.sensors import cast_lidar_rays, dirt_proximity_vector, local_dirt_signal
 
 
 class RoombaEnv(gym.Env):
@@ -40,6 +40,7 @@ class RoombaEnv(gym.Env):
         sensor_mode: str = "oracle",
         obstacle_count: int = 0,
         lidar_rays: int = 0,
+        dirt_sensor_radius: float = 4.0,
         eval_seed_offset: int = 10_000,
     ):
         super().__init__()
@@ -60,6 +61,7 @@ class RoombaEnv(gym.Env):
         self.sensor_mode = sensor_mode
         self.obstacle_count = int(obstacle_count)
         self.lidar_rays = int(lidar_rays)
+        self.dirt_sensor_radius = float(dirt_sensor_radius)
         self.eval_seed_offset = int(eval_seed_offset)
 
         self.action_space = spaces.Discrete(3)
@@ -79,7 +81,7 @@ class RoombaEnv(gym.Env):
     def _observation_size(self):
         if self.sensor_mode == "oracle":
             return self.observation_size
-        return 8 + self.lidar_rays
+        return 11 + self.lidar_rays
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -139,6 +141,14 @@ class RoombaEnv(gym.Env):
     def _oracle_obs(self):
         nearest, nearest_distance = self._nearest_dirt()
         heading_error = self._heading_error_to(nearest)
+        clearance_features = cast_lidar_rays(
+            robot=self.robot,
+            heading=self.heading,
+            room_size=self.size,
+            obstacles=self.obstacles,
+            ray_count=4,
+            max_range=self.size,
+        )
 
         dirt_features = []
         if len(self.dirt) > 0:
@@ -166,10 +176,7 @@ class RoombaEnv(gym.Env):
                 np.sin(heading_error),
                 np.cos(heading_error),
                 len(self.dirt) / max(self.dirt_count, 1),
-                self.robot[0] / self.size,
-                (self.size - self.robot[0]) / self.size,
-                self.robot[1] / self.size,
-                (self.size - self.robot[1]) / self.size,
+                *clearance_features,
                 *dirt_features,
             ],
             dtype=np.float32,
@@ -183,12 +190,20 @@ class RoombaEnv(gym.Env):
             obstacles=self.obstacles,
             ray_count=self.lidar_rays,
         )
+        dirt_vector = dirt_proximity_vector(
+            robot=self.robot,
+            heading=self.heading,
+            dirt=self.dirt,
+            radius=self.dirt_sensor_radius,
+            obstacles=self.obstacles,
+        )
         return np.array(
             [
                 np.sin(self.heading),
                 np.cos(self.heading),
                 len(self.dirt) / max(self.dirt_count, 1),
                 local_dirt_signal(self.robot, self.dirt, radius=self.clean_radius),
+                *dirt_vector,
                 *lidar_readings,
                 self.robot[0] / self.size,
                 (self.size - self.robot[0]) / self.size,
@@ -222,6 +237,7 @@ class RoombaEnv(gym.Env):
             "step_penalty": -0.01,
             "turn_penalty": 0.0,
             "wall_penalty": 0.0,
+            "obstacle_penalty": 0.0,
             "progress": 0.0,
             "alignment": 0.0,
             "clean": 0.0,
@@ -229,6 +245,7 @@ class RoombaEnv(gym.Env):
         }
         previous_nearest, previous_nearest_distance = self._nearest_dirt()
         previous_heading_error = abs(self._heading_error_to(previous_nearest))
+        previous_robot = self.robot.copy()
 
         if action == 0:
             direction = np.array(
@@ -247,8 +264,13 @@ class RoombaEnv(gym.Env):
 
         hit_wall = bool(np.any(self.robot < 0.0) or np.any(self.robot > self.size))
         if hit_wall:
-            self.robot = np.clip(self.robot, 0.0, self.size)
-            reward_components["wall_penalty"] = -1.5
+            self.robot = previous_robot
+            reward_components["wall_penalty"] = -3.0
+
+        hit_obstacle = self._hits_obstacle(self.robot)
+        if hit_obstacle:
+            self.robot = previous_robot
+            reward_components["obstacle_penalty"] = -5.0
 
         cleaned_count = 0
         nearest_dirt_distance = 0.0
@@ -280,6 +302,7 @@ class RoombaEnv(gym.Env):
             "remaining_dirt": int(len(self.dirt)),
             "steps": int(self.steps),
             "hit_wall": hit_wall,
+            "hit_obstacle": hit_obstacle,
             "cleaned_count": cleaned_count,
             "nearest_dirt_distance": nearest_dirt_distance,
             "heading_error": heading_error,
@@ -310,6 +333,11 @@ class RoombaEnv(gym.Env):
         for dirt in self.dirt:
             center = world_to_pixel(dirt)
             self._draw_disc(image, center, radius=7, color=np.array([139, 90, 43], dtype=np.uint8))
+
+        for obstacle in self.obstacles:
+            center = world_to_pixel(np.array([obstacle.x, obstacle.y], dtype=np.float32))
+            radius = max(2, int((obstacle.radius / self.size) * arena_size))
+            self._draw_disc(image, center, radius=radius, color=np.array([90, 90, 90], dtype=np.uint8))
 
         robot_center = world_to_pixel(self.robot)
         self._draw_disc(image, robot_center, radius=10, color=np.array([40, 110, 220], dtype=np.uint8))
@@ -350,3 +378,10 @@ class RoombaEnv(gym.Env):
 
     def close(self):
         return None
+
+    def _hits_obstacle(self, point):
+        for obstacle in self.obstacles:
+            center = np.array([obstacle.x, obstacle.y], dtype=np.float32)
+            if np.linalg.norm(point - center) <= obstacle.radius:
+                return True
+        return False

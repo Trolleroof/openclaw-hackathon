@@ -1,0 +1,2942 @@
+[
+  {
+    "seed": 10202,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10203,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10204,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10205,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10206,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10207,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10208,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10209,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10210,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10211,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10212,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10213,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10214,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10215,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10216,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10217,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10218,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10219,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10220,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  },
+  {
+    "seed": 10221,
+    "success": true,
+    "terminated": true,
+    "truncated": false,
+    "timeout": false,
+    "steps": 127,
+    "total_reward": 61.78788049441173,
+    "remaining_dirt": 0,
+    "cleaned_dirt": 6,
+    "wall_hits": 0,
+    "obstacle_hits": 0,
+    "path_length": 24.600002825260162,
+    "action_counts": {
+      "forward": 82,
+      "turn_left": 12,
+      "turn_right": 33
+    },
+    "turns": 45,
+    "forward_moves": 82,
+    "turn_move_ratio": 0.5487804878048781,
+    "action_switches": 28,
+    "max_turn_streak": 9,
+    "max_no_clean_streak": 41,
+    "first_clean_step": 20,
+    "final_clean_step": 127,
+    "cleaned_events": [
+      {
+        "step": 20,
+        "cleaned_count": 1,
+        "remaining_dirt": 5,
+        "robot_x": 6.552611351013184,
+        "robot_y": 1.9752167463302612,
+        "reward": 5.215903670117259,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2357036352157593,
+          "alignment": -0.009799965098500252,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 26,
+        "cleaned_count": 1,
+        "remaining_dirt": 4,
+        "robot_x": 7.907615661621094,
+        "robot_y": 2.579970359802246,
+        "reward": 5.159632887840271,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20030226707458498,
+          "alignment": -0.030669379234313968,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 44,
+        "cleaned_count": 1,
+        "remaining_dirt": 3,
+        "robot_x": 5.252998352050781,
+        "robot_y": 5.0116376876831055,
+        "reward": 5.153490432104002,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.2063765287399292,
+          "alignment": -0.04288609663592738,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 57,
+        "cleaned_count": 1,
+        "remaining_dirt": 2,
+        "robot_x": 2.877438545227051,
+        "robot_y": 7.668601036071777,
+        "reward": 5.139872243404389,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.19018542766571045,
+          "alignment": -0.04031318426132202,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 99,
+        "cleaned_count": 1,
+        "remaining_dirt": 1,
+        "robot_x": 2.3154137134552,
+        "robot_y": 7.061020851135254,
+        "reward": 5.1727287610377175,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.21405205726623536,
+          "alignment": -0.031323296228517705,
+          "clean": 5.0,
+          "terminal": 0.0
+        }
+      },
+      {
+        "step": 127,
+        "cleaned_count": 1,
+        "remaining_dirt": 0,
+        "robot_x": 7.733088970184326,
+        "robot_y": 8.268264770507812,
+        "reward": 22.27047935773026,
+        "reward_components": {
+          "step_penalty": -0.01,
+          "turn_penalty": 0.0,
+          "wall_penalty": 0.0,
+          "obstacle_penalty": 0.0,
+          "progress": 0.20071017742156982,
+          "alignment": -0.03386718332767487,
+          "clean": 5.0,
+          "terminal": 17.113636363636363
+        }
+      }
+    ],
+    "reward_totals": {
+      "step_penalty": -1.270000000000001,
+      "turn_penalty": -0.09000000000000007,
+      "wall_penalty": 0.0,
+      "obstacle_penalty": 0.0,
+      "progress": 15.708866310119632,
+      "alignment": 0.3253778206557035,
+      "clean": 30.0,
+      "terminal": 17.113636363636363
+    }
+  }
+]

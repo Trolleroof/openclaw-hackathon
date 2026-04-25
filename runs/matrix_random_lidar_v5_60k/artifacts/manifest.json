@@ -1,0 +1,19 @@
+{
+  "run_id": "matrix_random_lidar_v5_60k",
+  "seed": 10504,
+  "fps": 6,
+  "hold_final_frames": 8,
+  "room_size": 10.0,
+  "max_steps": 220,
+  "dirt_count": 6,
+  "obstacle_count": 4,
+  "layout_mode": "random",
+  "sensor_mode": "lidar_local_dirt",
+  "lidar_rays": 16,
+  "gif_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/matrix_random_lidar_v5_60k/artifacts/episode_seed_10504.gif"
+  ],
+  "trajectory_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/matrix_random_lidar_v5_60k/artifacts/episode_seed_10504_trajectory.json"
+  ]
+}

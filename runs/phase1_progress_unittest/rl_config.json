@@ -1,0 +1,15 @@
+{
+  "total_timesteps": 1024,
+  "seed": 11,
+  "eval_seed_offset": 10000,
+  "room_size": 5.0,
+  "max_steps": 50,
+  "dirt_count": 1,
+  "obstacle_count": 4,
+  "layout_mode": "preset",
+  "sensor_mode": "oracle",
+  "lidar_rays": 0,
+  "device": "cpu",
+  "progress_eval_interval": 512,
+  "progress_eval_episodes": 1
+}

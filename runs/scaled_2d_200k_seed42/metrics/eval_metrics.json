@@ -1,0 +1,32 @@
+{
+  "episodes": 50,
+  "success_rate": 1.0,
+  "timeout_rate": 0.0,
+  "avg_reward": 46.4596678501164,
+  "avg_steps": 68.0,
+  "avg_remaining_dirt": 0.0,
+  "avg_cleaned_dirt": 3.0,
+  "cleaned_dirt_distribution": {
+    "3": 50
+  },
+  "wall_hits": 0,
+  "avg_wall_hits": 0.0,
+  "avg_path_length": 17.10000330209732,
+  "avg_forward_moves": 57.0,
+  "avg_turns": 11.0,
+  "avg_turn_move_ratio": 0.19298245614035095,
+  "avg_action_switches": 10.0,
+  "avg_max_turn_streak": 5.0,
+  "avg_max_no_clean_streak": 24.0,
+  "avg_first_clean_step": 20.0,
+  "avg_final_clean_step": 68.0,
+  "avg_reward_components": {
+    "alignment": 0.34377937565194516,
+    "clean": 15.0,
+    "progress": 13.517888474464412,
+    "step_penalty": -0.68,
+    "terminal": 18.299999999999983,
+    "turn_penalty": -0.022000000000000016,
+    "wall_penalty": 0.0
+  }
+}

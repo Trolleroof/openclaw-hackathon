@@ -1,0 +1,19 @@
+{
+  "run_id": "phase1_unittest",
+  "seed": 0,
+  "fps": 6,
+  "hold_final_frames": 3,
+  "room_size": 5.0,
+  "max_steps": 50,
+  "dirt_count": 1,
+  "obstacle_count": 4,
+  "layout_mode": "preset",
+  "sensor_mode": "oracle",
+  "lidar_rays": 0,
+  "gif_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0.gif"
+  ],
+  "trajectory_paths": [
+    "/Users/adavya/Downloads/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0_trajectory.json"
+  ]
+}

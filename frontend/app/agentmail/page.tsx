@@ -1,45 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "../components/Card";
 import { EmptyState } from "../components/EmptyState";
-import type { MockAgentMailPayload } from "../lib/agentmail";
-import { runs, statusLabel } from "../lib/runs";
-
-type MockResponse = {
-  ok: boolean;
-  mocked: boolean;
-  provider: string;
-  sentAt: string;
-  payload: MockAgentMailPayload;
-};
+import { createSampleRunReport, fetchRunReports, HERMES_API_BASE_URL, type RunReport } from "../lib/reports";
 
 export default function AgentMailPage() {
-  const finishedRuns = runs.filter((run) => run.status !== "running");
-  const [selectedRunId, setSelectedRunId] = useState(finishedRuns[0]?.shortId ?? "");
-  const [mockResponse, setMockResponse] = useState<MockResponse | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [reports, setReports] = useState<RunReport[]>([]);
+  const [isLoadingReports, setIsLoadingReports] = useState(true);
+  const [reportsError, setReportsError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function sendMockSummary() {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadReports() {
+      setIsLoadingReports(true);
+      setReportsError(null);
+
+      try {
+        const data = await fetchRunReports();
+        if (!cancelled) setReports(data);
+      } catch (err) {
+        if (!cancelled) {
+          setReportsError(err instanceof Error ? err.message : "Failed to load reports");
+        }
+      } finally {
+        if (!cancelled) setIsLoadingReports(false);
+      }
+    }
+
+    loadReports();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function loadReports() {
+    setIsLoadingReports(true);
+    setReportsError(null);
+
+    try {
+      const data = await fetchRunReports();
+      setReports(data);
+    } catch (err) {
+      setReportsError(err instanceof Error ? err.message : "Failed to load reports");
+    } finally {
+      setIsLoadingReports(false);
+    }
+  }
+
+  async function sendSampleSummary() {
     setIsSending(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/agentmail/mock", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ runId: selectedRunId }),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Mock AgentMail request failed");
-      }
-
-      setMockResponse(data);
+      await createSampleRunReport();
+      await loadReports();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Mock AgentMail request failed");
+      setError(err instanceof Error ? err.message : "Sample report request failed");
     } finally {
       setIsSending(false);
     }
@@ -59,69 +79,74 @@ export default function AgentMailPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
           <Card title="Outbox" hint="recent dispatches">
-            <EmptyState
-              icon="✉"
-              title="No dispatches yet"
-              body="Once a run completes and AgentMail is connected, structured reports will appear here."
-            />
+            {isLoadingReports ? (
+              <EmptyState
+                icon="..."
+                title="Loading reports"
+                body={`Reading run reports from ${HERMES_API_BASE_URL}.`}
+              />
+            ) : reportsError ? (
+              <EmptyState
+                icon="!"
+                title="Backend not connected"
+                body={`${reportsError}. Start FastAPI with uvicorn app.main:app --reload, then refresh this page.`}
+              />
+            ) : reports.length === 0 ? (
+              <EmptyState
+                icon="✉"
+                title="No dispatches yet"
+                body="Once a run completes, the backend will store the report here and attempt AgentMail delivery."
+              />
+            ) : (
+              <div className="flex flex-col">
+                {reports.map((report) => (
+                  <div key={report.run_id} className="grid grid-cols-[1fr_auto] gap-4 py-3 border-b hairline last:border-b-0">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{report.run_id}</span>
+                        <span className="label">{report.status}</span>
+                        <span className="label">delivery: {report.delivery_status}</span>
+                      </div>
+                      <p className="mt-1 text-[12px] truncate" style={{ color: "var(--muted-strong)" }}>
+                        {report.model_summary}
+                      </p>
+                      {report.delivery_error && (
+                        <p className="mt-1 text-[11px]" style={{ color: "var(--status-failed)" }}>
+                          {report.delivery_error}
+                        </p>
+                      )}
+                    </div>
+                    {report.artifact_links.dashboard && (
+                      <a className="btn-ghost self-start" href={report.artifact_links.dashboard}>
+                        Open
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
 
-          <Card title="Mock API sender" hint="local test">
+          <Card title="Sample completion" hint="backend test">
             <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
-                <label className="flex flex-col gap-1">
-                  <span className="label">Run summary</span>
-                  <select
-                    className="px-3 py-2 rounded-md text-[13px] outline-none"
-                    style={{ background: "var(--background)", border: "1px solid var(--line)", color: "var(--foreground)" }}
-                    value={selectedRunId}
-                    onChange={(event) => setSelectedRunId(event.target.value)}
-                  >
-                    {finishedRuns.map((run) => (
-                      <option key={run.id} value={run.shortId}>
-                        {run.shortId} · {statusLabel(run.status).toLowerCase()} · {run.template}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-end">
+                <p className="text-[13px]" style={{ color: "var(--muted-strong)" }}>
+                  Posts a completed demo run to FastAPI, generates a stored report, and attempts
+                  AgentMail delivery if credentials are configured.
+                </p>
                 <button
                   className="btn-accent self-end disabled:opacity-60"
                   type="button"
-                  onClick={sendMockSummary}
-                  disabled={isSending || !selectedRunId}
+                  onClick={sendSampleSummary}
+                  disabled={isSending}
                 >
-                  {isSending ? "Sending mock..." : "Send mock summary"}
+                  {isSending ? "Sending sample..." : "Send sample report"}
                 </button>
               </div>
 
               {error && (
                 <div className="rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--status-failed)" }}>
                   {error}
-                </div>
-              )}
-
-              {mockResponse && (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                  <div className="rounded-md border hairline p-4" style={{ background: "var(--background)" }}>
-                    <div className="label mb-2">Model summary</div>
-                    <p className="text-[13px] leading-[1.7]" style={{ color: "var(--muted-strong)" }}>
-                      {mockResponse.payload.modelSummary}
-                    </p>
-                    <div className="mt-4 grid grid-cols-[84px_1fr] gap-2 text-[11px]">
-                      <span className="label">To</span>
-                      <span>{mockResponse.payload.to}</span>
-                      <span className="label">Subject</span>
-                      <span style={{ color: "var(--accent)" }}>{mockResponse.payload.subject}</span>
-                      <span className="label">Sent</span>
-                      <span>{new Date(mockResponse.sentAt).toLocaleString()}</span>
-                    </div>
-                  </div>
-                  <pre
-                    className="rounded-md border hairline p-4 text-[11px] leading-[1.6] overflow-x-auto"
-                    style={{ background: "var(--background)", color: "var(--foreground)" }}
-                  >
-{JSON.stringify(mockResponse.payload, null, 2)}
-                  </pre>
                 </div>
               )}
             </div>

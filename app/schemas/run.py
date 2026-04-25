@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict, Any
 
 from app.rl.train import DEFAULT_TOTAL_TIMESTEPS
@@ -15,6 +15,8 @@ class CreateRunRequest(BaseModel):
 
 
 class RunResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     run_id: str
     status: str
     config: Dict[str, Any]
@@ -22,3 +24,42 @@ class RunResponse(BaseModel):
     model_path: Optional[str] = None
     metrics_path: Optional[str] = None
     error: Optional[str] = None
+    report_path: Optional[str] = None
+
+
+class CompleteRunRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    status: str = Field(pattern="^(completed|success|failed|early_stop)$")
+    config: Dict[str, Any] = Field(default_factory=dict)
+    metrics: Optional[Dict[str, Any]] = None
+    model_path: Optional[str] = None
+    metrics_path: Optional[str] = None
+    error: Optional[str] = None
+
+
+class RunReport(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    run_id: str
+    status: str
+    started_at: Optional[str] = None
+    ended_at: str
+    duration_sec: Optional[float] = None
+    template: str
+    algo: str
+    config: Dict[str, Any]
+    steps: Optional[int] = None
+    episodes: Optional[int] = None
+    mean_return: Optional[float] = None
+    best_return: Optional[float] = None
+    checkpoint_uri: Optional[str] = None
+    artifact_links: Dict[str, str] = Field(default_factory=dict)
+    error: Optional[str] = None
+    model_summary: str
+    markdown: str
+    agentmail_message_id: Optional[str] = None
+    agentmail_thread_id: Optional[str] = None
+    delivery_status: str = "pending"
+    delivery_error: Optional[str] = None
+    created_at: str

@@ -53,13 +53,6 @@ export function Shell({ children }: { children: ReactNode }) {
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-6 py-10">{children}</div>
       </main>
-
-      <footer className="border-t hairline">
-        <div className="mx-auto max-w-6xl px-6 h-10 flex items-center justify-between text-[11px]" style={{ color: "var(--muted)" }}>
-          <span>hermes · v0.1.0</span>
-          <span>not connected</span>
-        </div>
-      </footer>
     </div>
   );
 }

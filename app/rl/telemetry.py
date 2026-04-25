@@ -36,15 +36,16 @@ def run_policy_episode(
     previous_action = None
 
     obs, _ = env.reset(seed=seed)
+    base_env = env.unwrapped if hasattr(env, "unwrapped") else env
     if model is None:
         env.action_space.seed(seed)
-    previous_position = env.robot.copy()
+    previous_position = base_env.robot.copy()
 
     if capture_frames:
         frames.append(env.render())
 
     last_info = {
-        "remaining_dirt": env.dirt_count,
+        "remaining_dirt": getattr(base_env, "dirt_count", 0),
         "cleaned_count": 0,
         "hit_wall": False,
         "hit_obstacle": False,
@@ -53,7 +54,8 @@ def run_policy_episode(
     terminated = False
     truncated = False
 
-    for step_index in range(env.max_steps):
+    max_steps = int(getattr(base_env, "max_steps", 0))
+    for step_index in range(max_steps):
         if model is None:
             action = int(env.action_space.sample())
         else:
@@ -79,7 +81,7 @@ def run_policy_episode(
             no_clean_streak += 1
         max_no_clean_streak = max(max_no_clean_streak, no_clean_streak)
 
-        current_position = env.robot.copy()
+        current_position = base_env.robot.copy()
         step_distance = float(np.linalg.norm(current_position - previous_position))
         path_length += step_distance
         previous_position = current_position
@@ -97,8 +99,8 @@ def run_policy_episode(
                     "step": step_number,
                     "cleaned_count": int(info["cleaned_count"]),
                     "remaining_dirt": int(info["remaining_dirt"]),
-                    "robot_x": float(env.robot[0]),
-                    "robot_y": float(env.robot[1]),
+                    "robot_x": float(base_env.robot[0]),
+                    "robot_y": float(base_env.robot[1]),
                     "reward": float(reward),
                     "reward_components": dict(info.get("reward_components", {})),
                 }
@@ -110,17 +112,17 @@ def run_policy_episode(
                     "step": step_number,
                     "action": action_name,
                     "action_id": action,
-                    "robot_x": float(env.robot[0]),
-                    "robot_y": float(env.robot[1]),
-                    "heading": float(env.heading),
+                    "robot_x": float(base_env.robot[0]),
+                    "robot_y": float(base_env.robot[1]),
+                    "heading": float(base_env.heading),
                     "reward": float(reward),
                     "reward_components": dict(info.get("reward_components", {})),
-                    "remaining_dirt": int(info["remaining_dirt"]),
-                    "cleaned_count": int(info["cleaned_count"]),
-                    "hit_wall": bool(info["hit_wall"]),
+                    "remaining_dirt": int(info.get("remaining_dirt", 0)),
+                    "cleaned_count": int(info.get("cleaned_count", 0)),
+                    "hit_wall": bool(info.get("hit_wall", False)),
                     "hit_obstacle": bool(info.get("hit_obstacle", False)),
-                    "nearest_dirt_distance": float(info["nearest_dirt_distance"]),
-                    "heading_error": float(info["heading_error"]),
+                    "nearest_dirt_distance": float(info.get("nearest_dirt_distance") or 0.0),
+                    "heading_error": float(info.get("heading_error", 0.0)),
                     "step_distance": step_distance,
                 }
             )
@@ -132,20 +134,21 @@ def run_policy_episode(
         if terminated or truncated:
             break
 
-    steps_taken = int(last_info.get("steps", env.max_steps))
-    cleaned_dirt = int(env.dirt_count - last_info["remaining_dirt"])
+    steps_taken = int(last_info.get("steps", max_steps))
+    dirt_count = int(getattr(base_env, "dirt_count", 0))
+    cleaned_dirt = int(dirt_count - int(last_info.get("remaining_dirt", 0)))
     first_clean_step = cleaned_events[0]["step"] if cleaned_events else None
     final_clean_step = cleaned_events[-1]["step"] if cleaned_events else None
 
     summary = {
         "seed": seed,
-        "success": bool(last_info["remaining_dirt"] == 0 and terminated),
+        "success": bool(last_info.get("success", False) or (last_info.get("remaining_dirt", 0) == 0 and terminated)),
         "terminated": bool(terminated),
         "truncated": bool(truncated),
-        "timeout": bool(truncated and last_info["remaining_dirt"] > 0),
+        "timeout": bool(truncated and last_info.get("remaining_dirt", 0) > 0),
         "steps": steps_taken,
         "total_reward": total_reward,
-        "remaining_dirt": int(last_info["remaining_dirt"]),
+        "remaining_dirt": int(last_info.get("remaining_dirt", 0)),
         "cleaned_dirt": cleaned_dirt,
         "wall_hits": wall_hits,
         "obstacle_hits": obstacle_hits,

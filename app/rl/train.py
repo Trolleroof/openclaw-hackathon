@@ -10,6 +10,7 @@ from app.config import RUNS_DIR
 from app.rl.config import RunConfig
 from app.rl.diagnostics import summarize_episodes
 from app.rl.env import RoombaEnv
+from app.rl.factory import make_env
 from app.rl.telemetry import run_policy_episode
 
 
@@ -56,7 +57,7 @@ class TrainingProgressCallback(BaseCallback):
         if self.num_timesteps == self.last_eval_timestep:
             return
         self.last_eval_timestep = self.num_timesteps
-        env = RoombaEnv(**self.env_kwargs)
+        env = make_env(**self.env_kwargs)
         episode_summaries = []
         for episode_index in range(self.eval_episodes):
             episode_seed = self.seed + self.eval_seed_offset + episode_index
@@ -112,6 +113,7 @@ def train_policy(
     lidar_rays: int = DEFAULT_RUN_CONFIG.lidar_rays,
     progress_eval_interval: int = 0,
     progress_eval_episodes: int = 0,
+    env_id: str | None = None,
 ) -> Path:
     run_dir = RUNS_DIR / run_id
     model_dir = run_dir / "model"
@@ -130,10 +132,12 @@ def train_policy(
         "device": device,
         "progress_eval_interval": progress_eval_interval,
         "progress_eval_episodes": progress_eval_episodes,
+        "env_id": env_id,
     }
     (run_dir / "rl_config.json").write_text(json.dumps(config, indent=2))
 
     env_kwargs = {
+        "env_id": env_id,
         "room_size": room_size,
         "max_steps": max_steps,
         "dirt_count": dirt_count,
@@ -144,7 +148,7 @@ def train_policy(
         "lidar_rays": lidar_rays,
         "eval_seed_offset": eval_seed_offset,
     }
-    env = RoombaEnv(**env_kwargs)
+    env = make_env(**env_kwargs)
 
     check_env(env, warn=True)
 
@@ -186,6 +190,7 @@ def main():
     parser.add_argument("--verbose", type=int, default=1)
     parser.add_argument("--progress-eval-interval", type=int, default=0)
     parser.add_argument("--progress-eval-episodes", type=int, default=0)
+    parser.add_argument("--env-id")
     args = parser.parse_args()
 
     model_path = train_policy(
@@ -204,6 +209,7 @@ def main():
         lidar_rays=args.lidar_rays,
         progress_eval_interval=args.progress_eval_interval,
         progress_eval_episodes=args.progress_eval_episodes,
+        env_id=args.env_id,
     )
     print(f"Saved model to {model_path}")
 

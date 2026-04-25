@@ -6,7 +6,7 @@ from stable_baselines3 import PPO
 from app.config import RUNS_DIR
 from app.rl.config import RunConfig, load_saved_run_config
 from app.rl.diagnostics import avg, avg_optional, avg_reward_components, summarize_episodes
-from app.rl.env import RoombaEnv
+from app.rl.factory import make_env
 from app.rl.telemetry import run_policy_episode
 
 DEFAULT_RUN_CONFIG = RunConfig()
@@ -21,6 +21,7 @@ LEGACY_EVAL_CONFIG = {
     "layout_mode": "preset",
     "sensor_mode": "oracle",
     "lidar_rays": 0,
+    "env_id": None,
 }
 
 
@@ -65,6 +66,7 @@ def evaluate_policy(
     layout_mode: str | None = None,
     sensor_mode: str | None = None,
     lidar_rays: int | None = None,
+    env_id: str | None = None,
 ):
     run_dir = RUNS_DIR / run_id
     model_path = run_dir / "model" / "roomba_policy.zip"
@@ -97,8 +99,10 @@ def evaluate_policy(
         _resolve(sensor_mode, saved_config, "sensor_mode", fallback_config["sensor_mode"])
     )
     lidar_rays = int(_resolve(lidar_rays, saved_config, "lidar_rays", fallback_config["lidar_rays"]))
+    env_id = _resolve(env_id, saved_config, "env_id", fallback_config.get("env_id"))
 
-    env = RoombaEnv(
+    env = make_env(
+        env_id=env_id,
         room_size=room_size,
         max_steps=max_steps,
         dirt_count=dirt_count,
@@ -151,6 +155,7 @@ def main():
     parser.add_argument("--layout-mode", choices=["preset", "random"])
     parser.add_argument("--sensor-mode", choices=["oracle", "lidar_local_dirt"])
     parser.add_argument("--lidar-rays", type=int)
+    parser.add_argument("--env-id")
     args = parser.parse_args()
 
     metrics = evaluate_policy(
@@ -165,6 +170,7 @@ def main():
         layout_mode=args.layout_mode,
         sensor_mode=args.sensor_mode,
         lidar_rays=args.lidar_rays,
+        env_id=args.env_id,
     )
 
     print(json.dumps(metrics, indent=2))

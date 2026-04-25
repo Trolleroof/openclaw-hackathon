@@ -7,7 +7,7 @@ from stable_baselines3 import PPO
 
 from app.config import RUNS_DIR
 from app.rl.config import load_saved_run_config
-from app.rl.env import RoombaEnv
+from app.rl.factory import make_env
 from app.rl.telemetry import run_policy_episode
 
 
@@ -21,6 +21,7 @@ LEGACY_VISUAL_CONFIG = {
     "layout_mode": "preset",
     "sensor_mode": "oracle",
     "lidar_rays": 0,
+    "env_id": None,
 }
 
 
@@ -61,6 +62,7 @@ def generate_run_artifacts(
     layout_mode: str | None = None,
     sensor_mode: str | None = None,
     lidar_rays: int | None = None,
+    env_id: str | None = None,
 ) -> dict:
     run_dir = RUNS_DIR / run_id
     model_path = run_dir / "model" / "roomba_policy.zip"
@@ -80,6 +82,7 @@ def generate_run_artifacts(
     layout_mode = str(_resolve(layout_mode, saved_config, "layout_mode"))
     sensor_mode = str(_resolve(sensor_mode, saved_config, "sensor_mode"))
     lidar_rays = int(_resolve(lidar_rays, saved_config, "lidar_rays"))
+    env_id = _resolve(env_id, saved_config, "env_id")
 
     model = PPO.load(str(model_path))
     gif_paths = []
@@ -87,7 +90,8 @@ def generate_run_artifacts(
 
     for episode_index in range(episodes):
         episode_seed = seed + episode_index
-        env = RoombaEnv(
+        env = make_env(
+            env_id=env_id,
             room_size=room_size,
             max_steps=max_steps,
             dirt_count=dirt_count,
@@ -138,6 +142,7 @@ def generate_run_artifacts(
         "layout_mode": layout_mode,
         "sensor_mode": sensor_mode,
         "lidar_rays": lidar_rays,
+        "env_id": env_id,
         "gif_paths": gif_paths,
         "trajectory_paths": trajectory_paths,
     }
@@ -161,6 +166,7 @@ def main():
     parser.add_argument("--layout-mode", choices=["preset", "random"])
     parser.add_argument("--sensor-mode", choices=["oracle", "lidar_local_dirt"])
     parser.add_argument("--lidar-rays", type=int)
+    parser.add_argument("--env-id")
     args = parser.parse_args()
 
     manifest = generate_run_artifacts(
@@ -176,6 +182,7 @@ def main():
         layout_mode=args.layout_mode,
         sensor_mode=args.sensor_mode,
         lidar_rays=args.lidar_rays,
+        env_id=args.env_id,
     )
     print(json.dumps(manifest, indent=2))
 

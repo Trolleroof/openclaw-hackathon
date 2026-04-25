@@ -2,8 +2,8 @@ import argparse
 import json
 
 from app.rl.config import RunConfig
-from app.rl.env import RoombaEnv
 from app.rl.eval import _avg, _avg_optional, _avg_reward_components, evaluation_seed
+from app.rl.factory import make_env
 from app.rl.telemetry import run_policy_episode
 
 DEFAULT_RUN_CONFIG = RunConfig()
@@ -20,8 +20,10 @@ def evaluate_random_baseline(
     layout_mode: str = DEFAULT_RUN_CONFIG.layout_mode,
     sensor_mode: str = DEFAULT_RUN_CONFIG.sensor_mode,
     lidar_rays: int = DEFAULT_RUN_CONFIG.lidar_rays,
+    env_id: str | None = None,
 ):
-    env = RoombaEnv(
+    env = make_env(
+        env_id=env_id,
         room_size=room_size,
         max_steps=max_steps,
         dirt_count=dirt_count,
@@ -83,6 +85,7 @@ def main():
     parser.add_argument("--layout-mode", default=DEFAULT_RUN_CONFIG.layout_mode, choices=["preset", "random"])
     parser.add_argument("--sensor-mode", default=DEFAULT_RUN_CONFIG.sensor_mode, choices=["oracle", "lidar_local_dirt"])
     parser.add_argument("--lidar-rays", type=int, default=DEFAULT_RUN_CONFIG.lidar_rays)
+    parser.add_argument("--env-id")
     args = parser.parse_args()
 
     metrics = evaluate_random_baseline(
@@ -96,6 +99,7 @@ def main():
         layout_mode=args.layout_mode,
         sensor_mode=args.sensor_mode,
         lidar_rays=args.lidar_rays,
+        env_id=args.env_id,
     )
     print(json.dumps(metrics, indent=2))
 

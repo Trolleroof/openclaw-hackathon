@@ -22,6 +22,22 @@ class Phase1RLTests(unittest.TestCase):
         self.assertTrue(np.all(obs >= -1.0))
         self.assertTrue(np.all(obs <= 1.0))
 
+    def test_random_layout_env_changes_dirt_by_seed(self):
+        a = RoombaEnv(layout_mode="random", seed=1)
+        b = RoombaEnv(layout_mode="random", seed=2)
+        a.reset(seed=1)
+        b.reset(seed=2)
+
+        self.assertFalse(np.allclose(a.dirt, b.dirt))
+
+    def test_lidar_local_dirt_mode_removes_oracle_dirt_vectors(self):
+        env = RoombaEnv(layout_mode="random", sensor_mode="lidar_local_dirt", lidar_rays=16, seed=1)
+        obs, _ = env.reset(seed=1)
+
+        self.assertEqual(obs.shape, (24,))
+        self.assertTrue(np.all(obs >= -1.0))
+        self.assertTrue(np.all(obs <= 1.0))
+
     def test_default_training_budget_is_scaled_for_2d_runs(self):
         self.assertEqual(DEFAULT_TOTAL_TIMESTEPS, 200_000)
         self.assertEqual(CreateRunRequest().total_timesteps, 200_000)
@@ -95,6 +111,9 @@ class Phase1RLTests(unittest.TestCase):
             max_steps=50,
             dirt_count=1,
             device="cpu",
+            layout_mode="preset",
+            sensor_mode="oracle",
+            lidar_rays=0,
         )
         metrics = evaluate_policy(
             run_id=run_id,
@@ -102,6 +121,9 @@ class Phase1RLTests(unittest.TestCase):
             room_size=5.0,
             max_steps=50,
             dirt_count=1,
+            layout_mode="preset",
+            sensor_mode="oracle",
+            lidar_rays=0,
         )
 
         self.assertTrue(model_path.exists())
@@ -125,6 +147,9 @@ class Phase1RLTests(unittest.TestCase):
                 dirt_count=1,
                 device="cpu",
                 verbose=0,
+                layout_mode="preset",
+                sensor_mode="oracle",
+                lidar_rays=0,
             )
 
         artifacts = generate_run_artifacts(

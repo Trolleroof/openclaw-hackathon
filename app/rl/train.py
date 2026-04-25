@@ -60,6 +60,11 @@ def train_policy(
         max_steps=max_steps,
         dirt_count=dirt_count,
         seed=seed,
+        layout_mode=layout_mode,
+        sensor_mode=sensor_mode,
+        obstacle_count=obstacle_count,
+        lidar_rays=lidar_rays,
+        eval_seed_offset=eval_seed_offset,
     )
 
     check_env(env, warn=True)

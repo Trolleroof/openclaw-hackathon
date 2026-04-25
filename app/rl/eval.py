@@ -4,8 +4,11 @@ import json
 from stable_baselines3 import PPO
 
 from app.config import RUNS_DIR
+from app.rl.config import RunConfig
 from app.rl.env import RoombaEnv
 from app.rl.telemetry import run_policy_episode
+
+DEFAULT_RUN_CONFIG = RunConfig()
 
 
 def _avg(values):
@@ -42,10 +45,16 @@ def summarize_generalization(train_metrics: dict, heldout_metrics: dict) -> dict
 
 def evaluate_policy(
     run_id: str,
-    episodes: int = 50,
-    room_size: float = 10.0,
-    max_steps: int = 200,
-    dirt_count: int = 3,
+    episodes: int = DEFAULT_RUN_CONFIG.eval_episodes,
+    room_size: float = DEFAULT_RUN_CONFIG.room_size,
+    max_steps: int = DEFAULT_RUN_CONFIG.max_steps,
+    dirt_count: int = DEFAULT_RUN_CONFIG.dirt_count,
+    seed: int = DEFAULT_RUN_CONFIG.seed,
+    eval_seed_offset: int = DEFAULT_RUN_CONFIG.eval_seed_offset,
+    obstacle_count: int = DEFAULT_RUN_CONFIG.obstacle_count,
+    layout_mode: str = DEFAULT_RUN_CONFIG.layout_mode,
+    sensor_mode: str = DEFAULT_RUN_CONFIG.sensor_mode,
+    lidar_rays: int = DEFAULT_RUN_CONFIG.lidar_rays,
 ):
     run_dir = RUNS_DIR / run_id
     model_path = run_dir / "model" / "roomba_policy.zip"
@@ -56,6 +65,12 @@ def evaluate_policy(
         room_size=room_size,
         max_steps=max_steps,
         dirt_count=dirt_count,
+        seed=seed + eval_seed_offset,
+        layout_mode=layout_mode,
+        sensor_mode=sensor_mode,
+        obstacle_count=obstacle_count,
+        lidar_rays=lidar_rays,
+        eval_seed_offset=eval_seed_offset,
     )
 
     model = PPO.load(str(model_path))
@@ -63,7 +78,7 @@ def evaluate_policy(
     episode_summaries = []
 
     for episode_index in range(episodes):
-        episode = run_policy_episode(model=model, env=env, seed=episode_index)
+        episode = run_policy_episode(model=model, env=env, seed=eval_seed_offset + episode_index)
         episode_summaries.append(episode["summary"])
 
     cleaned_distribution = {}
@@ -105,10 +120,16 @@ def evaluate_policy(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--episodes", type=int, default=50)
-    parser.add_argument("--room-size", type=float, default=10.0)
-    parser.add_argument("--max-steps", type=int, default=200)
-    parser.add_argument("--dirt-count", type=int, default=3)
+    parser.add_argument("--episodes", type=int, default=DEFAULT_RUN_CONFIG.eval_episodes)
+    parser.add_argument("--room-size", type=float, default=DEFAULT_RUN_CONFIG.room_size)
+    parser.add_argument("--max-steps", type=int, default=DEFAULT_RUN_CONFIG.max_steps)
+    parser.add_argument("--dirt-count", type=int, default=DEFAULT_RUN_CONFIG.dirt_count)
+    parser.add_argument("--seed", type=int, default=DEFAULT_RUN_CONFIG.seed)
+    parser.add_argument("--eval-seed-offset", type=int, default=DEFAULT_RUN_CONFIG.eval_seed_offset)
+    parser.add_argument("--obstacle-count", type=int, default=DEFAULT_RUN_CONFIG.obstacle_count)
+    parser.add_argument("--layout-mode", default=DEFAULT_RUN_CONFIG.layout_mode, choices=["preset", "random"])
+    parser.add_argument("--sensor-mode", default=DEFAULT_RUN_CONFIG.sensor_mode, choices=["oracle", "lidar_local_dirt"])
+    parser.add_argument("--lidar-rays", type=int, default=DEFAULT_RUN_CONFIG.lidar_rays)
     args = parser.parse_args()
 
     metrics = evaluate_policy(
@@ -117,6 +138,12 @@ def main():
         room_size=args.room_size,
         max_steps=args.max_steps,
         dirt_count=args.dirt_count,
+        seed=args.seed,
+        eval_seed_offset=args.eval_seed_offset,
+        obstacle_count=args.obstacle_count,
+        layout_mode=args.layout_mode,
+        sensor_mode=args.sensor_mode,
+        lidar_rays=args.lidar_rays,
     )
 
     print(json.dumps(metrics, indent=2))

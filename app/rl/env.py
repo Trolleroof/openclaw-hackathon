@@ -2,6 +2,9 @@ import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
 
+from app.rl.layouts import LayoutConfig, generate_layout
+from app.rl.sensors import cast_lidar_rays, local_dirt_signal
+
 
 class RoombaEnv(gym.Env):
     """
@@ -33,11 +36,18 @@ class RoombaEnv(gym.Env):
         turn_angle: float = 0.3,
         seed: int | None = None,
         render_mode: str | None = None,
+        layout_mode: str = "preset",
+        sensor_mode: str = "oracle",
+        obstacle_count: int = 0,
+        lidar_rays: int = 0,
+        eval_seed_offset: int = 10_000,
     ):
         super().__init__()
 
         if render_mode is not None and render_mode not in self.metadata["render_modes"]:
             raise ValueError(f"Unsupported render_mode: {render_mode}")
+        if sensor_mode not in {"oracle", "lidar_local_dirt"}:
+            raise ValueError(f"Unsupported sensor mode: {sensor_mode}")
 
         self.size = float(room_size)
         self.max_steps = int(max_steps)
@@ -46,18 +56,30 @@ class RoombaEnv(gym.Env):
         self.forward_step = float(forward_step)
         self.turn_angle = float(turn_angle)
         self.render_mode = render_mode
+        self.layout_mode = layout_mode
+        self.sensor_mode = sensor_mode
+        self.obstacle_count = int(obstacle_count)
+        self.lidar_rays = int(lidar_rays)
+        self.eval_seed_offset = int(eval_seed_offset)
 
         self.action_space = spaces.Discrete(3)
 
-        high = np.ones(self.observation_size, dtype=np.float32)
-        low = -np.ones(self.observation_size, dtype=np.float32)
+        observation_size = self._observation_size()
+        high = np.ones(observation_size, dtype=np.float32)
+        low = -np.ones(observation_size, dtype=np.float32)
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
 
         self.rng = np.random.default_rng(seed)
         self.robot = None
         self.heading = None
         self.dirt = None
+        self.obstacles = []
         self.steps = 0
+
+    def _observation_size(self):
+        if self.sensor_mode == "oracle":
+            return self.observation_size
+        return 8 + self.lidar_rays
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -65,11 +87,25 @@ class RoombaEnv(gym.Env):
         if seed is not None:
             self.rng = np.random.default_rng(seed)
 
-        self.robot = np.array([1.0, 1.0], dtype=np.float32)
-        self.heading = 0.0
-        self.steps = 0
+        layout_seed = seed
+        if layout_seed is None and self.layout_mode == "random":
+            layout_seed = int(self.rng.integers(0, np.iinfo(np.int32).max))
 
-        self.dirt = self._generate_dirt()
+        layout = generate_layout(
+            LayoutConfig(
+                mode=self.layout_mode,
+                room_size=self.size,
+                dirt_count=self.dirt_count,
+                obstacle_count=self.obstacle_count,
+            ),
+            seed=layout_seed,
+        )
+
+        self.robot = layout.robot.copy()
+        self.heading = float(layout.heading)
+        self.dirt = layout.dirt.copy()
+        self.obstacles = list(layout.obstacles)
+        self.steps = 0
 
         return self._obs(), {}
 
@@ -95,6 +131,12 @@ class RoombaEnv(gym.Env):
         return extra.astype(np.float32)
 
     def _obs(self):
+        if self.sensor_mode == "lidar_local_dirt":
+            return self._lidar_local_dirt_obs()
+
+        return self._oracle_obs()
+
+    def _oracle_obs(self):
         nearest, nearest_distance = self._nearest_dirt()
         heading_error = self._heading_error_to(nearest)
 
@@ -129,6 +171,29 @@ class RoombaEnv(gym.Env):
                 self.robot[1] / self.size,
                 (self.size - self.robot[1]) / self.size,
                 *dirt_features,
+            ],
+            dtype=np.float32,
+        )
+
+    def _lidar_local_dirt_obs(self):
+        lidar_readings = cast_lidar_rays(
+            robot=self.robot,
+            heading=self.heading,
+            room_size=self.size,
+            obstacles=self.obstacles,
+            ray_count=self.lidar_rays,
+        )
+        return np.array(
+            [
+                np.sin(self.heading),
+                np.cos(self.heading),
+                len(self.dirt) / max(self.dirt_count, 1),
+                local_dirt_signal(self.robot, self.dirt, radius=self.clean_radius),
+                *lidar_readings,
+                self.robot[0] / self.size,
+                (self.size - self.robot[0]) / self.size,
+                self.robot[1] / self.size,
+                (self.size - self.robot[1]) / self.size,
             ],
             dtype=np.float32,
         )

@@ -6,8 +6,12 @@ from PIL import Image
 from stable_baselines3 import PPO
 
 from app.config import RUNS_DIR
+from app.rl.config import RunConfig
 from app.rl.env import RoombaEnv
 from app.rl.telemetry import run_policy_episode
+
+
+DEFAULT_RUN_CONFIG = RunConfig()
 
 
 def _write_gif(frames, path: Path, fps: int, hold_final_frames: int = 0) -> None:
@@ -30,13 +34,17 @@ def _write_gif(frames, path: Path, fps: int, hold_final_frames: int = 0) -> None
 
 def generate_run_artifacts(
     run_id: str,
-    seed: int = 0,
+    seed: int = DEFAULT_RUN_CONFIG.seed + DEFAULT_RUN_CONFIG.eval_seed_offset,
     episodes: int = 1,
     fps: int = 6,
     hold_final_frames: int = 18,
-    room_size: float = 10.0,
-    max_steps: int = 200,
-    dirt_count: int = 3,
+    room_size: float = DEFAULT_RUN_CONFIG.room_size,
+    max_steps: int = DEFAULT_RUN_CONFIG.max_steps,
+    dirt_count: int = DEFAULT_RUN_CONFIG.dirt_count,
+    obstacle_count: int = DEFAULT_RUN_CONFIG.obstacle_count,
+    layout_mode: str = DEFAULT_RUN_CONFIG.layout_mode,
+    sensor_mode: str = DEFAULT_RUN_CONFIG.sensor_mode,
+    lidar_rays: int = DEFAULT_RUN_CONFIG.lidar_rays,
 ) -> dict:
     run_dir = RUNS_DIR / run_id
     model_path = run_dir / "model" / "roomba_policy.zip"
@@ -53,6 +61,10 @@ def generate_run_artifacts(
             room_size=room_size,
             max_steps=max_steps,
             dirt_count=dirt_count,
+            obstacle_count=obstacle_count,
+            layout_mode=layout_mode,
+            sensor_mode=sensor_mode,
+            lidar_rays=lidar_rays,
             render_mode="rgb_array",
         )
         rollout = run_policy_episode(
@@ -80,8 +92,16 @@ def generate_run_artifacts(
 
     manifest = {
         "run_id": run_id,
+        "seed": seed,
         "fps": fps,
         "hold_final_frames": hold_final_frames,
+        "room_size": room_size,
+        "max_steps": max_steps,
+        "dirt_count": dirt_count,
+        "obstacle_count": obstacle_count,
+        "layout_mode": layout_mode,
+        "sensor_mode": sensor_mode,
+        "lidar_rays": lidar_rays,
         "gif_paths": gif_paths,
         "trajectory_paths": trajectory_paths,
     }
@@ -94,13 +114,21 @@ def generate_run_artifacts(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=DEFAULT_RUN_CONFIG.seed + DEFAULT_RUN_CONFIG.eval_seed_offset,
+    )
     parser.add_argument("--episodes", type=int, default=1)
     parser.add_argument("--fps", type=int, default=6)
     parser.add_argument("--hold-final-frames", type=int, default=18)
-    parser.add_argument("--room-size", type=float, default=10.0)
-    parser.add_argument("--max-steps", type=int, default=200)
-    parser.add_argument("--dirt-count", type=int, default=3)
+    parser.add_argument("--room-size", type=float, default=DEFAULT_RUN_CONFIG.room_size)
+    parser.add_argument("--max-steps", type=int, default=DEFAULT_RUN_CONFIG.max_steps)
+    parser.add_argument("--dirt-count", type=int, default=DEFAULT_RUN_CONFIG.dirt_count)
+    parser.add_argument("--obstacle-count", type=int, default=DEFAULT_RUN_CONFIG.obstacle_count)
+    parser.add_argument("--layout-mode", default=DEFAULT_RUN_CONFIG.layout_mode, choices=["preset", "random"])
+    parser.add_argument("--sensor-mode", default=DEFAULT_RUN_CONFIG.sensor_mode, choices=["oracle", "lidar_local_dirt"])
+    parser.add_argument("--lidar-rays", type=int, default=DEFAULT_RUN_CONFIG.lidar_rays)
     args = parser.parse_args()
 
     manifest = generate_run_artifacts(
@@ -112,6 +140,10 @@ def main():
         room_size=args.room_size,
         max_steps=args.max_steps,
         dirt_count=args.dirt_count,
+        obstacle_count=args.obstacle_count,
+        layout_mode=args.layout_mode,
+        sensor_mode=args.sensor_mode,
+        lidar_rays=args.lidar_rays,
     )
     print(json.dumps(manifest, indent=2))
 

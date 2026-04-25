@@ -158,12 +158,20 @@ class Phase1RLTests(unittest.TestCase):
             episodes=1,
             fps=6,
             hold_final_frames=3,
+            room_size=5.0,
+            max_steps=50,
+            dirt_count=1,
+            layout_mode="preset",
+            sensor_mode="oracle",
+            lidar_rays=0,
         )
 
         self.assertTrue(Path(artifacts["gif_paths"][0]).exists())
         self.assertTrue(Path(artifacts["trajectory_paths"][0]).exists())
         self.assertEqual(artifacts["fps"], 6)
         self.assertEqual(artifacts["hold_final_frames"], 3)
+        self.assertEqual(artifacts["layout_mode"], "preset")
+        self.assertEqual(artifacts["sensor_mode"], "oracle")
 
 
 if __name__ == "__main__":

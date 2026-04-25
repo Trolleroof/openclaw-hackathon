@@ -52,6 +52,15 @@ def _finalize_report(metadata: dict) -> dict:
         report.delivery_status = result.delivery_status
         report.delivery_error = result.error
 
+    if existing and existing.hermes_delivery_status == "posted":
+        report.hermes_delivery_status = existing.hermes_delivery_status
+        report.hermes_delivery_error = existing.hermes_delivery_error
+    else:
+        from app.services.hermes import post_lesson
+        hermes_result = post_lesson(report)
+        report.hermes_delivery_status = hermes_result.status
+        report.hermes_delivery_error = hermes_result.error
+
     write_report(report)
     metadata["report_path"] = str(report_path(metadata["run_id"]))
     return metadata

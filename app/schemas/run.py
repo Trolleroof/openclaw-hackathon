@@ -70,5 +70,7 @@ class RunReport(BaseModel):
     agentmail_thread_id: Optional[str] = None
     delivery_status: str = "pending"
     delivery_error: Optional[str] = None
+    hermes_delivery_status: str = "pending"
+    hermes_delivery_error: Optional[str] = None
     created_at: str
 

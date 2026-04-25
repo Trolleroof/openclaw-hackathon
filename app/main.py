@@ -85,6 +85,14 @@ def get_agentmail_message(message_id: str):
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
 
+@app.get("/api/v1/memory/lessons")
+def get_memory_lessons(limit: int = Query(25, ge=1, le=100)):
+    """Return runs posted to Hermes as lessons, newest first."""
+    reports = list_reports()
+    lessons = [r for r in reports if r.hermes_delivery_status in ("posted", "failed", "skipped")]
+    return {"lessons": [r.model_dump() for r in lessons[:limit]]}
+
+
 @app.post("/api/v1/agentmail/mock-run", response_model=AgentMailMockSendResponse)
 def post_agentmail_mock_run():
     report = build_mock_run_report()

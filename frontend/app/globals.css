@@ -1,26 +1,161 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d0d0b;
+  --surface: #161613;
+  --surface-2: #1d1d19;
+  --line: #2a2a25;
+  --line-strong: #3a3a33;
+  --foreground: #ede8db;
+  --muted: #8a857a;
+  --muted-strong: #b3ae9f;
+  --accent: #c7f73e;
+  --accent-dim: #6f8a23;
+  --status-success: #c7f73e;
+  --status-running: #ffb347;
+  --status-failed: #ff6b6b;
+  --status-stopped: #8a857a;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-strong: var(--muted-strong);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-success: var(--status-success);
+  --color-running: var(--status-running);
+  --color-failed: var(--status-failed);
+  --color-stopped: var(--status-stopped);
+  --font-serif: var(--font-instrument-serif);
+  --font-mono: var(--font-plex-mono);
+  --font-sans: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
+
+body {
+  font-family: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+  font-feature-settings: "ss01", "ss02", "zero";
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(199, 247, 62, 0.05), transparent 60%),
+    radial-gradient(800px 500px at 0% 100%, rgba(255, 179, 71, 0.03), transparent 70%);
+  background-attachment: fixed;
+}
+
+.serif {
+  font-family: var(--font-instrument-serif), "Times New Roman", serif;
+  letter-spacing: -0.01em;
+}
+
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.hairline {
+  border-color: var(--line);
+}
+
+.divide-hairline > * + * {
+  border-color: var(--line);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--accent);
+  color: #0d0d0b;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.btn-accent:hover {
+  background: #d6ff5b;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--muted-strong);
+  background: var(--surface);
+}
+
+.label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scanline {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 3px
+  );
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}
+.pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker { animation: ticker 60s linear infinite; }
+
+::selection { background: var(--accent); color: #0d0d0b; }
+
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 0; }
+*::-webkit-scrollbar-thumb:hover { background: var(--muted); }

@@ -33,6 +33,7 @@ class RunResponse(BaseModel):
     metrics_path: Optional[str] = None
     error: Optional[str] = None
     report_path: Optional[str] = None
+    nia_context: Optional[str] = None
 
 
 class CompleteRunRequest(BaseModel):
@@ -70,5 +71,7 @@ class RunReport(BaseModel):
     agentmail_thread_id: Optional[str] = None
     delivery_status: str = "pending"
     delivery_error: Optional[str] = None
+    hermes_delivery_status: str = "pending"
+    hermes_delivery_error: Optional[str] = None
     created_at: str
 

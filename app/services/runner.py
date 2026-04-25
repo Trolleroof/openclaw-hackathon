@@ -52,6 +52,15 @@ def _finalize_report(metadata: dict) -> dict:
         report.delivery_status = result.delivery_status
         report.delivery_error = result.error
 
+    if existing and existing.hermes_delivery_status == "posted":
+        report.hermes_delivery_status = existing.hermes_delivery_status
+        report.hermes_delivery_error = existing.hermes_delivery_error
+    else:
+        from app.services.hermes import post_lesson
+        hermes_result = post_lesson(report)
+        report.hermes_delivery_status = hermes_result.status
+        report.hermes_delivery_error = hermes_result.error
+
     write_report(report)
     metadata["report_path"] = str(report_path(metadata["run_id"]))
     return metadata
@@ -70,6 +79,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
     (run_dir / "logs").mkdir(parents=True, exist_ok=True)
 
     config = request.model_dump()
+    template = f"roomba.room-{request.room_size}.dirt-{request.dirt_count}"
 
     metadata = {
         "run_id": run_id,
@@ -83,8 +93,15 @@ def create_run(request: CreateRunRequest) -> RunResponse:
         "metrics_path": None,
         "error": None,
         "report_path": None,
+        "nia_context": None,
     }
     _write_metadata(run_id, metadata)
+
+    from app.services.hermes import query_nia
+    nia_context = query_nia(template, config)
+    if nia_context:
+        metadata["nia_context"] = nia_context
+        _write_metadata(run_id, metadata)
 
     try:
         model_path = train_policy(

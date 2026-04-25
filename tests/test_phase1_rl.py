@@ -25,6 +25,7 @@ class Phase1RLTests(unittest.TestCase):
     def test_default_training_budget_is_scaled_for_2d_runs(self):
         self.assertEqual(DEFAULT_TOTAL_TIMESTEPS, 200_000)
         self.assertEqual(CreateRunRequest().total_timesteps, 200_000)
+        self.assertEqual(CreateRunRequest().dirt_count, 6)
 
     def test_env_passes_stable_baselines_checker(self):
         env = RoombaEnv(room_size=6.0, max_steps=20, dirt_count=2, seed=7)

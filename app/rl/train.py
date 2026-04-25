@@ -5,10 +5,12 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 
 from app.config import RUNS_DIR
+from app.rl.config import RunConfig
 from app.rl.env import RoombaEnv
 
 
-DEFAULT_TOTAL_TIMESTEPS = 200_000
+DEFAULT_RUN_CONFIG = RunConfig()
+DEFAULT_TOTAL_TIMESTEPS = DEFAULT_RUN_CONFIG.total_timesteps
 
 
 def _create_ppo_model(env: RoombaEnv, seed: int, device: str, verbose: int) -> PPO:
@@ -36,13 +38,18 @@ def _create_ppo_model(env: RoombaEnv, seed: int, device: str, verbose: int) -> P
 
 def train_policy(
     run_id: str,
-    total_timesteps: int = DEFAULT_TOTAL_TIMESTEPS,
-    seed: int = 42,
-    room_size: float = 10.0,
-    max_steps: int = 200,
-    dirt_count: int = 3,
-    device: str = "auto",
+    total_timesteps: int = DEFAULT_RUN_CONFIG.total_timesteps,
+    seed: int = DEFAULT_RUN_CONFIG.seed,
+    room_size: float = DEFAULT_RUN_CONFIG.room_size,
+    max_steps: int = DEFAULT_RUN_CONFIG.max_steps,
+    dirt_count: int = DEFAULT_RUN_CONFIG.dirt_count,
+    device: str = DEFAULT_RUN_CONFIG.device,
     verbose: int = 1,
+    eval_seed_offset: int = DEFAULT_RUN_CONFIG.eval_seed_offset,
+    obstacle_count: int = DEFAULT_RUN_CONFIG.obstacle_count,
+    layout_mode: str = DEFAULT_RUN_CONFIG.layout_mode,
+    sensor_mode: str = DEFAULT_RUN_CONFIG.sensor_mode,
+    lidar_rays: int = DEFAULT_RUN_CONFIG.lidar_rays,
 ) -> Path:
     run_dir = RUNS_DIR / run_id
     model_dir = run_dir / "model"
@@ -70,12 +77,17 @@ def train_policy(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--total-timesteps", type=int, default=DEFAULT_TOTAL_TIMESTEPS)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--room-size", type=float, default=10.0)
-    parser.add_argument("--max-steps", type=int, default=200)
-    parser.add_argument("--dirt-count", type=int, default=3)
-    parser.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda", "mps"])
+    parser.add_argument("--total-timesteps", type=int, default=DEFAULT_RUN_CONFIG.total_timesteps)
+    parser.add_argument("--seed", type=int, default=DEFAULT_RUN_CONFIG.seed)
+    parser.add_argument("--eval-seed-offset", type=int, default=DEFAULT_RUN_CONFIG.eval_seed_offset)
+    parser.add_argument("--room-size", type=float, default=DEFAULT_RUN_CONFIG.room_size)
+    parser.add_argument("--max-steps", type=int, default=DEFAULT_RUN_CONFIG.max_steps)
+    parser.add_argument("--dirt-count", type=int, default=DEFAULT_RUN_CONFIG.dirt_count)
+    parser.add_argument("--obstacle-count", type=int, default=DEFAULT_RUN_CONFIG.obstacle_count)
+    parser.add_argument("--layout-mode", default=DEFAULT_RUN_CONFIG.layout_mode, choices=["preset", "random"])
+    parser.add_argument("--sensor-mode", default=DEFAULT_RUN_CONFIG.sensor_mode, choices=["oracle", "lidar_local_dirt"])
+    parser.add_argument("--lidar-rays", type=int, default=DEFAULT_RUN_CONFIG.lidar_rays)
+    parser.add_argument("--device", default=DEFAULT_RUN_CONFIG.device, choices=["auto", "cpu", "cuda", "mps"])
     parser.add_argument("--verbose", type=int, default=1)
     args = parser.parse_args()
 
@@ -88,6 +100,11 @@ def main():
         dirt_count=args.dirt_count,
         device=args.device,
         verbose=args.verbose,
+        eval_seed_offset=args.eval_seed_offset,
+        obstacle_count=args.obstacle_count,
+        layout_mode=args.layout_mode,
+        sensor_mode=args.sensor_mode,
+        lidar_rays=args.lidar_rays,
     )
     print(f"Saved model to {model_path}")
 

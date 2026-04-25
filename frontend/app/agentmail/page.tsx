@@ -214,7 +214,7 @@ export default function AgentMailPage() {
 
               {selectedMessage.html ? (
                 <iframe
-                  className="min-h-[420px] w-full rounded-md border hairline bg-white"
+                  className="min-h-[420px] w-full rounded-md border hairline bg-background"
                   sandbox=""
                   srcDoc={selectedMessage.html}
                   title="AgentMail message HTML"

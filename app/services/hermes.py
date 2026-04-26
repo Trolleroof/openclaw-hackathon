@@ -6,12 +6,16 @@ from urllib import error, parse, request
 
 from app import config
 from app.schemas.run import RunReport
+from app.services.agentmail import AgentMailResult, send_report
+
+HERMES_REPORT_RECIPIENT = config.REPORT_RECIPIENT_EMAIL or "nikhilprabhu06@gmail.com"
 
 
 @dataclass
 class HermesPostResult:
     status: str  # "posted" | "skipped" | "failed"
     error: Optional[str] = None
+    agentmail: Optional[AgentMailResult] = None
 
 
 # ---------------------------------------------------------------------------
@@ -151,13 +155,25 @@ def _derive_lesson(report: RunReport) -> tuple[str, str, str]:
     )
 
 
+def send_run_email(report: RunReport) -> AgentMailResult:
+    """Hermes sends the end-of-run AgentMail report to the configured recipient."""
+    return send_report(report, recipient=HERMES_REPORT_RECIPIENT)
+
+
 def post_lesson(report: RunReport) -> HermesPostResult:
     """
-    Post a structured run lesson note to Hermes in Slack.
+    Post a structured run lesson note to Hermes in Slack and email the run report
+    via AgentMail (Hermes is the agent that triggers the email).
     Uses webhook if no bot token; bot token preferred for consistency.
     """
+    mail_result = send_run_email(report)
+    report.agentmail_message_id = mail_result.message_id
+    report.agentmail_thread_id = mail_result.thread_id
+    report.delivery_status = mail_result.delivery_status
+    report.delivery_error = mail_result.error
+
     if not config.SLACK_WEBHOOK_URL and not config.SLACK_BOT_TOKEN:
-        return HermesPostResult(status="skipped")
+        return HermesPostResult(status="skipped", agentmail=mail_result)
 
     what_worked, what_failed, next_rec = _derive_lesson(report)
     emoji = _status_emoji(report.status)
@@ -186,6 +202,16 @@ def post_lesson(report: RunReport) -> HermesPostResult:
         {"type": "section", "text": {"type": "mrkdwn", "text": f"*What worked*\n{what_worked}"}},
         {"type": "section", "text": {"type": "mrkdwn", "text": f"*What failed*\n{what_failed}"}},
         {"type": "section", "text": {"type": "mrkdwn", "text": f"*Next recommendation*\n{next_rec}"}},
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": (
+                    f"*Report email*\n{mail_result.delivery_status} → `{HERMES_REPORT_RECIPIENT}`"
+                    + (f" — {mail_result.error}" if mail_result.error else "")
+                ),
+            },
+        },
     ]
 
     if report.error:
@@ -205,8 +231,8 @@ def post_lesson(report: RunReport) -> HermesPostResult:
         fallback = f"[ClawLab Note] {report.run_id} {report.status}"
         ts = _post_message(fallback, blocks=blocks)
         if ts is not None:
-            return HermesPostResult(status="posted")
-        return HermesPostResult(status="failed", error="chat.postMessage returned no ts")
+            return HermesPostResult(status="posted", agentmail=mail_result)
+        return HermesPostResult(status="failed", error="chat.postMessage returned no ts", agentmail=mail_result)
 
     # Webhook fallback
     payload = json.dumps({"blocks": blocks}).encode("utf-8")
@@ -220,10 +246,10 @@ def post_lesson(report: RunReport) -> HermesPostResult:
         with request.urlopen(req, timeout=10) as resp:
             body = resp.read().decode("utf-8")
     except error.HTTPError as exc:
-        return HermesPostResult(status="failed", error=f"HTTP {exc.code}")
+        return HermesPostResult(status="failed", error=f"HTTP {exc.code}", agentmail=mail_result)
     except Exception as exc:
-        return HermesPostResult(status="failed", error=str(exc))
+        return HermesPostResult(status="failed", error=str(exc), agentmail=mail_result)
 
     if body.strip() == "ok":
-        return HermesPostResult(status="posted")
-    return HermesPostResult(status="failed", error=body)
+        return HermesPostResult(status="posted", agentmail=mail_result)
+    return HermesPostResult(status="failed", error=body, agentmail=mail_result)

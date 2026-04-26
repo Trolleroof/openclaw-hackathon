@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from html import escape
 from typing import Optional
 from urllib.parse import quote
 from urllib import error, request
@@ -19,16 +20,62 @@ class AgentMailResult:
 
 
 def _html_report(report: RunReport) -> str:
+    status_color = "#b7f84a" if report.status == "success" else "#ff7676"
+    fields = [
+        ("Status", report.status),
+        ("Template", report.template),
+        ("Timesteps", f"{report.steps or 0:,}"),
+        ("Episodes", str(report.episodes or 0)),
+        ("Average reward", f"{report.mean_return:.3f}" if report.mean_return is not None else "n/a"),
+        ("Success rate", f"{report.best_return:.3f}" if report.best_return is not None else "n/a"),
+    ]
+    secondary = [
+        ("Checkpoint", report.checkpoint_uri or "n/a"),
+        ("Dashboard", report.artifact_links.get("dashboard") if report.artifact_links else None),
+    ]
+    metric_rows = "".join(
+        "<tr>"
+        + "".join(
+            f"""
+            <td style="width:50%;padding:14px 16px;border-top:1px solid #27313a;vertical-align:top;">
+              <div style="font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:#98a69a;">{escape(label)}</div>
+              <div style="margin-top:5px;font-size:16px;font-weight:700;color:#f4f7ef;word-break:break-word;">{escape(value)}</div>
+            </td>
+            """
+            for label, value in fields[index : index + 2]
+        )
+        + "</tr>"
+        for index in range(0, len(fields), 2)
+    )
+    secondary_rows = "".join(
+        f"""
+        <tr>
+          <td style="padding:8px 0;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:#98a69a;width:120px;">{escape(label)}</td>
+          <td style="padding:8px 0;font-size:13px;color:#c4cec2;word-break:break-word;">{escape(value or "n/a")}</td>
+        </tr>
+        """
+        for label, value in secondary
+    )
+
     return (
-        f"<h1>Hermes Run Report: {report.run_id}</h1>"
-        f"<p>{report.model_summary}</p>"
-        "<ul>"
-        f"<li>Status: {report.status}</li>"
-        f"<li>Template: {report.template}</li>"
-        f"<li>Mean return: {report.mean_return}</li>"
-        f"<li>Best return: {report.best_return}</li>"
-        f"<li>Checkpoint: {report.checkpoint_uri or 'n/a'}</li>"
-        "</ul>"
+        '<div style="margin:0;background:#090b0d;padding:28px;font-family:Inter,Arial,sans-serif;color:#f4f7ef;">'
+        '<div style="max-width:680px;margin:0 auto;border:1px solid #27313a;border-radius:12px;overflow:hidden;background:#11161a;">'
+        '<div style="padding:24px 26px;border-bottom:1px solid #27313a;">'
+        '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#98a69a;">Hermes Run Report</div>'
+        f'<h1 style="margin:10px 0 0;font-size:28px;line-height:1.18;color:#f4f7ef;">{escape(report.run_id)}</h1>'
+        f'<p style="margin:14px 0 0;font-size:15px;line-height:1.65;color:#c4cec2;">{escape(report.model_summary)}</p>'
+        f'<div style="display:inline-block;margin-top:16px;padding:5px 10px;border-radius:999px;background:rgba(183,248,74,0.12);color:{status_color};font-size:12px;font-weight:700;">{escape(report.status)}</div>'
+        "</div>"
+        '<table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;">'
+        f"{metric_rows}"
+        "</table>"
+        '<div style="padding:20px 26px;border-top:1px solid #27313a;">'
+        '<table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;">'
+        f"{secondary_rows}"
+        "</table>"
+        "</div>"
+        "</div>"
+        "</div>"
     )
 
 
@@ -84,13 +131,13 @@ def _message_summary(data: dict) -> AgentMailMessageSummary:
     return AgentMailMessageSummary.model_validate(normalized)
 
 
-def send_report(report: RunReport) -> AgentMailResult:
-    recipient = _configured_recipient()
-    if not config.AGENTMAIL_API_KEY or not config.AGENTMAIL_INBOX_ID or not recipient:
+def send_report(report: RunReport, recipient: Optional[str] = None) -> AgentMailResult:
+    target = recipient or _configured_recipient()
+    if not config.AGENTMAIL_API_KEY or not config.AGENTMAIL_INBOX_ID or not target:
         return AgentMailResult(delivery_status="skipped", error="AgentMail is not configured")
 
     body = {
-        "to": [recipient],
+        "to": [target],
         "subject": f"[RL] run {report.run_id} {report.status}",
         "text": report.markdown,
         "html": _html_report(report),

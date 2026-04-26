@@ -8,7 +8,6 @@ from typing import Optional
 
 from app.config import RUNS_DIR
 from app.schemas.run import CompleteRunRequest, CreateRunRequest, RunResponse
-from app.services.agentmail import send_report
 from app.services.reports import build_run_report, read_report, report_path, write_report
 
 
@@ -46,12 +45,6 @@ def _finalize_report(metadata: dict) -> dict:
         report.agentmail_thread_id = existing.agentmail_thread_id
         report.delivery_status = existing.delivery_status
         report.delivery_error = existing.delivery_error
-    else:
-        result = send_report(report)
-        report.agentmail_message_id = result.message_id
-        report.agentmail_thread_id = result.thread_id
-        report.delivery_status = result.delivery_status
-        report.delivery_error = result.error
 
     if existing and existing.hermes_delivery_status == "posted":
         report.hermes_delivery_status = existing.hermes_delivery_status
@@ -61,6 +54,11 @@ def _finalize_report(metadata: dict) -> dict:
         hermes_result = post_lesson(report)
         report.hermes_delivery_status = hermes_result.status
         report.hermes_delivery_error = hermes_result.error
+        if hermes_result.agentmail and report.delivery_status != "sent":
+            report.agentmail_message_id = hermes_result.agentmail.message_id
+            report.agentmail_thread_id = hermes_result.agentmail.thread_id
+            report.delivery_status = hermes_result.agentmail.delivery_status
+            report.delivery_error = hermes_result.agentmail.error
 
     write_report(report)
     metadata["report_path"] = str(report_path(metadata["run_id"]))

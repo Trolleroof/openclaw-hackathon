@@ -102,6 +102,80 @@ body {
   border-radius: 10px;
 }
 
+.agentmail-surface {
+  --background: #090b0d;
+  --surface: #11161a;
+  --surface-2: #182027;
+  --line: #263039;
+  --line-strong: #3c4a55;
+  --foreground: #f2f5ef;
+  --muted: #9aa89a;
+  --muted-strong: #b3beb1;
+  --accent: #d8ff4f;
+  --accent-soft: rgba(216, 255, 79, 0.11);
+  --status-success: #bff84c;
+  --status-running: #70d6ff;
+  --status-failed: #ff7676;
+  --status-stopped: #a7a7a7;
+}
+
+.agentmail-surface .card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42%),
+    var(--surface);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.agentmail-row {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.agentmail-row:hover,
+.agentmail-row-selected {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+
+.agentmail-row-selected {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.agentmail-status {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--muted);
+}
+
+.agentmail-status-success { background: var(--status-success); }
+.agentmail-status-failed { background: var(--status-failed); }
+.agentmail-status-stopped { background: var(--status-stopped); }
+.agentmail-status-neutral { background: var(--status-running); }
+
+.agentmail-open-indicator {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted-strong);
+  font-size: 11px;
+}
+
+.agentmail-report {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0d1114;
+}
+
+.agentmail-metric {
+  background: rgba(255, 255, 255, 0.018);
+}
+
 .channel-pill {
   display: inline-flex;
   align-items: center;

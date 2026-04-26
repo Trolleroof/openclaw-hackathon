@@ -5,7 +5,7 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class RunConfig:
-    total_timesteps: int = 200_000
+    total_timesteps: int = 60_000
     eval_episodes: int = 50
     seed: int = 42
     eval_seed_offset: int = 10_000

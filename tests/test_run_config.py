@@ -7,7 +7,7 @@ from app.schemas.run import CreateRunRequest
 class RunConfigTests(unittest.TestCase):
     def test_run_config_defaults_to_randomized_generalization_mode(self):
         config = RunConfig()
-        self.assertEqual(config.total_timesteps, 200_000)
+        self.assertEqual(config.total_timesteps, 60_000)
         self.assertEqual(config.layout_mode, "random")
         self.assertEqual(config.sensor_mode, "lidar_local_dirt")
         self.assertEqual(config.eval_seed_offset, 10_000)

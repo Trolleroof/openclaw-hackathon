@@ -41,8 +41,8 @@ class Phase1RLTests(unittest.TestCase):
         self.assertTrue(np.all(obs <= 1.0))
 
     def test_default_training_budget_is_scaled_for_2d_runs(self):
-        self.assertEqual(DEFAULT_TOTAL_TIMESTEPS, 200_000)
-        self.assertEqual(CreateRunRequest().total_timesteps, 200_000)
+        self.assertEqual(DEFAULT_TOTAL_TIMESTEPS, 60_000)
+        self.assertEqual(CreateRunRequest().total_timesteps, 60_000)
         self.assertEqual(CreateRunRequest().dirt_count, 6)
 
     def test_env_passes_stable_baselines_checker(self):

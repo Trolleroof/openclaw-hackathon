@@ -65,6 +65,25 @@ def _finalize_report(metadata: dict) -> dict:
     return metadata
 
 
+def _generate_default_artifacts(run_id: str, metadata: dict) -> dict:
+    try:
+        from app.rl.visualize import generate_run_artifacts
+
+        artifacts = generate_run_artifacts(run_id=run_id, episodes=1)
+        metadata["artifact_manifest_path"] = artifacts.get("manifest_path")
+        metadata["gif_paths"] = artifacts.get("gif_paths", [])
+        metadata["trajectory_paths"] = artifacts.get("trajectory_paths", [])
+        metadata["artifact_error"] = None
+    except Exception as exc:
+        logs_dir = _run_dir(run_id) / "logs"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        (logs_dir / "artifact_error.txt").write_text(
+            "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+        )
+        metadata["artifact_error"] = str(exc)
+    return metadata
+
+
 def create_run(request: CreateRunRequest) -> RunResponse:
     from app.rl.baseline import evaluate_random_baseline
     from app.rl.eval import evaluate_policy
@@ -173,6 +192,7 @@ def create_run(request: CreateRunRequest) -> RunResponse:
         metadata["duration_sec"] = (
             datetime.fromisoformat(metadata["ended_at"]) - datetime.fromisoformat(started_at)
         ).total_seconds()
+        metadata = _generate_default_artifacts(run_id, metadata)
         metadata = _finalize_report(metadata)
         _write_metadata(run_id, metadata)
 

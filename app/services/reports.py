@@ -54,6 +54,9 @@ def build_run_report(metadata: dict) -> RunReport:
     algo = "PPO"
     checkpoint_uri = metadata.get("model_path")
     metrics_path = metadata.get("metrics_path")
+    artifact_manifest_path = metadata.get("artifact_manifest_path")
+    gif_paths = metadata.get("gif_paths") or []
+    trajectory_paths = metadata.get("trajectory_paths") or []
     dashboard_url = f"{HERMES_PUBLIC_BASE_URL.rstrip('/')}/runs/{run_id}"
 
     model_summary = (
@@ -77,6 +80,7 @@ def build_run_report(metadata: dict) -> RunReport:
             f"- Average reward: `{mean_return if mean_return is not None else 'n/a'}`",
             f"- Success rate: `{best_return if best_return is not None else 'n/a'}`",
             f"- Checkpoint: `{checkpoint_uri or 'n/a'}`",
+            f"- GIF: `{gif_paths[0] if gif_paths else 'n/a'}`",
             f"- Dashboard: {dashboard_url}",
             "",
             model_summary,
@@ -101,6 +105,9 @@ def build_run_report(metadata: dict) -> RunReport:
             "dashboard": dashboard_url,
             **({"metrics": metrics_path} if metrics_path else {}),
             **({"checkpoint": checkpoint_uri} if checkpoint_uri else {}),
+            **({"artifacts_manifest": artifact_manifest_path} if artifact_manifest_path else {}),
+            **({"gif": gif_paths[0]} if gif_paths else {}),
+            **({"trajectory": trajectory_paths[0]} if trajectory_paths else {}),
         },
         error=metadata.get("error"),
         model_summary=model_summary,

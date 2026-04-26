@@ -8,7 +8,10 @@ from app import config
 from app.schemas.run import RunReport
 from app.services.agentmail import AgentMailResult, send_report
 
-HERMES_REPORT_RECIPIENT = config.REPORT_RECIPIENT_EMAIL or "nikhilprabhu06@gmail.com"
+HERMES_REPORT_RECIPIENTS: list[str] = (
+    list(config.REPORT_RECIPIENT_EMAILS) if config.REPORT_RECIPIENT_EMAILS else ["nikhilprabhu06@gmail.com"]
+)
+HERMES_REPORT_RECIPIENT = ", ".join(HERMES_REPORT_RECIPIENTS)
 
 
 @dataclass
@@ -156,8 +159,8 @@ def _derive_lesson(report: RunReport) -> tuple[str, str, str]:
 
 
 def send_run_email(report: RunReport) -> AgentMailResult:
-    """Hermes sends the end-of-run AgentMail report to the configured recipient."""
-    return send_report(report, recipient=HERMES_REPORT_RECIPIENT)
+    """Hermes sends the end-of-run AgentMail report to the configured recipients."""
+    return send_report(report, recipient=HERMES_REPORT_RECIPIENTS)
 
 
 def post_lesson(report: RunReport) -> HermesPostResult:
@@ -167,6 +170,7 @@ def post_lesson(report: RunReport) -> HermesPostResult:
     Uses webhook if no bot token; bot token preferred for consistency.
     """
     mail_result = send_run_email(report)
+    recipient_label = ", ".join(HERMES_REPORT_RECIPIENTS) or HERMES_REPORT_RECIPIENT
     report.agentmail_message_id = mail_result.message_id
     report.agentmail_thread_id = mail_result.thread_id
     report.delivery_status = mail_result.delivery_status
@@ -207,7 +211,7 @@ def post_lesson(report: RunReport) -> HermesPostResult:
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    f"*Report email*\n{mail_result.delivery_status} → `{HERMES_REPORT_RECIPIENT}`"
+                    f"*Report email*\n{mail_result.delivery_status} → `{recipient_label}`"
                     + (f" — {mail_result.error}" if mail_result.error else "")
                 ),
             },
@@ -219,7 +223,11 @@ def post_lesson(report: RunReport) -> HermesPostResult:
             {"type": "section", "text": {"type": "mrkdwn", "text": f"*Error*\n```{report.error}```"}}
         )
 
-    dashboard_url = (report.artifact_links or {}).get("dashboard", "")
+    base_url = (config.HERMES_PUBLIC_BASE_URL or "").rstrip("/")
+    if base_url and report.run_id:
+        dashboard_url = f"{base_url}/runs/{report.run_id}"
+    else:
+        dashboard_url = (report.artifact_links or {}).get("dashboard", "") or base_url
     if dashboard_url:
         blocks.append({
             "type": "actions",

@@ -23,28 +23,19 @@ export default function RunPage() {
   const { id } = useParams<{ id: string }>();
   const [report, setReport] = useState<RunReport | null>(null);
   const [run, setRun] = useState<LiveRun | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
+  const [pollAttempts, setPollAttempts] = useState(0);
 
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    let seenRun = false;
 
     const tick = async () => {
       try {
         const liveRun = await fetchLiveRun(id);
-        if (cancelled) return;
-        if (liveRun) {
-          seenRun = true;
-          setRun(liveRun);
-          setError(null);
-        } else if (!seenRun) {
-          setError("Run not found");
-        }
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Failed to load run");
+        if (!cancelled && liveRun) setRun(liveRun);
+      } catch {
+        // Network blip — keep polling silently.
       }
 
       try {
@@ -53,6 +44,8 @@ export default function RunPage() {
       } catch {
         // Report not generated yet — fine while a run is still going.
       }
+
+      if (!cancelled) setPollAttempts((n) => n + 1);
     };
 
     tick();
@@ -63,20 +56,29 @@ export default function RunPage() {
     };
   }, [id]);
 
-  if (error && !run && !report) {
-    return (
-      <div className="flex flex-col gap-4">
-        <Link href="/" className="text-[12px]" style={{ color: "var(--muted-strong)" }}>← All runs</Link>
-        <p className="text-[13px]" style={{ color: "var(--status-failed)" }}>{error}</p>
-      </div>
-    );
-  }
-
   if (!run && !report) {
+    const stillSearching = pollAttempts < 4;
     return (
       <div className="flex flex-col gap-4">
         <Link href="/" className="text-[12px]" style={{ color: "var(--muted-strong)" }}>← All runs</Link>
-        <p className="text-[13px] label">Loading…</p>
+        <div className="flex flex-col gap-2">
+          <span className="label">{stillSearching ? "loading run" : "run details unavailable"}</span>
+          <p className="mono text-[14px] tracking-tight">{id}</p>
+          <p className="text-[12px]" style={{ color: "var(--muted-strong)" }}>
+            {stillSearching
+              ? "Fetching run details from Hermes…"
+              : "This run isn’t available on this dashboard yet. It may still be syncing, or it may have been removed."}
+          </p>
+          {!stillSearching && (
+            <Link
+              href="/"
+              className="text-[12px] underline"
+              style={{ color: "var(--muted-strong)" }}
+            >
+              View all runs →
+            </Link>
+          )}
+        </div>
       </div>
     );
   }

@@ -79,8 +79,24 @@ def _html_report(report: RunReport) -> str:
     )
 
 
-def _configured_recipient() -> str:
-    return config.REPORT_RECIPIENT_EMAIL or config.AGENTMAIL_INBOX_ID
+def _configured_recipients() -> list[str]:
+    if config.REPORT_RECIPIENT_EMAILS:
+        return list(config.REPORT_RECIPIENT_EMAILS)
+    if config.AGENTMAIL_INBOX_ID:
+        return [config.AGENTMAIL_INBOX_ID]
+    return []
+
+
+def _normalize_recipients(recipient: Optional[object]) -> list[str]:
+    if recipient is None:
+        return _configured_recipients()
+    if isinstance(recipient, str):
+        parsed = [addr.strip() for addr in recipient.split(",") if addr.strip()]
+        return parsed or _configured_recipients()
+    if isinstance(recipient, (list, tuple, set)):
+        parsed = [str(addr).strip() for addr in recipient if str(addr).strip()]
+        return parsed or _configured_recipients()
+    return _configured_recipients()
 
 
 def _request_json(method: str, path: str, body: Optional[dict] = None) -> dict:
@@ -131,13 +147,13 @@ def _message_summary(data: dict) -> AgentMailMessageSummary:
     return AgentMailMessageSummary.model_validate(normalized)
 
 
-def send_report(report: RunReport, recipient: Optional[str] = None) -> AgentMailResult:
-    target = recipient or _configured_recipient()
-    if not config.AGENTMAIL_API_KEY or not config.AGENTMAIL_INBOX_ID or not target:
+def send_report(report: RunReport, recipient: Optional[object] = None) -> AgentMailResult:
+    targets = _normalize_recipients(recipient)
+    if not config.AGENTMAIL_API_KEY or not config.AGENTMAIL_INBOX_ID or not targets:
         return AgentMailResult(delivery_status="skipped", error="AgentMail is not configured")
 
     body = {
-        "to": [target],
+        "to": targets,
         "subject": f"[RL] run {report.run_id} {report.status}",
         "text": report.markdown,
         "html": _html_report(report),

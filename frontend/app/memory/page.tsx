@@ -207,9 +207,8 @@ export default function MemoryPage() {
           checkpoint URI, derived recommendations) is indexed into Nia so the next run starts with the prior context.
         </p>
         <p className="max-w-3xl text-[12px]" style={{ color: "var(--muted-strong)" }}>
-          Each lesson below captures: the env_id and full env config, PPO training stats, evaluation
-          success rate, AgentMail / Slack delivery state, and a natural-language summary explaining
-          what the run actually demonstrated. This is what Nia retrieves on the next planning step.
+          Each row summarizes env config, training stats, delivery state, and a short narrative—what Nia can
+          retrieve later. Read-only here: new lessons come from runs started on a local clone with Slack/Nia wired up.
         </p>
       </header>
 
@@ -224,7 +223,7 @@ export default function MemoryPage() {
               <EmptyState
                 icon="…"
                 title="No lessons yet"
-                body="Complete a training run to generate the first lesson. Set SLACK_WEBHOOK_URL or a bot token to post it to Slack."
+                body="No lessons on this API yet. This view is read-only. From a local clone, run training with Slack configured so lessons appear here."
               />
             ) : (
               <div className="flex flex-col">

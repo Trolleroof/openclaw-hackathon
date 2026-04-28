@@ -50,6 +50,13 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
+      <div className="mx-auto max-w-6xl px-6 pt-3">
+        <p className="text-[12px] rounded-md border hairline px-3 py-2" style={{ color: "var(--muted-strong)" }}>
+          <span className="label mr-2">Mode</span>
+          Read-only. Training, mock reports, and deletions are not available here—clone the repo and run the API locally to change data.
+        </p>
+      </div>
+
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-6 py-10">{children}</div>
       </main>

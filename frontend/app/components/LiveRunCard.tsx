@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   HERMES_API_BASE_URL,
-  deleteRun,
   fmtDuration,
   fmtNumber,
   fmtRelative,
@@ -31,13 +30,7 @@ function since(start: string | null, end: string | null, durationSec: number | n
   return fmtDuration(Math.max(0, Math.round(elapsed)));
 }
 
-export function LiveRunCard({
-  run,
-  onDeleted,
-}: {
-  run: LiveRun;
-  onDeleted?: (runId: string) => void;
-}) {
+export function LiveRunCard({ run }: { run: LiveRun }) {
   const status = liveRunStatus(run.status);
   const accent = statusVar(status);
   const id = shortId(run.run_id);
@@ -46,26 +39,7 @@ export function LiveRunCard({
   const isRunning = status === "running";
   const beatsRandom = run.metrics?.ppo_beats_random;
   const [imgError, setImgError] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [confirming, setConfirming] = useState(false);
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!confirming) {
-      setConfirming(true);
-      window.setTimeout(() => setConfirming(false), 3000);
-      return;
-    }
-    setDeleting(true);
-    try {
-      await deleteRun(run.run_id);
-      onDeleted?.(run.run_id);
-    } catch {
-      setDeleting(false);
-      setConfirming(false);
-    }
-  };
   const gifSrc =
     run.gif_url && !imgError
       ? `${HERMES_API_BASE_URL}${run.gif_url}?t=${run.ended_at ?? run.started_at ?? ""}`
@@ -119,29 +93,12 @@ export function LiveRunCard({
               {template(run.config)} · seed {String(seed)}
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span
-              className="text-[12px] opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ color: "var(--accent)" }}
-            >
-              open →
-            </span>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleting}
-              aria-label="Delete run"
-              className="text-[11px] px-2 py-1 rounded-md mono transition-colors"
-              style={{
-                border: `1px solid ${confirming ? "var(--status-failed)" : "var(--line)"}`,
-                color: confirming ? "var(--status-failed)" : "var(--muted)",
-                background: "transparent",
-                opacity: deleting ? 0.5 : 1,
-              }}
-            >
-              {deleting ? "deleting…" : confirming ? "confirm?" : "delete"}
-            </button>
-          </div>
+          <span
+            className="text-[12px] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+            style={{ color: "var(--accent)" }}
+          >
+            open →
+          </span>
         </div>
 
         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">

@@ -64,11 +64,11 @@ export default function HomePage() {
           <span className="label">Dashboard</span>
           <h1 className="text-[32px] font-semibold tracking-tight mt-1">Runs</h1>
           <p className="text-[13px] mt-1" style={{ color: "var(--muted-strong)" }}>
-            Each box is one supervised training run. Click to inspect config, metrics, and logs.
+            Read-only view of runs from the API. To start training or change data, clone this repository
+            and run the stack locally with your own configuration.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <button className="btn-accent" type="button">+ New run</button>
           <div className="flex items-center gap-2 text-[11px]" style={{ color: "var(--muted)" }}>
             <span
               className={stats.liveCount > 0 ? "pulse-dot" : ""}
@@ -103,28 +103,18 @@ export default function HomePage() {
         <EmptyState
           icon="!"
           title="Cannot reach Apollo Labs API"
-          body={error}
+          body={`${error} This console is read-only and only displays data from the configured API.`}
         />
       ) : runs.length === 0 ? (
         <EmptyState
           icon="+"
           title="No runs yet"
-          body="Once Apollo Labs dispatches a training run, it will show up here. Connect the API to start streaming real data."
-          action={
-            <div className="flex gap-2">
-              <button className="btn-accent" type="button">+ New run</button>
-              <button className="btn-ghost" type="button">Connect API</button>
-            </div>
-          }
+          body="There are no runs on this API yet. This site is read-only: clone the repo, configure .env locally, and start training on your machine to populate runs here."
         />
       ) : (
         <section className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {runs.map((r) => (
-            <LiveRunCard
-              key={r.run_id}
-              run={r}
-              onDeleted={(id) => setRuns((prev) => prev.filter((x) => x.run_id !== id))}
-            />
+            <LiveRunCard key={r.run_id} run={r} />
           ))}
         </section>
       )}

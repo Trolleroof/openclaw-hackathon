@@ -70,15 +70,6 @@ export async function fetchLiveRuns(): Promise<LiveRun[]> {
   return (data?.runs ?? []) as LiveRun[];
 }
 
-export async function deleteRun(runId: string): Promise<void> {
-  const res = await fetch(`${HERMES_API_BASE_URL}/api/runs/${runId}`, {
-    method: "DELETE",
-  });
-  if (!res.ok && res.status !== 404) {
-    throw new Error(`Failed to delete run (${res.status})`);
-  }
-}
-
 export async function fetchLiveRun(runId: string): Promise<LiveRun | null> {
   const res = await fetch(`${HERMES_API_BASE_URL}/api/runs/${runId}`, {
     headers: { Accept: "application/json" },

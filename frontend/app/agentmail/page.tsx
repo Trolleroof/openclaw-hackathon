@@ -7,7 +7,6 @@ import {
   fetchAgentMailMessage,
   fetchAgentMailMessages,
   HERMES_API_BASE_URL,
-  sendMockRunToAgentMail,
   type AgentMailMessageDetail,
   type AgentMailMessageSummary,
 } from "../lib/agentmail";
@@ -104,24 +103,8 @@ export default function AgentMailPage() {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [isLoadingMessage, setIsLoadingMessage] = useState(false);
-  const [isSendingMock, setIsSendingMock] = useState(false);
   const [inboxError, setInboxError] = useState<string | null>(null);
-  const [sendError, setSendError] = useState<string | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
-
-  async function loadMessages() {
-    setIsLoadingMessages(true);
-    setInboxError(null);
-
-    try {
-      const data = await fetchAgentMailMessages();
-      setMessages(data.messages);
-    } catch (err) {
-      setInboxError(err instanceof Error ? err.message : "Failed to load AgentMail inbox");
-    } finally {
-      setIsLoadingMessages(false);
-    }
-  }
 
   useEffect(() => {
     let cancelled = false;
@@ -148,21 +131,6 @@ export default function AgentMailPage() {
     };
   }, []);
 
-  async function sendMockRun() {
-    setIsSendingMock(true);
-    setSendError(null);
-
-    try {
-      const sent = await sendMockRunToAgentMail();
-      await loadMessages();
-      if (sent.message_id) await openMessage(sent.message_id);
-    } catch (err) {
-      setSendError(err instanceof Error ? err.message : "Mock run send failed");
-    } finally {
-      setIsSendingMock(false);
-    }
-  }
-
   async function openMessage(messageId: string) {
     setSelectedMessageId(messageId);
     setSelectedMessage(null);
@@ -186,8 +154,8 @@ export default function AgentMailPage() {
           <span className="label">Integration · 02</span>
           <h1 className="text-[34px] font-semibold leading-none tracking-tight">AgentMail</h1>
           <p className="max-w-3xl text-[13px]" style={{ color: "var(--muted-strong)" }}>
-            Apollo Labs sends run summaries to AgentMail and reads the run inbox back through the AgentMail
-            messages API.
+            Read-only inbox view. Messages appear when your API (configured on a local clone) delivers
+            run reports via AgentMail. This page does not send mail or create runs.
           </p>
         </div>
         <div className="rounded-md border hairline px-3 py-2 text-[12px]" style={{ color: "var(--muted-strong)" }}>
@@ -201,21 +169,6 @@ export default function AgentMailPage() {
           <Card
             title="Inbox"
             hint="AgentMail messages"
-            action={
-              <div className="flex gap-2">
-                <button className="btn-ghost disabled:opacity-60" type="button" onClick={loadMessages}>
-                  Refresh
-                </button>
-                <button
-                  className="btn-accent disabled:opacity-60"
-                  type="button"
-                  onClick={sendMockRun}
-                  disabled={isSendingMock}
-                >
-                  {isSendingMock ? "Sending..." : "Mock run"}
-                </button>
-              </div>
-            }
           >
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
@@ -227,22 +180,20 @@ export default function AgentMailPage() {
               <span className="channel-pill">live inbox</span>
             </div>
 
-            {sendError && (
-              <div className="mb-3 rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--status-failed)" }}>
-                {sendError}
-              </div>
-            )}
-
             {isLoadingMessages ? (
               <EmptyState icon="..." title="Loading inbox" body="Reading messages from AgentMail." />
             ) : inboxError ? (
               <EmptyState
                 icon="!"
                 title="AgentMail not connected"
-                body={`${inboxError}. Set AGENTMAIL_API_KEY and AGENTMAIL_INBOX_ID in the API .env, then refresh.`}
+                body={`${inboxError}. On a local clone, set AGENTMAIL_API_KEY and AGENTMAIL_INBOX_ID in the API .env, then reload this page.`}
               />
             ) : messages.length === 0 ? (
-              <EmptyState icon="✉" title="No inbox messages" body="Generate a mock run to send the first report." />
+              <EmptyState
+                icon="✉"
+                title="No inbox messages"
+                body="Nothing to show yet. Delivery happens from a self-hosted or local API when you run training with AgentMail configured—not from this read-only console."
+              />
             ) : (
               <div className="flex flex-col gap-2">
                 {messages.map((message) => (

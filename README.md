@@ -1,10 +1,10 @@
-# ClawLab — RL Run Orchestrator
+# Apollo Labs — RL run orchestrator
 
-ClawLab is a small RL training platform built around a 2D Roomba-style cleaning
+Apollo Labs is a small RL training platform built around a 2D Roomba-style cleaning
 environment. It trains a PPO policy, evaluates it against a random baseline,
 generates rollout GIFs, stores a structured **run report**, and ships that
 report to humans through **AgentMail** while logging a narrative lesson into
-**Nia / Hermes**.
+**Nia** (Slack integration in `app/services/hermes.py`).
 
 The stack:
 
@@ -12,13 +12,13 @@ The stack:
   visualization, reporting, and notifications.
 - **Next.js frontend** (`frontend/`) — dashboard for run history, metrics,
   GIFs, AgentMail inbox, and Nia memory.
-- **Hermes** — agent harness that runs the orchestration. Code lives in
+- **Slack + Nia bridge** — pre- and post-run agent flow. Implementation lives in
   `app/services/hermes.py`.
 - **AgentMail** — async email channel for end-of-run reports
   (`app/services/agentmail.py`).
 - **Nia** — narrative memory layer queried *before* a run and written *after*
   a run.
-- **MCP server** (`app/mcp/clawlab_server.py`) — exposes ClawLab tools and
+- **MCP server** (`app/mcp/apollolabs_server.py`) — exposes Apollo Labs tools and
   resources to Claude / Cursor over MCP.
 
 ---
@@ -32,13 +32,13 @@ client → POST /api/runs
        → app/main.py:create_training_run
        → app/services/runner.py:create_run
              1. allocate run_id, write metadata.json
-             2. Hermes asks Nia for prior lessons   (hermes.query_nia)
+             2. Apollo Labs asks Nia for prior lessons   (hermes.query_nia)
              3. train PPO policy                    (app/rl/train.py)
              4. evaluate policy + random baseline   (app/rl/eval.py, baseline.py)
              5. write combined_metrics.json
              6. generate rollout GIF + trajectory   (app/rl/visualize.py)
              7. build RunReport (markdown + JSON)   (app/services/reports.py)
-             8. Hermes posts lesson to Slack +
+             8. Apollo Labs posts lesson to Slack +
                 sends report through AgentMail      (app/services/hermes.py)
              9. write report.json next to the run
 ```
@@ -67,23 +67,23 @@ that AgentMail sends, so the email and the dashboard never disagree.
 ## How we use AgentMail
 
 **Goal:** when a training run finishes (success, early stop, or crash),
-ClawLab sends the *exact same* structured `RunReport` to a human inbox. The
+Apollo Labs sends the *exact same* structured `RunReport` to a human inbox. The
 backend is the source of truth; AgentMail is just the delivery channel.
 
 **Where it lives:** `app/services/agentmail.py`.
 
 **What it does:**
 
-1. `send_report(report, recipient)` — called by Hermes at end-of-run.
+1. `send_report(report, recipient)` — called by the Apollo Labs orchestration at end-of-run.
    - Takes a `RunReport` (the same Pydantic model the API serves).
    - Renders a rich HTML email via `_html_report(report)` using the
-     ClawLab/Hermes visual language (dark card, status pill, metric grid).
+     Apollo Labs visual language (dark card, status pill, metric grid).
    - Falls back to the markdown version (`report.markdown`) for the plain
      text body.
    - POSTs to `https://api.agentmail.to/v0/inboxes/{INBOX_ID}/messages/send`
-     with labels `["hermes", "run-report", <status>]`.
+     with labels `["apollo-labs", "run-report", <status>]` (see `agentmail.py` for the exact list).
    - Returns an `AgentMailResult` with `delivery_status`, `message_id`,
-     `thread_id`. Hermes writes those back into `report.json` so the
+     `thread_id`. The orchestration writes those back into `report.json` so the
      frontend can show "Email delivered ✓" with the AgentMail thread id.
 
 2. `list_inbox_messages(limit)` and `get_inbox_message(message_id)` —
@@ -104,7 +104,7 @@ backend is the source of truth; AgentMail is just the delivery channel.
 | `AGENTMAIL_INBOX_ID`       | The inbox that sends the email.                  |
 | `AGENTMAIL_API_BASE_URL`   | Defaults to `https://api.agentmail.to/v0`.       |
 | `REPORT_RECIPIENT_EMAIL`   | Comma-separated list of human recipients.        |
-| `HERMES_PUBLIC_BASE_URL`   | Used to build the dashboard link in the report.  |
+| `HERMES_PUBLIC_BASE_URL`   | Used to build the dashboard link in the report. |
 
 If any of the required vars are missing, `send_report` returns
 `delivery_status="skipped"` instead of crashing the run.
@@ -115,7 +115,7 @@ If any of the required vars are missing, `send_report` returns
 
 ## How we use Nia
 
-**Goal:** ClawLab should not be stateless every time it sets up a sim. Before
+**Goal:** Apollo Labs should not be stateless every time it sets up a sim. Before
 a run, we ask Nia for relevant prior lessons; after a run, we drop a concise
 lesson note back into Nia. Numbers stay in metrics/W&B; *interpretations*
 stay in Nia.
@@ -123,16 +123,16 @@ stay in Nia.
 **Where it lives:**
 
 - `app/services/hermes.py` — the actual integration in code.
-- `skills/clawlab-curriculum-experimentation/references/nia-memory.md` —
-  the lesson-note template Hermes writes into Nia.
+- `skills/apollolabs-curriculum-experimentation/references/nia-memory.md` —
+  the lesson-note template used when indexing into Nia.
 - `npx nia-docs https://docs.innate.bot/` — CLI used to read Innate / Nia
   docs while developing.
 
 **Before a run** — `hermes.query_nia(template, run_config)` is called from
 `runner.create_run` *before* training starts. It posts a Slack message in the
-Hermes channel asking the agent to search Nia for prior lessons on the same
+configured Apollo Labs channel asking the agent to search Nia for prior lessons on the same
 `env_id` and config knobs (`room_size`, `dirt_count`, `total_timesteps`,
-etc.), then polls the thread for replies. Hermes' reply is stored on the run
+etc.), then polls the thread for replies. The agent reply is stored on the run
 as `metadata.nia_context`, so the frontend can show "What Nia remembered
 before this run" alongside the metrics.
 
@@ -145,27 +145,27 @@ It:
    - **What failed** — low success rate, errors, reward-hacking flags.
    - **Next recommendation** — "increase timesteps 50%", "simplify env",
      "scale to more seeds", etc.
-3. Posts a structured Slack block-kit message in the Hermes channel so the
+3. Posts a structured Slack block-kit message in the same channel so the
    agent can index the lesson into Nia using the template in
    `skills/.../nia-memory.md`.
 4. Writes `hermes_delivery_status` and `agentmail_message_id` back into
    `report.json`.
 
 **Memory dashboard** — `GET /api/v1/memory/lessons` returns every report
-with a Hermes delivery status. The frontend (`frontend/app/memory/page.tsx`)
-uses it to show the running list of lessons Hermes has shipped to Nia.
+with a delivery status. The frontend (`frontend/app/memory/page.tsx`)
+uses it to show the running list of lessons Apollo Labs has shipped toward Nia.
 
 **Why it matters:** the next time the user (or the MCP-driven agent) asks
 for a new run, the curriculum skill
-(`skills/clawlab-curriculum-experimentation/SKILL.md`) tells the agent to
+(`skills/apollolabs-curriculum-experimentation/SKILL.md`) tells the agent to
 search Nia *first*, so config decisions are grounded in what we've already
 learned instead of starting cold.
 
 ---
 
-## ClawLab MCP server (for agents)
+## Apollo Labs MCP server (for agents)
 
-`app/mcp/clawlab_server.py` exposes the same orchestration as MCP tools and
+`app/mcp/apollolabs_server.py` exposes the same orchestration as MCP tools and
 resources, so an agent in Cursor/Claude can drive runs without going through
 HTTP.
 
@@ -173,10 +173,10 @@ Tools: `list_envs`, `describe_env`, `start_training_run`, `get_run_status`,
 `start_eval_run`, `generate_run_gif`, `summarize_reward_hacking`,
 `compare_runs`.
 
-Resources (URIs): `clawlab://envs`,
-`clawlab://runs/{run_id}/{metadata|config|metrics|progress|artifacts|trajectory|report|logs}`.
+Resources (URIs): `apollolabs://envs`,
+`apollolabs://runs/{run_id}/{metadata|config|metrics|progress|artifacts|trajectory|report|logs}`.
 
-Run it standalone with `python -m app.mcp.clawlab_server` (requires the
+Run it standalone with `python -m app.mcp.apollolabs_server` (requires the
 optional `mcp` package).
 
 ---
@@ -253,7 +253,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/agentmail/mock-run
 ```
 app/
   main.py                  # FastAPI routes
-  config.py                # env vars (AgentMail, Hermes, Slack)
+  config.py                # env vars (AgentMail, dashboard URL, Slack)
   schemas/                 # Pydantic models (RunReport, AgentMail*, etc.)
   services/
     runner.py              # run lifecycle, calls train/eval/visualize
@@ -261,15 +261,15 @@ app/
     agentmail.py           # AgentMail HTTP client + HTML report renderer
     hermes.py              # query_nia (pre-run) + post_lesson (post-run)
   rl/                      # env, train, eval, baseline, visualize
-  mcp/clawlab_server.py    # MCP tools + resources for agents
+  mcp/apollolabs_server.py # MCP tools + resources for agents (Apollo Labs)
 frontend/
   app/
     page.tsx               # run history
     runs/[id]/page.tsx     # run detail (metrics + GIF + report)
     agentmail/page.tsx     # AgentMail inbox viewer
     memory/page.tsx        # Nia lesson feed
-skills/clawlab-curriculum-experimentation/
-  SKILL.md                 # how an agent should drive ClawLab
+skills/apollolabs-curriculum-experimentation/
+  SKILL.md                 # how an agent should drive Apollo Labs
   references/nia-memory.md # Nia lesson-note template
   references/reporting.md  # AgentMail/Slack/Nia channel split
 runs/                      # generated per-run artifacts (gitignored)
@@ -282,10 +282,9 @@ CLAUDE.md                  # assistant-oriented notes
 
 ## Glossary
 
-- **ClawLab** — the FastAPI orchestrator that supervises runs, stores
-  reports, and exposes them to clients.
-- **Hermes** — the agent harness running ClawLab work. Sends the AgentMail
-  email and writes Nia lessons.
+- **Apollo Labs** — the FastAPI orchestrator and product name: supervises runs,
+  stores reports, exposes them to clients, and drives Slack / AgentMail / Nia
+  flows (see `app/services/hermes.py` for the Slack-side implementation).
 - **AgentMail** — async human notification channel. Same payload as the API.
 - **Nia** — narrative memory queried before runs and written after.
 - **RunReport** — canonical Pydantic object served by the API, rendered by

@@ -5,7 +5,7 @@
   "ended_at": "2026-04-25T23:41:30.839836+00:00",
   "duration_sec": 82.681272,
   "config": {
-    "env_id": "ClawLab/FullCleaning-v0",
+    "env_id": "ApolloLabs/FullCleaning-v0",
     "total_timesteps": 1000,
     "eval_episodes": 3,
     "seed": 43,

@@ -5,16 +5,16 @@ from app.schemas.run import RunReport
 from app.services.hermes import post_lesson
 
 
-class HermesReportTests(unittest.TestCase):
+class ApolloLabsReportTests(unittest.TestCase):
     def test_lesson_uses_execution_status_and_real_env_id(self):
         report = RunReport(
             run_id="run_low_success",
             status="completed",
             ended_at="2026-04-25T20:02:00+00:00",
-            template="ClawLab/FullCleaning-v0",
+            template="ApolloLabs/FullCleaning-v0",
             algo="PPO",
             config={
-                "env_id": "ClawLab/FullCleaning-v0",
+                "env_id": "ApolloLabs/FullCleaning-v0",
                 "total_timesteps": 1000,
                 "room_size": 10.0,
                 "max_steps": 200,
@@ -35,7 +35,7 @@ class HermesReportTests(unittest.TestCase):
         self.assertEqual(result.status, "posted")
         blocks = post_message.call_args.kwargs["blocks"]
         fields = blocks[1]["fields"]
-        self.assertEqual(fields[0]["text"], "*env_id*\n`ClawLab/FullCleaning-v0`")
+        self.assertEqual(fields[0]["text"], "*env_id*\n`ApolloLabs/FullCleaning-v0`")
         self.assertIn("completed | reward -2.333 | policy success 0%", fields[1]["text"])
         self.assertNotIn("result*\nsuccess |", fields[1]["text"])
 

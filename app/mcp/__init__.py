@@ -1,1 +1,1 @@
-"""ClawLab MCP integration helpers."""
+"""Apollo Labs MCP integration helpers."""

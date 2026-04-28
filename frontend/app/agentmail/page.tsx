@@ -186,7 +186,7 @@ export default function AgentMailPage() {
           <span className="label">Integration · 02</span>
           <h1 className="text-[34px] font-semibold leading-none tracking-tight">AgentMail</h1>
           <p className="max-w-3xl text-[13px]" style={{ color: "var(--muted-strong)" }}>
-            Hermes sends run summaries to AgentMail and reads the run inbox back through the AgentMail
+            Apollo Labs sends run summaries to AgentMail and reads the run inbox back through the AgentMail
             messages API.
           </p>
         </div>
@@ -325,7 +325,7 @@ function MessageDetail({ message }: { message: AgentMailMessageDetail }) {
 
       <article className="agentmail-report">
         <div className="border-b hairline p-5">
-          <span className="label">Hermes report</span>
+          <span className="label">Apollo Labs report</span>
           <h3 className="mt-2 text-[24px] font-semibold leading-tight">{report.title}</h3>
           <p className="mt-3 text-[14px] leading-7" style={{ color: "var(--muted-strong)" }}>
             {report.summary}

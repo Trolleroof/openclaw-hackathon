@@ -6,7 +6,7 @@ Prefer small configs first. Scale only after plumbing and smoke metrics look san
 
 ```json
 {
-  "env_id": "ClawLab/ObstacleAvoidance-v0",
+  "env_id": "ApolloLabs/ObstacleAvoidance-v0",
   "total_timesteps": 30000,
   "eval_episodes": 20,
   "seed": 1,
@@ -18,7 +18,7 @@ Prefer small configs first. Scale only after plumbing and smoke metrics look san
 
 ```json
 {
-  "env_id": "ClawLab/FullCleaning-v0",
+  "env_id": "ApolloLabs/FullCleaning-v0",
   "total_timesteps": 200000,
   "eval_episodes": 50,
   "seed": 42,
@@ -32,10 +32,10 @@ Prefer small configs first. Scale only after plumbing and smoke metrics look san
 
 ## Curriculum Order
 
-1. `ClawLab/ObstacleAvoidance-v0`
-2. `ClawLab/PointNavigation-v0`
-3. `ClawLab/DirtSeeking-v0`
-4. `ClawLab/FullCleaning-v0`
+1. `ApolloLabs/ObstacleAvoidance-v0`
+2. `ApolloLabs/PointNavigation-v0`
+3. `ApolloLabs/DirtSeeking-v0`
+4. `ApolloLabs/FullCleaning-v0`
 
 Scale to easy/dense/random variants after the core env succeeds across seeds.
 

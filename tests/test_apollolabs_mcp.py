@@ -3,7 +3,7 @@ import shutil
 import unittest
 from pathlib import Path
 
-from app.mcp.clawlab_server import (
+from app.mcp.apollolabs_server import (
     compare_runs,
     describe_env,
     get_run_status,
@@ -13,7 +13,7 @@ from app.mcp.clawlab_server import (
 )
 
 
-class ClawLabMcpTests(unittest.TestCase):
+class ApolloLabsMcpTests(unittest.TestCase):
     GENERATED_RUN_IDS = {
         "mcp_status_unittest",
         "mcp_compare_a",
@@ -28,13 +28,13 @@ class ClawLabMcpTests(unittest.TestCase):
             if run_dir.is_dir():
                 shutil.rmtree(run_dir)
 
-    def test_list_envs_returns_clawlab_ids(self):
+    def test_list_envs_returns_apollolabs_ids(self):
         env_ids = {item["id"] for item in list_envs()["envs"]}
 
-        self.assertIn("ClawLab/FullCleaning-v0", env_ids)
+        self.assertIn("ApolloLabs/FullCleaning-v0", env_ids)
 
     def test_describe_env_returns_reward_components(self):
-        payload = describe_env("ClawLab/FullCleaning-v0")
+        payload = describe_env("ApolloLabs/FullCleaning-v0")
 
         self.assertIn("clean", payload["reward_components"])
 
@@ -60,7 +60,7 @@ class ClawLabMcpTests(unittest.TestCase):
         self.assertEqual(summary["reward_hacking"]["flag_count"], 0)
 
     def test_read_env_resource(self):
-        payload = read_resource("clawlab://envs")
+        payload = read_resource("apollolabs://envs")
 
         self.assertIn("envs", payload)
 
@@ -76,7 +76,7 @@ class ClawLabMcpTests(unittest.TestCase):
                 {
                     "run_id": "mcp_status_unittest",
                     "status": "completed",
-                    "config": {"env_id": "ClawLab/FullCleaning-v0"},
+                    "config": {"env_id": "ApolloLabs/FullCleaning-v0"},
                     "metrics_path": str(run_dir / "metrics" / "combined_metrics.json"),
                     "report_path": str(run_dir / "report.json"),
                     "model_path": str(run_dir / "model" / "roomba_policy.zip"),
@@ -91,7 +91,7 @@ class ClawLabMcpTests(unittest.TestCase):
         status = get_run_status("mcp_status_unittest")
 
         self.assertEqual(status["status"], "completed")
-        self.assertEqual(status["resources"]["metadata"], "clawlab://runs/mcp_status_unittest/metadata")
+        self.assertEqual(status["resources"]["metadata"], "apollolabs://runs/mcp_status_unittest/metadata")
         self.assertTrue(status["artifacts"]["has_gif"])
 
     def test_get_run_status_supports_direct_training_runs_without_metadata(self):
@@ -101,7 +101,7 @@ class ClawLabMcpTests(unittest.TestCase):
         (run_dir / "metrics").mkdir(parents=True)
         (run_dir / "model").mkdir()
         (run_dir / "rl_config.json").write_text(
-            json.dumps({"env_id": "ClawLab/FullCleaning-v0", "total_timesteps": 1024})
+            json.dumps({"env_id": "ApolloLabs/FullCleaning-v0", "total_timesteps": 1024})
         )
         (run_dir / "metrics" / "eval_metrics.json").write_text(
             json.dumps({"success_rate": 0.0})
@@ -109,10 +109,10 @@ class ClawLabMcpTests(unittest.TestCase):
         (run_dir / "model" / "roomba_policy.zip").write_bytes(b"model")
 
         status = get_run_status("mcp_status_unittest")
-        metadata = read_resource("clawlab://runs/mcp_status_unittest/metadata")
+        metadata = read_resource("apollolabs://runs/mcp_status_unittest/metadata")
 
         self.assertEqual(status["status"], "completed")
-        self.assertEqual(status["env_id"], "ClawLab/FullCleaning-v0")
+        self.assertEqual(status["env_id"], "ApolloLabs/FullCleaning-v0")
         self.assertEqual(metadata["config"]["total_timesteps"], 1024)
         self.assertTrue(status["model_path"].endswith("model/roomba_policy.zip"))
 
@@ -154,9 +154,9 @@ class ClawLabMcpTests(unittest.TestCase):
         (run_dir / "report.json").write_text(json.dumps({"run_id": "mcp_resource_unittest", "status": "completed"}))
         (run_dir / "logs" / "error.txt").write_text("example traceback")
 
-        metadata = read_resource("clawlab://runs/mcp_resource_unittest/metadata")
-        report = read_resource("clawlab://runs/mcp_resource_unittest/report")
-        logs = read_resource("clawlab://runs/mcp_resource_unittest/logs")
+        metadata = read_resource("apollolabs://runs/mcp_resource_unittest/metadata")
+        report = read_resource("apollolabs://runs/mcp_resource_unittest/report")
+        logs = read_resource("apollolabs://runs/mcp_resource_unittest/logs")
 
         self.assertEqual(metadata["run_id"], "mcp_resource_unittest")
         self.assertEqual(report["status"], "completed")

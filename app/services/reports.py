@@ -71,7 +71,7 @@ def build_run_report(metadata: dict) -> RunReport:
 
     markdown = "\n".join(
         [
-            f"# Hermes Run Report: {run_id}",
+            f"# Apollo Labs run report: {run_id}",
             "",
             f"- Status: `{status}`",
             f"- Template: `{template}`",

@@ -66,7 +66,7 @@ export default function RunPage() {
           <p className="mono text-[14px] tracking-tight">{id}</p>
           <p className="text-[12px]" style={{ color: "var(--muted-strong)" }}>
             {stillSearching
-              ? "Fetching run details from Hermes…"
+              ? "Fetching run details…"
               : "This run isn’t available on this dashboard yet. It may still be syncing, or it may have been removed."}
           </p>
           {!stillSearching && (
@@ -90,7 +90,7 @@ export default function RunPage() {
   const runId = run?.run_id ?? report?.run_id ?? id;
   const config = (run?.config ?? report?.config ?? {}) as Record<string, unknown>;
   const template =
-    (config.env_id as string | undefined)?.replace("ClawLab/", "") ??
+    (config.env_id as string | undefined)?.replace("ApolloLabs/", "") ??
     report?.template ??
     "—";
   const ppo = run?.metrics?.ppo;

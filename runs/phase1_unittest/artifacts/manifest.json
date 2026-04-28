@@ -12,9 +12,9 @@
   "lidar_rays": 0,
   "env_id": null,
   "gif_paths": [
-    "/Users/adavya/Downloads/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0.gif"
+    "/Users/nikhi/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0.gif"
   ],
   "trajectory_paths": [
-    "/Users/adavya/Downloads/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0_trajectory.json"
+    "/Users/nikhi/openclaw-hackathon/runs/phase1_unittest/artifacts/episode_seed_0_trajectory.json"
   ]
 }

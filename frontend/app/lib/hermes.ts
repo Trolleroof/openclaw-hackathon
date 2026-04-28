@@ -1,6 +1,6 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-export type HermesLesson = {
+export type ApolloLabsLesson = {
   run_id: string;
   status: string;
   template: string;
@@ -27,11 +27,11 @@ export type HermesLesson = {
   agentmail_thread_id?: string | null;
 };
 
-export async function fetchHermesLessons(limit = 25): Promise<HermesLesson[]> {
+export async function fetchApolloLabsLessons(limit = 25): Promise<ApolloLabsLesson[]> {
   const res = await fetch(`${API_BASE}/api/v1/memory/lessons?limit=${limit}`, {
     headers: { Accept: "application/json" },
   });
   if (!res.ok) throw new Error(`Failed to load lessons (${res.status})`);
   const data = await res.json();
-  return data.lessons as HermesLesson[];
+  return data.lessons as ApolloLabsLesson[];
 }

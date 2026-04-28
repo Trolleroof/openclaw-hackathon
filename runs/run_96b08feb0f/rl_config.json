@@ -12,5 +12,5 @@
   "device": "cpu",
   "progress_eval_interval": 0,
   "progress_eval_episodes": 0,
-  "env_id": "ClawLab/FullCleaning-v0"
+  "env_id": "ApolloLabs/FullCleaning-v0"
 }

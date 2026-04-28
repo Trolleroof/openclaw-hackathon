@@ -21,7 +21,7 @@ export type Run = {
   logs: string[];
 };
 
-// No mock data — wire to Hermes API in Phase 2.
+// No mock data — wire to Apollo Labs API in Phase 2.
 export const runs: Run[] = [];
 
 export function getRun(id: string): Run | undefined {

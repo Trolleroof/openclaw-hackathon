@@ -9,7 +9,7 @@ from app.rl.sensors import cast_lidar_rays
 
 
 class PointNavigationEnv(gym.Env):
-    """Point-goal navigation environment for the ClawLab curriculum."""
+    """Point-goal navigation environment for the Apollo Labs curriculum."""
 
     metadata = {"render_modes": ["human", "rgb_array"]}
 

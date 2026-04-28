@@ -10,7 +10,7 @@ DEFAULT_RUN_CONFIG = RunConfig()
 
 
 class CreateRunRequest(BaseModel):
-    env_id: str = Field(default="ClawLab/FullCleaning-v0")
+    env_id: str = Field(default="ApolloLabs/FullCleaning-v0")
     total_timesteps: int = Field(default=DEFAULT_RUN_CONFIG.total_timesteps, ge=1_000, le=2_000_000)
     eval_episodes: int = Field(default=DEFAULT_RUN_CONFIG.eval_episodes, ge=1, le=1_000)
     seed: int = Field(default=DEFAULT_RUN_CONFIG.seed)
@@ -28,7 +28,7 @@ class CreateRunRequest(BaseModel):
     @classmethod
     def validate_env_id(cls, value: str) -> str:
         if value not in all_env_specs():
-            raise ValueError(f"Unknown ClawLab env_id: {value}")
+            raise ValueError(f"Unknown Apollo Labs env_id: {value}")
         return value
 
 

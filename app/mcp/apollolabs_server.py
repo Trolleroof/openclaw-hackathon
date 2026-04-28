@@ -16,17 +16,17 @@ from app.services.runner import create_run
 
 
 def list_envs() -> dict[str, Any]:
-    """List all registered ClawLab curriculum environments and their defaults."""
+    """List all registered Apollo Labs curriculum environments and their defaults."""
     return {"envs": list_registered_envs()}
 
 
 def describe_env(env_id: str) -> dict[str, Any]:
-    """Describe one ClawLab environment, including defaults, rewards, and metrics."""
+    """Describe one Apollo Labs environment, including defaults, rewards, and metrics."""
     return describe_registered_env(env_id)
 
 
 def start_training_run(config: dict[str, Any]) -> dict[str, Any]:
-    """Start a validated ClawLab PPO training run from a run config."""
+    """Start a validated Apollo Labs PPO training run from a run config."""
     request = CreateRunRequest(**config)
     captured, response = _capture_tool_output(lambda: create_run(request))
     payload = response.model_dump()
@@ -61,14 +61,14 @@ def get_run_status(run_id: str) -> dict[str, Any]:
             "log_files": log_files,
         },
         "resources": {
-            "metadata": f"clawlab://runs/{run_id}/metadata",
-            "config": f"clawlab://runs/{run_id}/config",
-            "metrics": f"clawlab://runs/{run_id}/metrics",
-            "progress": f"clawlab://runs/{run_id}/progress",
-            "artifacts": f"clawlab://runs/{run_id}/artifacts",
-            "trajectory": f"clawlab://runs/{run_id}/trajectory",
-            "report": f"clawlab://runs/{run_id}/report",
-            "logs": f"clawlab://runs/{run_id}/logs",
+            "metadata": f"apollolabs://runs/{run_id}/metadata",
+            "config": f"apollolabs://runs/{run_id}/config",
+            "metrics": f"apollolabs://runs/{run_id}/metrics",
+            "progress": f"apollolabs://runs/{run_id}/progress",
+            "artifacts": f"apollolabs://runs/{run_id}/artifacts",
+            "trajectory": f"apollolabs://runs/{run_id}/trajectory",
+            "report": f"apollolabs://runs/{run_id}/report",
+            "logs": f"apollolabs://runs/{run_id}/logs",
         },
     }
 
@@ -81,7 +81,7 @@ def start_eval_run(run_id: str, episodes: int = 20) -> dict[str, Any]:
 
 
 def generate_run_gif(run_id: str, episodes: int = 1) -> dict[str, Any]:
-    """Generate rollout visualization artifacts for a trained ClawLab run."""
+    """Generate rollout visualization artifacts for a trained Apollo Labs run."""
     captured, payload = _capture_tool_output(lambda: generate_run_artifacts(run_id=run_id, episodes=episodes))
     _append_tool_log(run_id, "generate_run_gif", captured)
     return payload
@@ -147,11 +147,11 @@ def compare_runs(run_ids: list[str]) -> dict[str, Any]:
 
 
 def read_resource(uri: str) -> dict[str, Any]:
-    if uri == "clawlab://envs":
+    if uri == "apollolabs://envs":
         return list_envs()
-    prefix = "clawlab://runs/"
+    prefix = "apollolabs://runs/"
     if not uri.startswith(prefix):
-        raise ValueError(f"Unsupported ClawLab resource URI: {uri}")
+        raise ValueError(f"Unsupported Apollo Labs resource URI: {uri}")
 
     path = uri[len(prefix) :]
     run_id, _, resource_name = path.partition("/")
@@ -281,39 +281,39 @@ def _desc(value: Any) -> float:
 
 
 def _resource_envs() -> dict[str, Any]:
-    return read_resource("clawlab://envs")
+    return read_resource("apollolabs://envs")
 
 
 def _resource_run_metadata(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/metadata")
+    return read_resource(f"apollolabs://runs/{run_id}/metadata")
 
 
 def _resource_run_config(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/config")
+    return read_resource(f"apollolabs://runs/{run_id}/config")
 
 
 def _resource_run_metrics(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/metrics")
+    return read_resource(f"apollolabs://runs/{run_id}/metrics")
 
 
 def _resource_run_progress(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/progress")
+    return read_resource(f"apollolabs://runs/{run_id}/progress")
 
 
 def _resource_run_artifacts(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/artifacts")
+    return read_resource(f"apollolabs://runs/{run_id}/artifacts")
 
 
 def _resource_run_trajectory(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/trajectory")
+    return read_resource(f"apollolabs://runs/{run_id}/trajectory")
 
 
 def _resource_run_report(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/report")
+    return read_resource(f"apollolabs://runs/{run_id}/report")
 
 
 def _resource_run_logs(run_id: str) -> dict[str, Any]:
-    return read_resource(f"clawlab://runs/{run_id}/logs")
+    return read_resource(f"apollolabs://runs/{run_id}/logs")
 
 
 def main() -> None:
@@ -322,10 +322,10 @@ def main() -> None:
     except ImportError as exc:
         raise SystemExit(
             "The optional 'mcp' package is not installed. Install it to run the "
-            "ClawLab MCP server process; direct Python helpers remain usable."
+            "Apollo Labs MCP server process; direct Python helpers remain usable."
         ) from exc
 
-    server = FastMCP("clawlab")
+    server = FastMCP("apollolabs")
     server.tool()(list_envs)
     server.tool()(describe_env)
     server.tool()(start_training_run)
@@ -335,15 +335,15 @@ def main() -> None:
     server.tool()(generate_run_gif)
     server.tool()(summarize_reward_hacking)
 
-    server.resource("clawlab://envs")(_resource_envs)
-    server.resource("clawlab://runs/{run_id}/metadata")(_resource_run_metadata)
-    server.resource("clawlab://runs/{run_id}/config")(_resource_run_config)
-    server.resource("clawlab://runs/{run_id}/metrics")(_resource_run_metrics)
-    server.resource("clawlab://runs/{run_id}/progress")(_resource_run_progress)
-    server.resource("clawlab://runs/{run_id}/artifacts")(_resource_run_artifacts)
-    server.resource("clawlab://runs/{run_id}/trajectory")(_resource_run_trajectory)
-    server.resource("clawlab://runs/{run_id}/report")(_resource_run_report)
-    server.resource("clawlab://runs/{run_id}/logs")(_resource_run_logs)
+    server.resource("apollolabs://envs")(_resource_envs)
+    server.resource("apollolabs://runs/{run_id}/metadata")(_resource_run_metadata)
+    server.resource("apollolabs://runs/{run_id}/config")(_resource_run_config)
+    server.resource("apollolabs://runs/{run_id}/metrics")(_resource_run_metrics)
+    server.resource("apollolabs://runs/{run_id}/progress")(_resource_run_progress)
+    server.resource("apollolabs://runs/{run_id}/artifacts")(_resource_run_artifacts)
+    server.resource("apollolabs://runs/{run_id}/trajectory")(_resource_run_trajectory)
+    server.resource("apollolabs://runs/{run_id}/report")(_resource_run_report)
+    server.resource("apollolabs://runs/{run_id}/logs")(_resource_run_logs)
     server.run()
 
 

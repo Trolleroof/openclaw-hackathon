@@ -7,7 +7,7 @@
   "template": "roomba.room-10.0.dirt-6",
   "algo": "PPO",
   "config": {
-    "env_id": "ClawLab/FullCleaning-v0",
+    "env_id": "ApolloLabs/FullCleaning-v0",
     "total_timesteps": 1000,
     "eval_episodes": 3,
     "seed": 43,
@@ -33,7 +33,7 @@
   },
   "error": null,
   "model_summary": "PPO run run_96b08feb0f finished with status success. Trained for 1,000 timesteps and evaluated across 3 episodes. Average reward: -2.333; success rate: 0.000.",
-  "markdown": "# Hermes Run Report: run_96b08feb0f\n\n- Status: `success`\n- Template: `roomba.room-10.0.dirt-6`\n- Timesteps: `1000`\n- Episodes: `3`\n- Average reward: `-2.3330170056781645`\n- Success rate: `0.0`\n- Checkpoint: `/Users/nikhi/openclaw-hackathon/runs/run_96b08feb0f/model/roomba_policy.zip`\n- Dashboard: http://localhost:3000/runs/run_96b08feb0f\n\nPPO run run_96b08feb0f finished with status success. Trained for 1,000 timesteps and evaluated across 3 episodes. Average reward: -2.333; success rate: 0.000.",
+  "markdown": "# Apollo Labs run report: run_96b08feb0f\n\n- Status: `success`\n- Template: `roomba.room-10.0.dirt-6`\n- Timesteps: `1000`\n- Episodes: `3`\n- Average reward: `-2.3330170056781645`\n- Success rate: `0.0`\n- Checkpoint: `/Users/nikhi/openclaw-hackathon/runs/run_96b08feb0f/model/roomba_policy.zip`\n- Dashboard: http://localhost:3000/runs/run_96b08feb0f\n\nPPO run run_96b08feb0f finished with status success. Trained for 1,000 timesteps and evaluated across 3 episodes. Average reward: -2.333; success rate: 0.000.",
   "agentmail_message_id": "<0100019dc7051716-7c15e255-377f-4ecb-af4d-0bbb36bd7e8d-000000@email.amazonses.com>",
   "agentmail_thread_id": "9ca4153f-bbb9-4eeb-9c89-f06caf713ac1",
   "delivery_status": "sent",

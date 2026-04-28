@@ -16,8 +16,8 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hermes — RL run console",
-  description: "Hermes orchestrates reinforcement-learning training runs.",
+  title: "Apollo Labs — RL run console",
+  description: "Apollo Labs orchestrates reinforcement-learning training runs.",
 };
 
 export default function RootLayout({

@@ -9,7 +9,7 @@ from app.rl.sensors import cast_lidar_rays
 
 
 class ObstacleAvoidanceEnv(gym.Env):
-    """ClawLab curriculum env focused only on collision-free navigation."""
+    """Apollo Labs curriculum env focused only on collision-free navigation."""
 
     metadata = {"render_modes": ["human", "rgb_array"]}
 

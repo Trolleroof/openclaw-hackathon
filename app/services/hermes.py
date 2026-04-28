@@ -83,13 +83,13 @@ def _get_replies(thread_ts: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Before-run: query Nia via Hermes
+# Before-run: query Nia via Slack (Apollo Labs flow)
 # ---------------------------------------------------------------------------
 
 def query_nia(template: str, run_config: dict) -> str:
     """
-    Post a pre-run query to Hermes in Slack. Hermes searches Nia and replies.
-    Returns Hermes' reply text, or "" if unavailable/timeout.
+    Post a pre-run query in Slack. The agent searches Nia and replies.
+    Returns the reply text, or "" if unavailable/timeout.
     """
     if not config.SLACK_BOT_TOKEN or not config.SLACK_CHANNEL_ID:
         return ""
@@ -101,7 +101,7 @@ def query_nia(template: str, run_config: dict) -> str:
     )
 
     text = (
-        f"[ClawLab] Planning a new training run.\n"
+        f"[Apollo Labs] Planning a new training run.\n"
         f"*env_id:* `{template}`\n"
         f"*Config:* {config_summary}\n"
         f"Please search Nia for relevant prior lessons on this environment "
@@ -159,14 +159,14 @@ def _derive_lesson(report: RunReport) -> tuple[str, str, str]:
 
 
 def send_run_email(report: RunReport) -> AgentMailResult:
-    """Hermes sends the end-of-run AgentMail report to the configured recipients."""
+    """Send the end-of-run AgentMail report to the configured recipients."""
     return send_report(report, recipient=HERMES_REPORT_RECIPIENTS)
 
 
 def post_lesson(report: RunReport) -> HermesPostResult:
     """
-    Post a structured run lesson note to Hermes in Slack and email the run report
-    via AgentMail (Hermes is the agent that triggers the email).
+    Post a structured run lesson note to Slack and email the run report
+    via AgentMail (Apollo Labs orchestration triggers the email).
     Uses webhook if no bot token; bot token preferred for consistency.
     """
     mail_result = send_run_email(report)
@@ -191,7 +191,7 @@ def post_lesson(report: RunReport) -> HermesPostResult:
     blocks = [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": f"[ClawLab Note] {emoji} Run `{report.run_id}`"},
+            "text": {"type": "plain_text", "text": f"[Apollo Labs] {emoji} Run `{report.run_id}`"},
         },
         {
             "type": "section",
@@ -236,7 +236,7 @@ def post_lesson(report: RunReport) -> HermesPostResult:
 
     # Prefer bot token (chat.postMessage); fall back to webhook
     if config.SLACK_BOT_TOKEN and config.SLACK_CHANNEL_ID:
-        fallback = f"[ClawLab Note] {report.run_id} {report.status}"
+        fallback = f"[Apollo Labs] {report.run_id} {report.status}"
         ts = _post_message(fallback, blocks=blocks)
         if ts is not None:
             return HermesPostResult(status="posted", agentmail=mail_result)

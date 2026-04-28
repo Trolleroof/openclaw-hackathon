@@ -9,7 +9,7 @@ class BenchmarkSummaryTests(unittest.TestCase):
             [
                 {
                     "run_id": "run_bad",
-                    "env_id": "ClawLab/FullCleaning-v0",
+                    "env_id": "ApolloLabs/FullCleaning-v0",
                     "metrics": {
                         "success_rate": 0.5,
                         "avg_reward": 10.0,
@@ -25,7 +25,7 @@ class BenchmarkSummaryTests(unittest.TestCase):
                 },
                 {
                     "run_id": "run_good",
-                    "env_id": "ClawLab/FullCleaning-v0",
+                    "env_id": "ApolloLabs/FullCleaning-v0",
                     "metrics": {
                         "success_rate": 1.0,
                         "avg_reward": 50.0,

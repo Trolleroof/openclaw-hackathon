@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "../components/Card";
 import { EmptyState } from "../components/EmptyState";
-import { fetchHermesLessons, type HermesLesson } from "../lib/hermes";
+import { fetchApolloLabsLessons, type ApolloLabsLesson } from "../lib/hermes";
 
 function fmt(value: number | null | undefined, decimals = 3): string {
   return value !== null && value !== undefined ? value.toFixed(decimals) : "n/a";
@@ -50,7 +50,7 @@ function statusBadge(status: string) {
   );
 }
 
-function hermesBadge(deliveryStatus: string) {
+function slackLessonBadge(deliveryStatus: string) {
   const color =
     deliveryStatus === "posted"
       ? "var(--status-success)"
@@ -59,7 +59,7 @@ function hermesBadge(deliveryStatus: string) {
       : "var(--muted-strong)";
   return (
     <span className="label" style={{ color }}>
-      {deliveryStatus === "posted" ? "sent to hermes" : deliveryStatus === "failed" ? "hermes failed" : "hermes skipped"}
+      {deliveryStatus === "posted" ? "posted to Slack" : deliveryStatus === "failed" ? "Slack post failed" : "Slack post skipped"}
     </span>
   );
 }
@@ -87,7 +87,7 @@ type DerivedLesson = {
   narrative: string;
 };
 
-function deriveLesson(lesson: HermesLesson): DerivedLesson {
+function deriveLesson(lesson: ApolloLabsLesson): DerivedLesson {
   const sr = lesson.best_return ?? 0;
   const mr = lesson.mean_return ?? 0;
   const steps = lesson.steps ?? 0;
@@ -177,15 +177,15 @@ function summarizeConfig(cfg: Record<string, unknown> | null | undefined): Array
 }
 
 export default function MemoryPage() {
-  const [lessons, setLessons] = useState<HermesLesson[]>([]);
-  const [selected, setSelected] = useState<HermesLesson | null>(null);
+  const [lessons, setLessons] = useState<ApolloLabsLesson[]>([]);
+  const [selected, setSelected] = useState<ApolloLabsLesson | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
-    fetchHermesLessons()
+    fetchApolloLabsLessons()
       .then((data) => { if (!cancelled) setLessons(data); })
       .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load lessons"); })
       .finally(() => { if (!cancelled) setIsLoading(false); });
@@ -202,9 +202,9 @@ export default function MemoryPage() {
         <h1 className="text-[32px] font-semibold tracking-tight">Nia memory</h1>
         <p className="max-w-3xl text-[13px]" style={{ color: "var(--muted-strong)" }}>
           W&amp;B holds the numbers. Nia holds the narrative — what we tried, what worked, and
-          what failed. After every training run, ClawLab posts a structured lesson to Hermes in Slack,
-          AgentMail emails the full report, and Hermes indexes the whole bundle (env config, metrics,
-          checkpoint URI, derived recommendations) into Nia so the next run starts with the prior context.
+          what failed. After every training run, Apollo Labs posts a structured lesson to Slack,
+          AgentMail emails the full report, and the whole bundle (env config, metrics,
+          checkpoint URI, derived recommendations) is indexed into Nia so the next run starts with the prior context.
         </p>
         <p className="max-w-3xl text-[12px]" style={{ color: "var(--muted-strong)" }}>
           Each lesson below captures: the env_id and full env config, PPO training stats, evaluation
@@ -215,16 +215,16 @@ export default function MemoryPage() {
 
       <section className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_520px] gap-6">
         <div className="flex flex-col gap-6">
-          <Card title="Lessons" hint="posted to Hermes">
+          <Card title="Lessons" hint="posted to Slack (Apollo Labs)">
             {isLoading ? (
-              <EmptyState icon="..." title="Loading lessons" body="Fetching run lessons from ClawLab." />
+              <EmptyState icon="..." title="Loading lessons" body="Fetching run lessons from Apollo Labs." />
             ) : error ? (
               <EmptyState icon="!" title="Could not load lessons" body={error} />
             ) : lessons.length === 0 ? (
               <EmptyState
-                icon="§"
+                icon="…"
                 title="No lessons yet"
-                body="Complete a training run to generate the first lesson. Set SLACK_WEBHOOK_URL to post it to Hermes."
+                body="Complete a training run to generate the first lesson. Set SLACK_WEBHOOK_URL or a bot token to post it to Slack."
               />
             ) : (
               <div className="flex flex-col">
@@ -239,7 +239,7 @@ export default function MemoryPage() {
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-semibold font-mono text-[13px]">{lesson.run_id}</span>
                           {statusBadge(lesson.status)}
-                          {hermesBadge(lesson.hermes_delivery_status)}
+                          {slackLessonBadge(lesson.hermes_delivery_status)}
                           {agentmailBadge(lesson.delivery_status)}
                         </div>
                         <p className="mt-1 text-[12px] font-mono" style={{ color: "var(--muted-strong)" }}>
@@ -278,7 +278,7 @@ export default function MemoryPage() {
             <EmptyState
               icon="↗"
               title="Select a lesson"
-              body="Pick a row to see the full lesson sent to Hermes — env config, metrics, derived recommendations, and delivery trail."
+              body="Pick a row to see the full lesson posted to Slack — env config, metrics, derived recommendations, and delivery trail."
             />
           ) : (
             <div className="flex flex-col gap-5">
@@ -287,7 +287,7 @@ export default function MemoryPage() {
                 <h2 className="text-[18px] font-semibold leading-tight">{selected.template}</h2>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {statusBadge(selected.status)}
-                  {hermesBadge(selected.hermes_delivery_status)}
+                  {slackLessonBadge(selected.hermes_delivery_status)}
                   {agentmailBadge(selected.delivery_status)}
                 </div>
               </div>
@@ -363,7 +363,7 @@ export default function MemoryPage() {
                 <table className="w-full text-[12px] border-collapse mt-2">
                   <tbody>
                     {([
-                      ["Hermes (Slack)", selected.hermes_delivery_status],
+                      ["Apollo Labs (Slack)", selected.hermes_delivery_status],
                       ["AgentMail", selected.delivery_status || "n/a"],
                       ["AgentMail message", selected.agentmail_message_id || "n/a"],
                       ["AgentMail thread", selected.agentmail_thread_id || "n/a"],
@@ -408,7 +408,7 @@ export default function MemoryPage() {
 
               {selected.hermes_delivery_error && (
                 <div className="rounded-md border hairline p-3 text-[12px]" style={{ color: "var(--status-failed)" }}>
-                  <span className="font-medium">Hermes delivery error:</span> {selected.hermes_delivery_error}
+                  <span className="font-medium">Slack lesson delivery error:</span> {selected.hermes_delivery_error}
                 </div>
               )}
 

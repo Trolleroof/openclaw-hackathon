@@ -34,7 +34,7 @@ def make_env(env_id: str | None = None, render_mode: str | None = None, **config
 def _filter_env_kwargs(env_id: str, config: dict[str, Any]) -> dict[str, Any]:
     specs = all_env_specs()
     if env_id not in specs:
-        raise ValueError(f"Unknown ClawLab env_id: {env_id}")
+        raise ValueError(f"Unknown Apollo Labs env_id: {env_id}")
 
     constructor = _env_constructor(specs[env_id].entry_point)
     signature = inspect.signature(constructor.__init__)

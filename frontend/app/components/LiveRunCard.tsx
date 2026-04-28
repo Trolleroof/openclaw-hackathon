@@ -20,8 +20,8 @@ function shortId(runId: string) {
 }
 
 function template(config: Record<string, unknown>) {
-  const env = (config.env_id as string | undefined) ?? "ClawLab";
-  return env.replace("ClawLab/", "");
+  const env = (config.env_id as string | undefined) ?? "Apollo Labs";
+  return env.replace("ApolloLabs/", "");
 }
 
 function since(start: string | null, end: string | null, durationSec: number | null) {

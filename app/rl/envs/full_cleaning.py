@@ -5,7 +5,7 @@ from app.rl.env import RoombaEnv
 
 class FullCleaningEnv(RoombaEnv):
     """
-    Full ClawLab cleaning task.
+    Full Apollo Labs cleaning task.
 
     This keeps the original RoombaEnv task mechanics for dirt removal,
     collision handling, reward components, and telemetry, while defaulting to

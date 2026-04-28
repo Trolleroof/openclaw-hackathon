@@ -1,13 +1,13 @@
 ---
-name: clawlab-curriculum-experimentation
-description: Use when launching, monitoring, comparing, diagnosing, visualizing, or reporting ClawLab RL curriculum runs
+name: apollolabs-curriculum-experimentation
+description: Use when launching, monitoring, comparing, diagnosing, visualizing, or reporting Apollo Labs RL curriculum runs
 ---
 
-# ClawLab Curriculum Experimentation
+# Apollo Labs curriculum experimentation
 
 ## Rules
 
-- Use the ClawLab MCP for environment and run operations.
+- Use the Apollo Labs MCP for environment and run operations.
 - Do not call training scripts directly unless the MCP server is unavailable.
 - Start with smoke runs before longer training or benchmark sweeps.
 - Use W&B, local metrics, and run artifacts as the source of truth for numbers.
@@ -30,19 +30,19 @@ description: Use when launching, monitoring, comparing, diagnosing, visualizing,
 
 ## Tool Use
 
-Required ClawLab MCP tools:
+Required Apollo Labs MCP tools:
 
-- `mcp_clawlab_list_envs`
-- `mcp_clawlab_describe_env`
-- `mcp_clawlab_start_training_run`
-- `mcp_clawlab_get_run_status`
-- `mcp_clawlab_compare_runs`
-- `mcp_clawlab_summarize_reward_hacking`
+- `mcp_apollolabs_list_envs`
+- `mcp_apollolabs_describe_env`
+- `mcp_apollolabs_start_training_run`
+- `mcp_apollolabs_get_run_status`
+- `mcp_apollolabs_compare_runs`
+- `mcp_apollolabs_summarize_reward_hacking`
 
-Regeneration ClawLab MCP tools:
+Regeneration Apollo Labs MCP tools:
 
-- `mcp_clawlab_start_eval_run`
-- `mcp_clawlab_generate_run_gif`
+- `mcp_apollolabs_start_eval_run`
+- `mcp_apollolabs_generate_run_gif`
 
 Use MCP resources for config, metrics, progress, artifacts, trajectory, report, and logs.
 

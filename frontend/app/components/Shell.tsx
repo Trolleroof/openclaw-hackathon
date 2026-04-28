@@ -22,7 +22,7 @@ export function Shell({ children }: { children: ReactNode }) {
               className="inline-block w-2 h-2 rounded-full"
               style={{ background: "var(--accent)" }}
             />
-            <span className="text-[15px] font-semibold tracking-tight">Hermes</span>
+            <span className="text-[15px] font-semibold tracking-tight">Apollo Labs</span>
             <span className="label hidden sm:inline ml-2">RL console</span>
           </Link>
 

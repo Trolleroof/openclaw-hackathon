@@ -16,10 +16,10 @@ from app.rl.train import train_policy
 
 
 CORE_ENVS = [
-    "ClawLab/ObstacleAvoidance-v0",
-    "ClawLab/PointNavigation-v0",
-    "ClawLab/DirtSeeking-v0",
-    "ClawLab/FullCleaning-v0",
+    "ApolloLabs/ObstacleAvoidance-v0",
+    "ApolloLabs/PointNavigation-v0",
+    "ApolloLabs/DirtSeeking-v0",
+    "ApolloLabs/FullCleaning-v0",
 ]
 
 
@@ -72,7 +72,7 @@ def main():
     parser.add_argument("--seeds", default="1")
     parser.add_argument("--eval-episodes", type=int, default=20)
     parser.add_argument("--device", default="cpu", choices=["auto", "cpu", "cuda", "mps"])
-    parser.add_argument("--prefix", default="clawlab")
+    parser.add_argument("--prefix", default="apollolabs")
     parser.add_argument("--progress-eval-interval", type=int)
     parser.add_argument("--progress-eval-episodes", type=int, default=2)
     args = parser.parse_args()

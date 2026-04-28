@@ -1,12 +1,12 @@
-# ClawLab MCP Tools
+# Apollo Labs MCP Tools
 
-Configure Hermes with server name `clawlab` so discovered tools use the `mcp_clawlab_*` prefix.
+Configure your MCP client with server name `apollolabs` so discovered tools use the `mcp_apollolabs_*` prefix.
 
 ```yaml
 mcp_servers:
-  clawlab:
+  apollolabs:
     command: "/Users/adavya/Downloads/openclaw-hackathon/.venv/bin/python"
-    args: ["-m", "app.mcp.clawlab_server"]
+    args: ["-m", "app.mcp.apollolabs_server"]
     cwd: "/Users/adavya/Downloads/openclaw-hackathon"
 ```
 
@@ -38,14 +38,14 @@ Reads reward-hacking diagnostics and returns a concise interpretation.
 
 ## Resources
 
-- `clawlab://envs`
-- `clawlab://runs/{run_id}/metadata`
-- `clawlab://runs/{run_id}/config`
-- `clawlab://runs/{run_id}/metrics`
-- `clawlab://runs/{run_id}/progress`
-- `clawlab://runs/{run_id}/artifacts`
-- `clawlab://runs/{run_id}/trajectory`
-- `clawlab://runs/{run_id}/report`
-- `clawlab://runs/{run_id}/logs`
+- `apollolabs://envs`
+- `apollolabs://runs/{run_id}/metadata`
+- `apollolabs://runs/{run_id}/config`
+- `apollolabs://runs/{run_id}/metrics`
+- `apollolabs://runs/{run_id}/progress`
+- `apollolabs://runs/{run_id}/artifacts`
+- `apollolabs://runs/{run_id}/trajectory`
+- `apollolabs://runs/{run_id}/report`
+- `apollolabs://runs/{run_id}/logs`
 
 Use resources for inspection. Use tools for actions.

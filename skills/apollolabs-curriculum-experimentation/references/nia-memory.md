@@ -16,9 +16,9 @@ Search Nia for:
 Write a concise note for meaningful runs and benchmark summaries.
 
 ```markdown
-type: clawlab_run_summary
+type: apollolabs_run_summary
 run_id: run_abc123
-env_id: ClawLab/FullCleaning-v0
+env_id: ApolloLabs/FullCleaning-v0
 status: completed
 
 artifact_locations:
@@ -43,4 +43,4 @@ next:
   - Test this config across three seeds.
 ```
 
-Keep raw logs and full metrics in ClawLab/W&B. Store locations and interpretation in Nia.
+Keep raw logs and full metrics in Apollo Labs or W&B. Store locations and interpretation in Nia.

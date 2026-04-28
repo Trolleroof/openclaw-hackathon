@@ -102,18 +102,18 @@ export default function HomePage() {
       {error && runs.length === 0 ? (
         <EmptyState
           icon="!"
-          title="Cannot reach Hermes API"
+          title="Cannot reach Apollo Labs API"
           body={error}
         />
       ) : runs.length === 0 ? (
         <EmptyState
           icon="+"
           title="No runs yet"
-          body="Once Hermes dispatches a training run, it will show up here. Connect the API to start streaming real data."
+          body="Once Apollo Labs dispatches a training run, it will show up here. Connect the API to start streaming real data."
           action={
             <div className="flex gap-2">
               <button className="btn-accent" type="button">+ New run</button>
-              <button className="btn-ghost" type="button">Connect Hermes API</button>
+              <button className="btn-ghost" type="button">Connect API</button>
             </div>
           }
         />

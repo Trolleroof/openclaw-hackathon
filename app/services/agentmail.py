@@ -61,7 +61,7 @@ def _html_report(report: RunReport) -> str:
         '<div style="margin:0;background:#090b0d;padding:28px;font-family:Inter,Arial,sans-serif;color:#f4f7ef;">'
         '<div style="max-width:680px;margin:0 auto;border:1px solid #27313a;border-radius:12px;overflow:hidden;background:#11161a;">'
         '<div style="padding:24px 26px;border-bottom:1px solid #27313a;">'
-        '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#98a69a;">Hermes Run Report</div>'
+        '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#98a69a;">Apollo Labs run report</div>'
         f'<h1 style="margin:10px 0 0;font-size:28px;line-height:1.18;color:#f4f7ef;">{escape(report.run_id)}</h1>'
         f'<p style="margin:14px 0 0;font-size:15px;line-height:1.65;color:#c4cec2;">{escape(report.model_summary)}</p>'
         f'<div style="display:inline-block;margin-top:16px;padding:5px 10px;border-radius:999px;background:rgba(183,248,74,0.12);color:{status_color};font-size:12px;font-weight:700;">{escape(report.status)}</div>'
@@ -157,7 +157,7 @@ def send_report(report: RunReport, recipient: Optional[object] = None) -> AgentM
         "subject": f"[RL] run {report.run_id} {report.status}",
         "text": report.markdown,
         "html": _html_report(report),
-        "labels": ["hermes", "run-report", report.status],
+        "labels": ["apollo-labs", "run-report", report.status],
     }
     try:
         data = _request_json("POST", f"inboxes/{config.AGENTMAIL_INBOX_ID}/messages/send", body)
@@ -215,7 +215,7 @@ def build_mock_run_report() -> RunReport:
     )
     markdown = "\n".join(
         [
-            f"# Hermes Run Report: {run_id}",
+            f"# Apollo Labs run report: {run_id}",
             "",
             "- Status: `success`",
             f"- Template: `{template}`",
